@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>МЕТА Процессы v19</title>
+<style>
+:root{
+  --meta-blue:#2477f3;
+  --meta-blue-2:#5a9cff;
+  --meta-blue-3:#dbe9ff;
+  --meta-sky:#edf5ff;
+  --meta-ink:#19324f;
+  --meta-cyan:#5bc0eb;
+  --meta-mint:#8ed8c6;
+  --meta-lime:#c8e36b;
+  --meta-violet:#a88cf5;
+  --meta-peach:#ffb98e;
+  --meta-yellow:#ffd76a;
+  --bg:#f5f8fc;
+  --surface:#ffffff;
+  --surface2:#f8fbff;
+  --ink:#172033;
+  --muted:#6f7b8e;
+  --line:#dbe4ef;
+  --shadow:0 18px 50px rgba(29,72,128,.12);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:
+ radial-gradient(circle at top right, rgba(90,156,255,.14), transparent 28%),
+ linear-gradient(180deg,#f8fbff 0%,#f4f7fb 100%);
+ color:var(--ink)}
+button,input{font:inherit}
+.shell{min-height:100vh;display:grid;grid-template-columns:310px 1fr}
+.sidebar{
+ position:sticky;top:0;height:100vh;padding:22px 20px 26px;
+ background:linear-gradient(180deg,#ffffff 0%,#f5f9ff 100%);
+ border-right:1px solid var(--line);overflow:auto
+}
+.logo-wrap{
+ background:#e8eefb;border:1px solid #d8e2f4;border-radius:18px;
+ padding:16px 18px;margin-bottom:20px;display:flex;align-items:center
+}
+.logo-wrap img{display:block;width:100%;height:auto}
+.sidebar h1{font-size:24px;line-height:1.15;margin:0 0 10px;color:var(--meta-ink)}
+.sidebar p{color:var(--muted);line-height:1.55;font-size:14px}
+.tree{margin-top:24px;display:grid;gap:9px}
+.tree button{
+ width:100%;border:1px solid var(--line);background:#fff;color:var(--meta-ink);
+ text-align:left;padding:13px 14px;border-radius:14px;cursor:pointer;transition:.2s;
+ box-shadow:0 3px 10px rgba(36,119,243,.04)
+}
+.tree button:hover,.tree button.active{
+ background:linear-gradient(135deg,var(--meta-blue),var(--meta-blue-2));
+ color:#fff;border-color:transparent;transform:translateX(3px)
+}
+.tree .count{display:block;margin-top:5px;font-size:12px;opacity:.72}
+.main{padding:34px clamp(24px,4vw,64px) 60px}
+.topbar{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:26px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--meta-blue)}
+h2{font-size:clamp(30px,4vw,52px);line-height:1.04;margin:8px 0 10px;color:var(--meta-ink)}
+.subtitle{color:var(--muted);max-width:760px;line-height:1.6}
+.breadcrumbs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px;color:var(--muted);font-size:13px}
+.breadcrumbs button{border:0;background:none;color:var(--meta-blue);padding:0;cursor:pointer}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:18px}
+.card{
+ background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+ padding:22px;box-shadow:0 6px 20px rgba(30,63,110,.06);cursor:pointer;transition:.22s;
+ position:relative;overflow:hidden
+}
+.card:nth-child(5n+1){--card-accent:var(--meta-blue)}
+.card:nth-child(5n+2){--card-accent:var(--meta-cyan)}
+.card:nth-child(5n+3){--card-accent:var(--meta-mint)}
+.card:nth-child(5n+4){--card-accent:var(--meta-violet)}
+.card:nth-child(5n+5){--card-accent:var(--meta-peach)}
+.card:before{
+ content:"";position:absolute;inset:0 0 auto 0;height:5px;background:var(--card-accent);
+ transform:scaleX(.34);transform-origin:left;transition:.2s
+}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:#b9cbe5}
+.card:hover:before{transform:scaleX(1)}
+.card h3{margin:11px 0 8px;font-size:20px;line-height:1.25;color:var(--meta-ink)}
+.card p{margin:0;color:var(--muted);line-height:1.5;font-size:14px}
+.badge{
+ display:inline-flex;align-items:center;gap:7px;padding:6px 9px;border-radius:999px;
+ background:var(--meta-sky);color:var(--meta-blue);font-size:12px;font-weight:800
+}
+.badge.work{background:#fff4db;color:#a76a08}
+.arrow{position:absolute;right:18px;bottom:16px;font-size:23px;color:var(--card-accent)}
+.stage-holder{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.stage-holder strong{display:block;color:var(--meta-ink);margin-top:4px}
+.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
+.info-panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px}
+.info-panel:nth-child(1){border-top:5px solid var(--meta-blue)}
+.info-panel:nth-child(2){border-top:5px solid var(--meta-mint)}
+.info-panel:nth-child(3){border-top:5px solid var(--meta-violet)}
+.info-panel h4{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--meta-blue);margin:0 0 10px}
+.info-panel div{white-space:pre-line;line-height:1.55;color:#344057}
+.flow-banner{
+ display:grid;grid-template-columns:1fr;gap:12px;align-items:stretch;margin-bottom:18px
+}
+.flow-chip{
+ background:linear-gradient(135deg,#eaf3ff,#f8fbff);border:1px solid #cfe0f7;
+ padding:17px 19px;border-radius:18px
+}
+.flow-chip.alt{background:linear-gradient(135deg,#eefaf6,#fbfffd);border-color:#cfe9df}
+.flow-chip span{color:var(--muted);font-size:13px}
+.flow-chip strong{display:block;margin-top:5px;font-size:19px;color:var(--meta-ink)}
+.accordion-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.accordion{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.acc-head{
+ width:100%;border:0;background:linear-gradient(180deg,#fff,#fbfdff);padding:20px;text-align:left;
+ display:flex;justify-content:space-between;cursor:pointer;color:var(--meta-ink);font-weight:800;font-size:18px
+}
+.acc-head:hover{background:var(--meta-sky)}
+.acc-body{display:none;padding:0 20px 18px}
+.accordion.open .acc-body{display:block}
+.kv{
+ display:grid;grid-template-columns:minmax(150px,.78fr) 1.22fr;gap:14px;padding:14px;
+ border-top:1px solid var(--line);margin:0 -6px
+}
+.kv:first-child{border-top:0}
+.kv .label{font-size:13px;color:var(--muted);font-weight:800}
+.kv .value{white-space:pre-line;line-height:1.5}
+.kv.highlight-flow{
+ background:linear-gradient(135deg,rgba(36,119,243,.15),rgba(90,156,255,.08));
+ border-left:5px solid var(--meta-blue);border-radius:12px
+}
+.kv.highlight-transfer{
+ background:linear-gradient(135deg,rgba(142,216,198,.22),rgba(200,227,107,.12));
+ border-left:5px solid var(--meta-mint);border-radius:12px
+}
+.kv.highlight-artifact{
+ background:linear-gradient(135deg,rgba(255,215,106,.28),rgba(255,185,142,.14));
+ border-left:5px solid var(--meta-yellow);border-radius:12px
+}
+.kv.highlight-flow .label,.kv.highlight-transfer .label,.kv.highlight-artifact .label{
+ color:var(--meta-ink)
+}
+.empty{color:#98a2b3;font-style:italic}
+.back{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;cursor:pointer;color:var(--meta-blue);font-weight:800}
+.search{width:min(380px,100%);border:1px solid var(--line);background:#fff;border-radius:13px;padding:12px 14px;outline:none}
+.search:focus{border-color:var(--meta-blue);box-shadow:0 0 0 3px var(--meta-blue-3)}
+.notice{background:#fff8e8;border:1px solid #f0d79b;color:#765012;padding:18px;border-radius:16px;line-height:1.5}
+@media(max-width:950px){
+ .shell{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.tree{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+ .hero-grid,.accordion-grid,.flow-banner{grid-template-columns:1fr}.main{padding:26px 18px 50px}
+}
+
+.flow-help-card{
+ margin-top:22px;border:2px solid var(--meta-blue);background:linear-gradient(180deg,#ffffff,#f4f8ff);
+ border-radius:18px;padding:18px;cursor:pointer;box-shadow:0 10px 28px rgba(36,119,243,.12);
+ transition:.2s;position:relative
+}
+.flow-help-card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(36,119,243,.18)}
+.flow-help-card .help-icon{
+ position:absolute;right:14px;top:14px;width:28px;height:28px;border-radius:50%;
+ display:grid;place-items:center;background:var(--meta-blue);color:#fff;font-weight:900
+}
+.flow-help-card h3{margin:0 36px 8px 0;font-size:17px;line-height:1.3;color:var(--meta-ink)}
+.flow-help-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.flow-help-card .more{display:inline-block;margin-top:12px;color:var(--meta-blue);font-weight:800;font-size:13px}
+.modal-backdrop{
+ position:fixed;inset:0;background:rgba(22,41,69,.38);backdrop-filter:blur(4px);
+ display:none;align-items:center;justify-content:center;padding:20px;z-index:1000
+}
+.modal-backdrop.open{display:flex}
+.modal{
+ width:min(760px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:24px;
+ box-shadow:0 30px 80px rgba(15,36,70,.28);border:1px solid var(--line);padding:28px;position:relative
+}
+.modal-close{
+ position:absolute;right:18px;top:16px;width:36px;height:36px;border:0;border-radius:50%;
+ background:var(--meta-sky);color:var(--meta-blue);font-size:22px;cursor:pointer
+}
+.modal .eyebrow{margin-bottom:8px}
+.modal h3{font-size:30px;line-height:1.15;margin:0 40px 14px 0;color:var(--meta-ink)}
+.modal-intro{
+ background:linear-gradient(135deg,#eef5ff,#fbfdff);border:1px solid #d5e4fb;
+ border-radius:16px;padding:16px 18px;line-height:1.6;color:#30435f;margin-bottom:18px
+}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.role-item{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff}
+.role-item strong{display:block;color:var(--meta-blue);margin-bottom:6px}
+.role-item div{color:#4d5d73;line-height:1.5;font-size:14px}
+.role-note{margin-top:18px;padding:16px;border-left:5px solid var(--meta-mint);background:#f0fbf7;border-radius:12px;line-height:1.55}
+@media(max-width:650px){.role-grid{grid-template-columns:1fr}}
+
+
+.roles-compare-card{
+ margin-top:12px;border:2px solid var(--meta-violet);
+ background:linear-gradient(180deg,#ffffff,#faf7ff);
+ border-radius:18px;padding:18px;cursor:pointer;
+ box-shadow:0 10px 28px rgba(168,140,245,.12);
+ transition:.2s;position:relative
+}
+.roles-compare-card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(168,140,245,.18)}
+.roles-compare-card .help-icon{
+ position:absolute;right:14px;top:14px;width:28px;height:28px;border-radius:50%;
+ display:grid;place-items:center;background:var(--meta-violet);color:#fff;font-weight:900
+}
+.roles-compare-card h3{margin:0 36px 8px 0;font-size:17px;line-height:1.3;color:var(--meta-ink)}
+.roles-compare-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.roles-compare-card .more{display:inline-block;margin-top:12px;color:#7658d7;font-weight:800;font-size:13px}
+.compare-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px}
+.compare-table{width:100%;border-collapse:collapse;min-width:760px}
+.compare-table th,.compare-table td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;line-height:1.45}
+.compare-table th{background:var(--meta-sky);color:var(--meta-ink);font-size:13px}
+.compare-table td{font-size:14px;color:#44536a}
+.compare-table tr:last-child td{border-bottom:0}
+.compare-table td:first-child{font-weight:800;color:var(--meta-ink);background:#fbfdff}
+
+
+.tree{display:block}
+.tree-group{margin-bottom:8px}
+.tree-process{
+ width:100%;display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;
+ border:1px solid var(--line);background:#fff;color:var(--meta-ink);text-align:left;
+ padding:12px 13px;border-radius:14px;cursor:pointer;transition:.2s
+}
+.tree-process:hover,.tree-process.active{
+ background:linear-gradient(135deg,var(--meta-blue),var(--meta-blue-2));color:#fff;border-color:transparent
+}
+.tree-process .tree-title{font-weight:800;font-size:13px}
+.tree-process .tree-meta{font-size:11px;opacity:.72;margin-top:3px}
+.tree-process .chevron{font-size:17px;transition:.2s}
+.tree-group.open .tree-process .chevron{transform:rotate(90deg)}
+.tree-stages{display:none;padding:7px 0 2px 13px;margin-left:12px;border-left:2px solid #d7e4f5}
+.tree-group.open .tree-stages{display:grid;gap:5px}
+.tree-stage{
+ border:0;background:transparent;color:#5e6b7f;text-align:left;padding:8px 9px;border-radius:10px;
+ cursor:pointer;font-size:12px;line-height:1.35;transition:.18s
+}
+.tree-stage:hover{background:#edf5ff;color:var(--meta-blue)}
+.tree-stage.active{
+ background:linear-gradient(135deg,#dceaff,#eef5ff);color:var(--meta-blue);
+ font-weight:800;box-shadow:inset 3px 0 0 var(--meta-blue)
+}
+.modal-backdrop#rolesCompareModal .modal{width:min(1180px,96vw)}
+.formatted-list{display:grid;gap:7px}
+.formatted-item{display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:start}
+.formatted-item .num{
+ width:22px;height:22px;border-radius:7px;background:var(--meta-sky);color:var(--meta-blue);
+ display:grid;place-items:center;font-size:11px;font-weight:900
+}
+.formatted-item .txt{line-height:1.45}
+.meta-ai-speech{
+ margin-top:14px;background:linear-gradient(135deg,#f7f3ff,#ffffff);
+ border:1px solid #dfd4ff;border-radius:16px;padding:14px 16px;color:#4d4567;line-height:1.55
+}
+.meta-ai-speech strong{color:#7658d7}
+
+
+.tree-stage{
+ display:grid;grid-template-columns:24px 1fr;gap:7px;align-items:start
+}
+.tree-stage-number{
+ width:22px;height:22px;border-radius:7px;background:#eef4fc;color:var(--meta-blue);
+ display:grid;place-items:center;font-size:10px;font-weight:900;line-height:1
+}
+.tree-stage.active .tree-stage-number{
+ background:var(--meta-blue);color:#fff
+}
+.tree-stage-name{padding-top:2px}
+
+
+.laws-card{
+ margin-top:12px;border:2px solid var(--meta-mint);
+ background:linear-gradient(180deg,#ffffff,#f3fbf8);
+ border-radius:18px;padding:18px;cursor:pointer;
+ box-shadow:0 10px 28px rgba(92,184,160,.12);
+ transition:.2s;position:relative
+}
+.laws-card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(92,184,160,.18)}
+.laws-card .help-icon{
+ position:absolute;right:14px;top:14px;width:28px;height:28px;border-radius:50%;
+ display:grid;place-items:center;background:var(--meta-mint);color:#173a32;font-weight:900
+}
+.laws-card h3{margin:0 36px 8px 0;font-size:17px;line-height:1.3;color:var(--meta-ink)}
+.laws-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.laws-card .more{display:inline-block;margin-top:12px;color:#2f8a73;font-weight:800;font-size:13px}
+.laws-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.law-button{
+ border:1px solid var(--line);background:#fff;border-radius:18px;padding:18px;text-align:left;
+ cursor:pointer;transition:.2s;color:var(--meta-ink)
+}
+.law-button:hover{transform:translateY(-3px);border-color:#b8d7cd;background:#f7fcfa}
+.law-number{
+ width:34px;height:34px;border-radius:11px;background:var(--meta-mint);color:#173a32;
+ display:grid;place-items:center;font-weight:900;margin-bottom:12px
+}
+.law-button strong{display:block;font-size:17px;line-height:1.35;margin-bottom:8px}
+.law-button span{display:block;color:var(--muted);font-size:13px;line-height:1.45}
+.law-detail{display:none;margin-top:18px;border:1px solid var(--line);border-radius:18px;padding:20px;background:#fff}
+.law-detail.active{display:block}
+.law-detail h4{margin:0 0 12px;color:var(--meta-ink);font-size:21px}
+.law-detail .law-rule{
+ border-left:5px solid var(--meta-mint);background:#f1faf7;border-radius:12px;
+ padding:14px 16px;margin-bottom:16px;font-weight:800;color:#23483f
+}
+.law-detail ul{margin:10px 0 0;padding-left:20px;color:#46566d;line-height:1.6}
+.law-thesis{
+ margin-top:16px;background:var(--meta-sky);border:1px solid #d4e4fa;
+ border-radius:12px;padding:14px 16px;color:var(--meta-ink)
+}
+@media(max-width:760px){.laws-grid{grid-template-columns:1fr}}
+
+
+.instruction-card{
+ margin-top:12px;border:2px solid var(--meta-blue);
+ background:linear-gradient(180deg,#fff,#f4f8ff);
+ border-radius:18px;padding:18px;cursor:pointer;
+ box-shadow:0 10px 28px rgba(36,119,243,.12)
+}
+.instruction-card:hover{transform:translateY(-3px)}
+.instruction-card h3{margin:0 0 8px;font-size:17px;color:var(--meta-ink)}
+.instruction-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.instruction-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.instruction-item{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.instruction-item strong{display:block;color:var(--meta-blue);margin-bottom:5px}
+@media(max-width:760px){.instruction-grid{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="logo-wrap"><img alt="МЕТА" src="data:image/png;base64,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"></div>
+<h1>МЕТА Процессы</h1>
+    <p>Подпроцесс → этап → данные и управление.</p>
+    <nav class="tree" id="tree"></nav>
+
+    <section class="flow-help-card" style="cursor:default">
+      <h3>🔎 Поиск по ролям процесса</h3>
+      <p style="margin-bottom:12px">Поиск этапов по назначенным ролям управления.</p>
+      <input class="search" placeholder="Держатель потока" oninput="roleSearch('flow',this.value)">
+      <input class="search" style="margin-top:8px" placeholder="Исполнитель (R)" oninput="roleSearch('executor',this.value)">
+      <input class="search" style="margin-top:8px" placeholder="Держатель процесса" oninput="roleSearch('holder',this.value)">
+    </section>
+    <section class="flow-help-card" onclick="openFlowHelp()" tabindex="0" onkeydown="if(event.key==='Enter')openFlowHelp()">
+      <div class="help-icon">?</div>
+      <h3>Держатель потока — кто это?</h3>
+      <p>Роль, отвечающая за непрерывность движения результата от входа этапа до принятого выхода.</p>
+      <span class="more">Открыть описание →</span>
+    </section>
+
+    <section class="roles-compare-card" onclick="openRolesCompare()" tabindex="0" onkeydown="if(event.key==='Enter')openRolesCompare()">
+      <div class="help-icon">≠</div>
+      <h3>Чем отличаются роли?</h3>
+      <p>Модератор процесса, держатель потока и держатель процесса.</p>
+      <span class="more">Открыть сравнение →</span>
+    </section>
+
+
+    <section class="laws-card" onclick="openLaws()" tabindex="0" onkeydown="if(event.key==='Enter')openLaws()">
+      <div class="help-icon">3</div>
+      <h3>Три закона</h3>
+      <p>Базовые правила работы с системой МЕТА Процессы.</p>
+      <span class="more">Открыть законы →</span>
+    </section>
+
+<section class="instruction-card" onclick="openInstruction()" tabindex="0">
+ <h3>📘 Краткая инструкция</h3>
+ <p>Как пользоваться МЕТА Процессы: найти этап, проверить вход, получить результат, передать дальше.</p>
+</section>
+
+
+  </aside>
+  <main class="main"><div id="app"></div></main>
+</div>
+
+
+
+<div class="modal-backdrop" id="flowHelpModal" onclick="if(event.target===this)closeFlowHelp()">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="flowHelpTitle">
+    <button class="modal-close" onclick="closeFlowHelp()" aria-label="Закрыть">×</button>
+    <div class="eyebrow">Роль в процессе</div>
+    <h3 id="flowHelpTitle">Держатель потока</h3>
+
+    <div class="meta-ai-speech"><strong>МЕТА ИИ:</strong> здесь важно не перепутать скорость движения с ответственностью за результат. Держатель потока следит, чтобы работа не остановилась между участниками.</div>
+    <div class="modal-intro">
+      Держатель потока — это участник, отвечающий за скорость, непрерывность и наблюдаемость движения данных и результатов между этапами процесса.
+      Он не отвечает за содержание и конечный результат процесса — за результат отвечает держатель процесса.
+    </div>
+
+    <div class="role-grid">
+      <div class="role-item"><strong>Контролирует скорость потока</strong><div>Следит за временем прохождения задачи между точками входа и выхода и выявляет отклонения от нормативного темпа.</div></div>
+      <div class="role-item"><strong>Контролирует наличие данных</strong><div>Проверяет своевременность и достаточность входных данных для запуска и продолжения этапа.</div></div>
+      <div class="role-item"><strong>Выявляет разрывы</strong><div>Фиксирует остановки, задержки, отсутствие передачи результата и зависание задачи между участниками.</div></div>
+      <div class="role-item"><strong>Инициирует модерацию</strong><div>Запускает рабочее обсуждение, когда поток остановлен из-за несогласованности требований или позиций участников.</div></div>
+      <div class="role-item"><strong>Указывает на необходимость эскалации</strong><div>Передает вопрос выше, когда восстановить поток на текущем уровне невозможно или есть риск нарушения срока.</div></div>
+      <div class="role-item"><strong>Контролирует восстановление движения</strong><div>Разрыв считается устраненным только после фактического поступления данных или передачи результата следующему участнику.</div></div>
+    </div>
+
+    <div class="role-note">
+      <strong>Главный принцип:</strong> держатель потока не обязан самостоятельно устранять каждое препятствие. Он обязан своевременно обнаружить разрыв,
+      сделать его видимым и запустить механизм восстановления потока: координацию, модерацию или эскалацию.
+    </div>
+
+    <div style="margin-top:18px">
+      <strong style="display:block;margin-bottom:10px;color:var(--meta-ink)">Алгоритм действий при разрыве потока</strong>
+      <div class="role-grid">
+        <div class="role-item"><strong>1. Обнаружить</strong><div>Зафиксировать, что данные не поступили, результат не передан или превышено нормативное время.</div></div>
+        <div class="role-item"><strong>2. Локализовать</strong><div>Определить, между какими точками входа и выхода возник разрыв.</div></div>
+        <div class="role-item"><strong>3. Установить причину</strong><div>Нет данных, решения, ресурса, ответственного или существует конфликт требований.</div></div>
+        <div class="role-item"><strong>4. Запросить восстановление</strong><div>Назначить необходимое действие и срок ответственному участнику.</div></div>
+        <div class="role-item"><strong>5. Модерировать или эскалировать</strong><div>Выбрать механизм снятия блокировки в зависимости от уровня проблемы.</div></div>
+        <div class="role-item"><strong>6. Подтвердить возобновление</strong><div>Убедиться, что данные или результат действительно переданы дальше.</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-backdrop" id="rolesCompareModal" onclick="if(event.target===this)closeRolesCompare()">
+  <section class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="rolesCompareTitle">
+    <button class="modal-close" onclick="closeRolesCompare()" aria-label="Закрыть">×</button>
+    <div class="eyebrow">Роли управления процессом</div>
+    <h3 id="rolesCompareTitle">Модератор, держатель потока и держатель процесса</h3>
+
+    <div class="modal-intro">
+      Роли дополняют друг друга, но не подменяют друг друга:
+      держатель процесса отвечает за результат, держатель потока — за скорость и отсутствие разрыва,
+      модератор — за организованное взаимодействие и выработку решения.
+    </div>
+
+    <div class="compare-table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Критерий</th>
+            <th>Модератор процесса</th>
+            <th>Держатель потока</th>
+            <th>Держатель процесса</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Главный объект внимания</td><td>Взаимодействие участников</td><td>Движение данных и результатов</td><td>Конечный результат и логика процесса</td></tr>
+          <tr><td>Главный вопрос</td><td>Как организовать согласованное решение?</td><td>Где возник разрыв и как восстановить движение?</td><td>Получаем ли мы требуемый результат?</td></tr>
+          <tr><td>Ответственность за результат</td><td>Нет</td><td>Нет</td><td>Да</td></tr>
+          <tr><td>Ответственность за скорость</td><td>В рамках процедуры</td><td>Да, за скорость и непрерывность потока</td><td>Через устройство и правила процесса</td></tr>
+          <tr><td>Работа с данными</td><td>Обеспечивает наличие для обсуждения</td><td>Контролирует своевременность и полноту передачи</td><td>Определяет требования к составу данных</td></tr>
+          <tr><td>Модерация</td><td>Организует и проводит</td><td>Инициирует при разрыве потока</td><td>Назначает или требует при необходимости</td></tr>
+          <tr><td>Эскалация</td><td>При отсутствии согласованного решения</td><td>При невозможности восстановить поток на рабочем уровне</td><td>При необходимости управленческого решения</td></tr>
+          <tr><td>Ключевой результат роли</td><td>Решение или зафиксированная эскалация</td><td>Поток движется без необоснованных остановок</td><td>Процесс создает требуемый конечный результат</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="role-note">
+      <strong>Коротко:</strong><br>
+      Держатель процесса отвечает за результат.<br>
+      Держатель потока отвечает за отсутствие разрыва и скорость движения результата.<br>
+      Модератор обеспечивает организованное взаимодействие для принятия решения.
+    </div>
+  </section>
+</div>
+
+
+<div class="modal-backdrop" id="lawsModal" onclick="if(event.target===this)closeLaws()">
+  <section class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="lawsTitle">
+    <button class="modal-close" onclick="closeLaws()" aria-label="Закрыть">×</button>
+    <div class="eyebrow">МЕТА Процессы</div>
+    <h3 id="lawsTitle">Три закона</h3>
+    <div class="modal-intro">
+      Три базовых правила, которые делают МЕТА Процессы частью ежедневной работы.
+      Выберите закон, чтобы открыть его расшифровку.
+    </div>
+
+    <div class="laws-grid">
+      <button class="law-button" type="button" data-law="1">
+        <span class="law-number">1</span>
+        <strong>Начал работу — открой МЕТА Процессы</strong>
+        <span>Работа начинается с карточки этапа.</span>
+      </button>
+
+      <button class="law-button" type="button" data-law="2">
+        <span class="law-number">2</span>
+        <strong>Возник вопрос — открой МЕТА Процессы</strong>
+        <span>Сначала ищем ответ в системе.</span>
+      </button>
+
+      <button class="law-button" type="button" data-law="3">
+        <span class="law-number">3</span>
+        <strong>МЕТА Процессы — живая система</strong>
+        <span>Не обходи процесс — улучшай его.</span>
+      </button>
+    </div>
+
+    <article class="law-detail" id="lawDetail1">
+      <h4>Закон №1. Начал работу — открой МЕТА Процессы</h4>
+      <div class="law-rule">Начал работу над задачей — открой МЕТА Процессы.</div>
+      <p>Перед началом работы открой соответствующий этап и проверь:</p>
+      <ul>
+        <li>цель этапа;</li>
+        <li>входные данные;</li>
+        <li>ожидаемый результат;</li>
+        <li>артефакт этапа;</li>
+        <li>критерии приемки;</li>
+        <li>кому передается результат.</li>
+      </ul>
+      <div class="law-thesis"><strong>Главная мысль:</strong> работу начинают не с документа, а с этапа процесса.</div>
+    </article>
+
+    <article class="law-detail" id="lawDetail2">
+      <h4>Закон №2. Возник вопрос — открой МЕТА Процессы</h4>
+      <div class="law-rule">Возник вопрос по процессу — открой МЕТА Процессы.</div>
+      <p>Если возник вопрос, кто отвечает, что делать, какой результат нужен, кому его передать или что считается завершением этапа, сначала найди ответ в МЕТА Процессы.</p>
+      <p>Если информации недостаточно, вопрос передается держателю потока, держателю процесса или ответственному руководителю.</p>
+      <div class="law-thesis"><strong>Главная мысль:</strong> сначала обращаемся к системе, затем — к человеку.</div>
+    </article>
+
+    <article class="law-detail" id="lawDetail3">
+      <h4>Закон №3. МЕТА Процессы — живая система</h4>
+      <div class="law-rule">Что-то работает плохо — предложи изменение.</div>
+      <p>Если процесс неудобен, создает лишние действия, вызывает ошибки, замедляет работу или не отражает реальную практику, его нельзя просто обходить.</p>
+      <p>Необходимо сформулировать проблему, предложить улучшение и передать его на рассмотрение. После согласования процесс актуализируется.</p>
+      <div class="law-thesis"><strong>Главная мысль:</strong> не обходи процесс — улучшай его.</div>
+    </article>
+  </section>
+</div>
+
+
+<div class="modal-backdrop" id="instructionModal" onclick="if(event.target===this)closeInstruction()">
+<section class="modal" role="dialog">
+<button class="modal-close" onclick="closeInstruction()">×</button>
+<div class="eyebrow">МЕТА Процессы</div>
+<h3>Краткая инструкция</h3>
+<div class="modal-intro">
+МЕТА Процессы — это система управления созданием результата.
+Мы управляем не действиями людей, а движением результата.
+</div>
+<div class="instruction-grid">
+<div class="instruction-item"><strong>1. Найди процесс</strong>Открой подпроцесс и выбери нужный этап.</div>
+<div class="instruction-item"><strong>2. Проверь этап</strong>Изучи цель, входные данные, результат, артефакт и критерии приемки.</div>
+<div class="instruction-item"><strong>3. Проверь вход</strong>Нет входных данных — этап не запускается.</div>
+<div class="instruction-item"><strong>4. Пойми роль</strong>Исполнитель делает работу, ответственный отвечает за результат.</div>
+<div class="instruction-item"><strong>5. Следи за потоком</strong>Держатель потока обеспечивает движение результата между этапами.</div>
+<div class="instruction-item"><strong>6. Передавай результат</strong>Передается не процесс работы, а конкретный артефакт.</div>
+<div class="instruction-item"><strong>7. Возник вопрос</strong>Сначала открой МЕТА Процессы, затем обращайся к участникам.</div>
+<div class="instruction-item"><strong>8. Улучшай систему</strong>Не обходи процесс — предлагай изменения.</div>
+<div class="instruction-item"><strong>9. Три правила</strong>Открой процесс. Найди ответ. Улучши систему.</div>
+</div>
+</section>
+</div>
+
+<script>
+const PROCESS_DATA = [{"name": "Квартирография", "status": "Доступно", "stages": [{"id": "1", "number": 1, "stage": "Разработка ограничений", "goal": "Формирование пространства допустимых решений", "content": "Градостроительные ограничения", "constraints": "Градостроительные, рыночные, нормативные", "flowHolder": "Платформа", "data": [{"label": "Входные данные", "value": "1. ГПЗУ2. ПЗЗ3. Ограничения участка4. Вводные от Директора развитию5. Вводные от диретора ДД"}, {"label": "Источник входных данных", "value": "1. Директор по развитию 2. Директор по Девелопменту"}, {"label": "Точка входа", "value": "Старт проекта"}, {"label": "Выходной результат", "value": "Перечень ограничений и целевых параметров"}, {"label": "Артефакт этапа", "value": "Массинг 0.0"}, {"label": "Точка выхода", "value": "Утвержденные ограничения:1. Пятно застройки2. Расчетные диапозоны пр ТЭП и стоянкам автомобилей в подземной и надземной части 3. Инсоляцонный объем (этажность )"}, {"label": "Критерий приемки", "value": "Все ограничения формализованы"}], "management": [{"label": "Исполнитель (R)", "value": "Градостроительное подразделение"}, {"label": "Ответственный за ИКР (A)", "value": "Градостроительное подразделение"}, {"label": "Эксперт (CI)", "value": "управление по параметризации "}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "управление по параметризации "}, {"label": "Держатель подпроцесса", "value": "Проектная дирекция "}, {"label": "Основание перехода", "value": "Пространство допустимых решений утверждено"}, {"label": "Передает результат", "value": "Проектировщик"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Платформа"}, {"label": "Тип процесса", "value": "Аналитический"}]}, {"id": "2", "number": 2, "stage": "Назначение класса продукта", "goal": "Класс", "content": "Класс", "constraints": "Локация , позиционирование", "flowHolder": "Платформа", "data": [{"label": "Входные данные", "value": "1. Инвестиционный калькулятор 2. Анализ рынка3. Стратегия позиционирования"}, {"label": "Источник входных данных", "value": "1. Продукт 2. Продажи 3. Аналитики (фин.блок)"}, {"label": "Точка входа", "value": "Аналитика по локации"}, {"label": "Выходной результат", "value": ""}, {"label": "Артефакт этапа", "value": "Атрибутивная модель по классу"}, {"label": "Точка выхода", "value": "Класс утвержден"}, {"label": "Критерий приемки", "value": "Соответствие локации и финцели"}], "management": [{"label": "Исполнитель (R)", "value": "Продукт"}, {"label": "Ответственный за ИКР (A)", "value": "Продукт"}, {"label": "Эксперт (CI)", "value": "управление по параметризации "}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "управление по параметризации "}, {"label": "Держатель подпроцесса", "value": "Проектная дирекция "}, {"label": "Основание перехода", "value": "Класс продукта утвержден"}, {"label": "Передает результат", "value": "Продукт"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Аналитический"}]}, {"id": "3", "number": 3, "stage": "Определение квартирного профиля", "goal": "Квартирный профиль", "content": "Квартирный профиль", "constraints": "", "flowHolder": "Продукт", "data": [{"label": "Входные данные", "value": "1. Класс продукта,2. Аналитика продаж"}, {"label": "Источник входных данных", "value": "1. Продукт 2. Аналитики (фин. блок)3. Платформа (ограничения)"}, {"label": "Точка входа", "value": "Утвержден класс"}, {"label": "Выходной результат", "value": ""}, {"label": "Артефакт этапа", "value": "Профиль квартирографии"}, {"label": "Точка выхода", "value": ""}, {"label": "Критерий приемки", "value": ""}], "management": [{"label": "Исполнитель (R)", "value": "Аналитики"}, {"label": "Ответственный за ИКР (A)", "value": "управление по параметризации "}, {"label": "Эксперт (CI)", "value": "Продукт , Фин.блок, Продажи"}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "управление по параметризации "}, {"label": "Держатель подпроцесса", "value": "Проектная дирекция "}, {"label": "Основание перехода", "value": "Профиль соответствует классу, АМ и ограничениям платформы"}, {"label": "Передает результат", "value": "Продукт"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Аналитический"}]}, {"id": "4", "number": 4, "stage": "Формирование фин.цели", "goal": "Целевой ТЭП", "content": "Целевой ТЭП", "constraints": "Финмодель, плотность", "flowHolder": "Платформа", "data": [{"label": "Входные данные", "value": "1. Класс2. Стратегия"}, {"label": "Источник входных данных", "value": "1. Продукт 2. Фин.блок3. Продажи"}, {"label": "Точка входа", "value": "Утвержден профиль"}, {"label": "Выходной результат", "value": "Диапазон средней площади и целевой ТЭП"}, {"label": "Артефакт этапа", "value": "Атрибутивная модельуточненая"}, {"label": "Точка выхода", "value": "Утверждена Sср и ТЭП"}, {"label": "Критерий приемки", "value": "Соответствие классу и финцели"}], "management": [{"label": "Исполнитель (R)", "value": "Фин.блок"}, {"label": "Ответственный за ИКР (A)", "value": "Фин.блок"}, {"label": "Эксперт (CI)", "value": "управление по параметризации "}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "управление по параметризации "}, {"label": "Держатель подпроцесса", "value": "Проектная дирекция "}, {"label": "Основание перехода", "value": "Утверждены целевой ТЭП и средняя площадь квартир"}, {"label": "Передает результат", "value": "Фин.дирекия"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Аналитический"}]}, {"id": "5", "number": 5, "stage": "Разработка сценариев массинга", "goal": "Сужение пространства допустимых решений", "content": "Сценарии массинга", "constraints": "Директиные", "flowHolder": "Продукт", "data": [{"label": "Входные данные", "value": "1. Класс - АМ - Средняя площадь 2. Фин. цель (ТЭП)3. Ограничения массинга 0.0"}, {"label": "Источник входных данных", "value": "1. Продукт 2. Фин.блок3. Продажи"}, {"label": "Точка входа", "value": "Утвержденная Sср и ТЭП"}, {"label": "Выходной результат", "value": "Сценарии масинга с вариантами компановки зданий"}, {"label": "Артефакт этапа", "value": "Сценарии"}, {"label": "Точка выхода", "value": "Сценарии составлены и утверждены РГ"}, {"label": "Критерий приемки", "value": "Сценарии соотвествуют классу , средней площади , целевому ТЭП и ограничениям массинга 0.0"}], "management": [{"label": "Исполнитель (R)", "value": "управление по параметризации "}, {"label": "Ответственный за ИКР (A)", "value": "управление по параметризации "}, {"label": "Эксперт (CI)", "value": "Продукт , Фин.блок, Продажи"}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "управление по параметризации "}, {"label": "Держатель подпроцесса", "value": "Проектная дирекция "}, {"label": "Основание перехода", "value": "Выбраны сценарии, удовлетворяющие ТЭП и ограничениям участка"}, {"label": "Передает результат", "value": "Платформа"}, {"label": "Принимает результат", "value": "Продукт"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Аналитический"}]}, {"id": "6", "number": 6, "stage": "Разработка Массинг 1.0", "goal": "Посадка плаформенного решения на генплан", "content": "Формирование вариантов массинга и посадка платформы", "constraints": "1. Градостроительные ограничения2. Ограничения Платформы", "flowHolder": "Платформа", "data": [{"label": "Входные данные", "value": "1. Квартирография 2. Габариты зданий или скомпанованный типовой этаж 3. Сценарии массинга"}, {"label": "Источник входных данных", "value": "Платформа"}, {"label": "Точка входа", "value": "Сценарии"}, {"label": "Выходной результат", "value": "Сценарии отработаны"}, {"label": "Артефакт этапа", "value": "Массинг 1.0 с утвержденной платформой"}, {"label": "Точка выхода", "value": "Массинг разработан"}, {"label": "Критерий приемки", "value": "Соотвествует ТЗ"}], "management": [{"label": "Исполнитель (R)", "value": "Градостроительное подразделение"}, {"label": "Ответственный за ИКР (A)", "value": "управление по параметризации "}, {"label": "Эксперт (CI)", "value": "Управление по параметризации  , Продукт , Продажи"}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "управление по параметризации "}, {"label": "Держатель подпроцесса", "value": "Проектная дирекция "}, {"label": "Основание перехода", "value": "Разработан и согласован Massing 1.0"}, {"label": "Передает результат", "value": "Генпроектировщик"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Производственный"}]}, {"id": "7", "number": 7, "stage": "Фин.расчет", "goal": "Проверка соотвствия критериям фин. цели", "content": "Проверка достижения критериев фин.цели", "constraints": "NPV, IRR, DSCR, Маржа", "flowHolder": "Продукт", "data": [{"label": "Входные данные", "value": "1. Квартирография 2. Указания о дате сроках и очередности строительства"}, {"label": "Источник входных данных", "value": "1. Продукт 2. Фин.блок3. Продажи 4. Проектировщик"}, {"label": "Точка входа", "value": "Массинг 1.0"}, {"label": "Выходной результат", "value": "Финансовая модель проекта"}, {"label": "Артефакт этапа", "value": "Финансовый расчет"}, {"label": "Точка выхода", "value": "Фин.модель подтверждена"}, {"label": "Критерий приемки", "value": "Выполнение KPI проекта"}], "management": [{"label": "Исполнитель (R)", "value": "Фин.блок"}, {"label": "Ответственный за ИКР (A)", "value": "Фин.блок"}, {"label": "Эксперт (CI)", "value": "Управление по параметризации "}, {"label": "Информируемый (I)", "value": "Управление по параметризации , Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "управление по параметризации "}, {"label": "Держатель подпроцесса", "value": "Проектная дирекция "}, {"label": "Основание перехода", "value": "Финансовая модель соответствует KPI проекта"}, {"label": "Передает результат", "value": "Финансовая дирекция"}, {"label": "Принимает результат", "value": "Продукт"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Аналитический"}]}, {"id": "8", "number": 8, "stage": "Рассмотрение в рабочей группе №1", "goal": "Утверждение вариантов решений", "content": "Проверка продуктовой и рыночной состоятельности", "constraints": "Продуктовые ограничения", "flowHolder": "", "data": [{"label": "Входные данные", "value": "Массинг, квартирография, ТЭП"}, {"label": "Источник входных данных", "value": "1. Продукт 2. Фин.блок3. Продажи 4. Проектировщик"}, {"label": "Точка входа", "value": "Массинг 1.0+Фин.расчет"}, {"label": "Выходной результат", "value": "Замечания и рекомендации"}, {"label": "Артефакт этапа", "value": "Протокол РГ"}, {"label": "Точка выхода", "value": "Решение согласовано РГ"}, {"label": "Критерий приемки", "value": "Нет критических замечаний"}], "management": [{"label": "Исполнитель (R)", "value": "Продажи , Проектирощик , Управление по параметризации  , Продукт , Директор ДД"}, {"label": "Ответственный за ИКР (A)", "value": "Управление по параметризации "}, {"label": "Эксперт (CI)", "value": "Продажи , Проектирощик , Управление по параметризации  , Продукт , Директор ДД"}, {"label": "Информируемый (I)", "value": ""}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "управление по параметризации "}, {"label": "Держатель подпроцесса", "value": "Проектная дирекция "}, {"label": "Основание перехода", "value": ""}, {"label": "Передает результат", "value": ""}, {"label": "Принимает результат", "value": ""}, {"label": "принимает решение о переходе", "value": ""}, {"label": "Тип процесса", "value": ""}]}, {"id": "9", "number": 9, "stage": "УТП", "goal": "Формирование и фиксация ключевых потребительских преимуществ объекта", "content": "Формирование перечня продуктовых характеристик и конкурентных преимуществ, обязательных к реализации в проекте", "constraints": "Класс объекта, рынок, экономика проекта", "flowHolder": "Продукт", "data": [{"label": "Входные данные", "value": "1. Класс объекта2. Анализ рынка3. Стратегия позиционирования4. Квартирография5. Атрибутивная модель"}, {"label": "Источник входных данных", "value": "1. Продукт2. Продажи3. Аналитики4. Платформа"}, {"label": "Точка входа", "value": "Массинг 1.0+Фин.расчет"}, {"label": "Выходной результат", "value": "Перечень продуктовых требований объекта"}, {"label": "Артефакт этапа", "value": "УТП объекта"}, {"label": "Точка выхода", "value": "УТП утверждено"}, {"label": "Критерий приемки", "value": "Все ключевые преимущества объекта формализованы и могут быть реализованы проектными решениями"}], "management": [{"label": "Исполнитель (R)", "value": "Продукт"}, {"label": "Ответственный за ИКР (A)", "value": "Продукт"}, {"label": "Эксперт (CI)", "value": "Продажи , Управление по параметризации  , Аналитики"}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "управление по параметризации "}, {"label": "Держатель подпроцесса", "value": "Проектная дирекция "}, {"label": "Основание перехода", "value": "УТП утверждено и признано реализуемым"}, {"label": "Передает результат", "value": "Продукт"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Аналитический"}]}, {"id": "10", "number": 10, "stage": "Комитет по продукту", "goal": "Утверждение одного из вариантов", "content": "Выбор и утверждение финального варианта", "constraints": "Управленческие ограничения", "flowHolder": "Продукт", "data": [{"label": "Входные данные", "value": "1. Масинг 1.02. Квартирография 3. Планировка типового этажа4. Фин. расчет"}, {"label": "Источник входных данных", "value": "1. Продукт 2. Фин.блок3. Продажи 4. Проектировщик"}, {"label": "Точка входа", "value": "Фин. расчет готов , решения подтверждены, УТП разаботано, Промежуточные согласования по чеку получены"}, {"label": "Выходной результат", "value": "Утвержденный вариант"}, {"label": "Артефакт этапа", "value": "Решение комитета"}, {"label": "Точка выхода", "value": "Решение утверждено"}, {"label": "Критерий приемки", "value": "Утвержден один вариант"}], "management": [{"label": "Исполнитель (R)", "value": "Продукт"}, {"label": "Ответственный за ИКР (A)", "value": "управление по параметризации "}, {"label": "Эксперт (CI)", "value": "Продажи , Проектирощик , Управление по параметризации  , Продукт , Директор ДД, Фин.блок, Аналитики"}, {"label": "Информируемый (I)", "value": "Директор по развитию"}, {"label": "Модератор подпроцесса", "value": "Продукт"}, {"label": "Держатель потока", "value": "управление по параметризации "}, {"label": "Держатель подпроцесса", "value": "Проектная дирекция "}, {"label": "Основание перехода", "value": "Утверждена продуктовая концепция объекта"}, {"label": "Передает результат", "value": "Продукт"}, {"label": "Принимает результат", "value": "Комитет"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Управленческий"}]}]}, {"name": "Сводное задание", "status": "Доступно", "stages": [{"id": "11", "number": 1, "stage": "Разработка сводного задания на проектирование", "goal": "Формирование единого комплекта требований для разработки проектной документации", "content": "Техничекое задание", "constraints": "Градостроительные ограничения, требования нормативной документации, решения Комитета по продукту", "flowHolder": "ГИП ТЗ", "data": [{"label": "Входные данные", "value": ""}, {"label": "Источник входных данных", "value": "1. Платформа2. Продукт3. Технический заказчик4. Проектировщик"}, {"label": "Точка входа", "value": ""}, {"label": "Выходной результат", "value": "Комплект технических требований к проектированию объекта"}, {"label": "Артефакт этапа", "value": "Техническое задание на проектирование"}, {"label": "Точка выхода", "value": "Задание передано в работу"}, {"label": "Критерий приемки", "value": "Все исходные данные и требования определены в объеме, достаточном для начала проектирования"}], "management": [{"label": "Исполнитель (R)", "value": "Управление по параметризации "}, {"label": "Ответственный за ИКР (A)", "value": "ГИП ТЗ"}, {"label": "Эксперт (CI)", "value": "Проектирощик"}, {"label": "Информируемый (I)", "value": "Продукт"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Определен состав требований к проектированию"}, {"label": "Передает результат", "value": "Платформа"}, {"label": "Принимает результат", "value": "Тех. зак"}, {"label": "принимает решение о переходе", "value": "Тех. зак"}, {"label": "Тип процесса", "value": "Координационный"}]}, {"id": "12", "number": 2, "stage": "Квартирография", "goal": "Зафиксировать утвержденную квартирографию для включения в сводное задание.", "content": "Подготовка, согласование и включение блока «Квартирография» в состав сводного задания.", "constraints": "соглассно под.процесса", "flowHolder": "Платформа", "data": [{"label": "Входные данные", "value": "Отдельный подпроцесс"}, {"label": "Источник входных данных", "value": "Продукт"}, {"label": "Точка входа", "value": "под.процесс завешен"}, {"label": "Выходной результат", "value": "Утвержденный вариант"}, {"label": "Артефакт этапа", "value": "Квартирография"}, {"label": "Точка выхода", "value": "Задание передано в работу"}, {"label": "Критерий приемки", "value": "Утвержден состав квартир, средняя площадь, количество квартир и квартирный профиль; показатели соответствуют классу объекта, АМ и финцели"}], "management": [{"label": "Исполнитель (R)", "value": "Управление по параметризации "}, {"label": "Ответственный за ИКР (A)", "value": "Управление по параметризации "}, {"label": "Эксперт (CI)", "value": "Продукт , Продажи"}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Профиль соответствует классу продукта, атрибутивной модели и ограничениям платформы"}, {"label": "Передает результат", "value": "Продукт"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Аналитический"}]}, {"id": "13", "number": 3, "stage": "Атрибутивная модель", "goal": "Зафиксировать обязательные атрибутивные требования к объекту.", "content": "Подготовка, согласование и включение блока «Атрибутивная модель» в состав сводного задания.", "constraints": "Класс объекта, УТП, стандарты компании, рыночное позиционирование", "flowHolder": "ГИП ТЗ", "data": [{"label": "Входные данные", "value": "1. Класс объекта2. УТП3. Позиционирование"}, {"label": "Источник входных данных", "value": "Продукт"}, {"label": "Точка входа", "value": "Квартирография"}, {"label": "Выходной результат", "value": "Атрибутивные требования приминительно к объекту , увязанные с УТП"}, {"label": "Артефакт этапа", "value": "Атрибутивное задание"}, {"label": "Точка выхода", "value": "Задание передано в работу"}, {"label": "Критерий приемки", "value": "Все обязательные атрибуты объекта определены и увязаны с классом продукта и УТП"}], "management": [{"label": "Исполнитель (R)", "value": "Продукт"}, {"label": "Ответственный за ИКР (A)", "value": "Продукт"}, {"label": "Эксперт (CI)", "value": "Управление по параметризации "}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Атрибутивная модель объекта утверждена"}, {"label": "Передает результат", "value": "Подукт"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Передача"}]}, {"id": "14", "number": 4, "stage": "Задание на коммерцию", "goal": "Определить требования к коммерческим помещениям объекта.", "content": "Подготовка, согласование и включение блока «Задание на коммерцию» в состав сводного задания.", "constraints": "УТП, экономика проекта, требования арендаторов, ограничения объемно-планировочных решений", "flowHolder": "ГИП ТЗ", "data": [{"label": "Входные данные", "value": "1. Класс объекта 2. Атрибутивное задание 3. Фин. модель4. Объемно планировочные решения"}, {"label": "Источник входных данных", "value": "1. Продукт 2. Фин.блок3. Продажи 4. Проектировщик 5. Платформа"}, {"label": "Точка входа", "value": "Объемнопланировочные решения не жилых этажей + УТП"}, {"label": "Выходной результат", "value": "Задание на коммерцию приминительно к объекту или комплекс объектов"}, {"label": "Артефакт этапа", "value": "Задание на коммерцию"}, {"label": "Точка выхода", "value": "Задание передано в работу"}, {"label": "Критерий приемки", "value": "Определены состав, площади, функциональное назначение и требования к коммерческим помещениям, заданы нагрузки на подключение к сетям инжереного обеспечения , точечные и распределенные нагрущки на несущие кнструкции."}], "management": [{"label": "Исполнитель (R)", "value": "Продукт"}, {"label": "Ответственный за ИКР (A)", "value": "Продукт"}, {"label": "Эксперт (CI)", "value": "Проектирощик , Продукт , Продажи , Фин.блок, Аналитики"}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Требования к коммерции утверждены"}, {"label": "Передает результат", "value": "Продукт"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Передача"}]}, {"id": "15", "number": 5, "stage": "Задание на благоустройство", "goal": "Определить требования к благоустройству территории.", "content": "Подготовка, согласование и включение блока «Задание на благоустройство» в состав сводного задания.", "constraints": "УТП, градостроительные ограничения, экономика проекта, стандарты МЕТА", "flowHolder": "ГИП ТЗ", "data": [{"label": "Входные данные", "value": "1. Массинг 1.02. Атрибутивное задание 3. Фин. модель4. Объемно планировочные решения5. Стандарты МЕТА 6. УТП 7. МОП"}, {"label": "Источник входных данных", "value": "1. Проектировщик 2. Продукт 2. Фин.блок3. Продажи"}, {"label": "Точка входа", "value": "Массинг 1.0 + УТП"}, {"label": "Выходной результат", "value": "Задание на благоустройство"}, {"label": "Артефакт этапа", "value": "Задание на благоустройство"}, {"label": "Точка выхода", "value": "Задание передано в работу"}, {"label": "Критерий приемки", "value": "Определены функциональное зонирование территории, состав площадок, озеленение и сценарии использования территории"}], "management": [{"label": "Исполнитель (R)", "value": "Продукт"}, {"label": "Ответственный за ИКР (A)", "value": "Продукт"}, {"label": "Эксперт (CI)", "value": "Проектирощик , Управление по параметризации  , Продукт"}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Требования к благоустройству утверждены"}, {"label": "Передает результат", "value": "Продукт"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Передача"}]}, {"id": "16", "number": 6, "stage": "Задание на фасады", "goal": "Определить требования к архитектурному облику и фасадным решениям.", "content": "Подготовка, согласование и включение блока «Задание на фасады» в состав сводного задания.", "constraints": "УТП, класс объекта, экономика проекта, стандарты МЕТА, техническая реализуемость", "flowHolder": "ГИП ТЗ", "data": [{"label": "Входные данные", "value": "1. Массинг 1.02. Атрибутивное задание 3. Фин. модель4. Объемно планировочные решения5. Стандарты МЕТА 6. УТП"}, {"label": "Источник входных данных", "value": "1. Проектировщик 2. Продукт 2. Фин.блок3. Продажи"}, {"label": "Точка входа", "value": "Массинг 1.0 + УТП"}, {"label": "Выходной результат", "value": "Задание на фасады"}, {"label": "Артефакт этапа", "value": "Задание на фасады"}, {"label": "Точка выхода", "value": "Задание передано в работу"}, {"label": "Критерий приемки", "value": "Определены требования к архитектурному облику, материалам, архитектурным акцентам и идентичности объекта"}], "management": [{"label": "Исполнитель (R)", "value": "Продукт"}, {"label": "Ответственный за ИКР (A)", "value": "Тех. зак"}, {"label": "Эксперт (CI)", "value": "Проектирощик , Управление по параметризации  , Продукт , Тех. зак"}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Требования к фасадам утверждены"}, {"label": "Передает результат", "value": "Продукт"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Передача"}]}, {"id": "17", "number": 7, "stage": "Стандарты МЕТА", "goal": "Определить комплект стандартов МЕТА, обязательных для объекта.", "content": "Подготовка, согласование и включение блока «Стандарты МЕТА» в состав сводного задания.", "constraints": "Действующая редакция стандартов компании", "flowHolder": "ГИП ТЗ", "data": [{"label": "Входные данные", "value": "1. Инициация объекта"}, {"label": "Источник входных данных", "value": "Платформа"}, {"label": "Точка входа", "value": "Стандарты МЕТА релевантные задаче"}, {"label": "Выходной результат", "value": "Применимый комплект стандартов МЕТА"}, {"label": "Артефакт этапа", "value": "Стандарты МЕТА"}, {"label": "Точка выхода", "value": "Задание передано в работу"}, {"label": "Критерий приемки", "value": "Определен полный перечень корпоративных стандартов, обязательных для применения на объекте"}], "management": [{"label": "Исполнитель (R)", "value": "Управление по параметризации "}, {"label": "Ответственный за ИКР (A)", "value": "Управление по параметризации "}, {"label": "Эксперт (CI)", "value": "Ген.проектировщик , Продукт"}, {"label": "Информируемый (I)", "value": "Проектирощик"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Определен комплект обязательных стандартов"}, {"label": "Передает результат", "value": "Платформа"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Платформа"}, {"label": "Тип процесса", "value": "Передача"}]}, {"id": "18", "number": 8, "stage": "МОП", "goal": "Определить требования к помещениям общего пользования.", "content": "Подготовка, согласование и включение блока «МОП» в состав сводного задания.", "constraints": "Класс объекта, УТП, квартирография, массинг 1.0, стандарты МЕТА, экономика проекта", "flowHolder": "ГИП ТЗ", "data": [{"label": "Входные данные", "value": "1. Класс объекта.2. Атрибутивная модель.3. Квартирография.4. УТП.5. Стандарты МЕТА.6. Массинг 1.0"}, {"label": "Источник входных данных", "value": "1. Продукт 2. Платформа"}, {"label": "Точка входа", "value": ""}, {"label": "Выходной результат", "value": "Требования к МОП :входные группы;лифтовые холлы;межквартирные коридоры;колясочные;велосипедные;кладовые;лапомойки;помещения эксплуатации;общественные пространства (если предусмотрены);требования к отделке;требования к оснащению."}, {"label": "Артефакт этапа", "value": "Задание на МОП"}, {"label": "Точка выхода", "value": ""}, {"label": "Критерий приемки", "value": "Определены состав, площади, функционал, уровень отделки и оснащения всех помещений общего пользования"}], "management": [{"label": "Исполнитель (R)", "value": "Продукт"}, {"label": "Ответственный за ИКР (A)", "value": "Продукт"}, {"label": "Эксперт (CI)", "value": "Управление по параметризации "}, {"label": "Информируемый (I)", "value": "Проектирощик"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Требования к МОП утверждены"}, {"label": "Передает результат", "value": "Продукт"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Комитет"}, {"label": "Тип процесса", "value": "Передача"}]}, {"id": "19", "number": 9, "stage": "Сведение сводного задания", "goal": "Выявление противоречий между требованиями и подтверждение реализуемости объекта до передачи в проектирование", "content": "Комплексная проверка согласованности квартирографии, АМ, УТП, коммерции, МОП, благоустройства, фасадов, стандартов МЕТА и Технического задания", "constraints": "Решения Комитета по продукту, нормативные требования, экономика проекта", "flowHolder": "Платформа", "data": [{"label": "Входные данные", "value": "1. Квартирография2. Атрибутивная модель3. УТП4. Задание на коммерцию5. Задание на благоустройство6. Задание на фасады7. МОП8. Стандарты МЕТА9. Техническое задание10. Массинг 1.0"}, {"label": "Источник входных данных", "value": "1. Продукт2. Платформа3. Технический заказчик,4. Финансовый блок5. Продажи"}, {"label": "Точка входа", "value": "Сводное задание сформировано"}, {"label": "Выходной результат", "value": "Подтвержденная реализуемость объекта и перечень замечаний"}, {"label": "Артефакт этапа", "value": "Заключение о согласованности требований"}, {"label": "Точка выхода", "value": "Замечания устранены либо требования подтверждены"}, {"label": "Критерий приемки", "value": "Отсутствуют критические противоречия между требованиями, подтверждена возможность реализации объекта"}], "management": [{"label": "Исполнитель (R)", "value": "Управление по параметризации "}, {"label": "Ответственный за ИКР (A)", "value": "Управление по параметризации "}, {"label": "Эксперт (CI)", "value": "Продукт , Проектирощик , Тех. зак, Фин.блок"}, {"label": "Информируемый (I)", "value": "Тех. зак"}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Критические противоречия между требованиями отсутствуют"}, {"label": "Передает результат", "value": "Платформа"}, {"label": "Принимает результат", "value": "Тех. зак"}, {"label": "принимает решение о переходе", "value": "Тех. зак"}, {"label": "Тип процесса", "value": "Координационный"}]}, {"id": "20", "number": 10, "stage": "Проверка и передача сводного задания в проектирование", "goal": "Передача проектировщику полного и согласованного комплекта требований для начала проектирования объекта", "content": "Передача утвержденного сводного задания, технического задания и приложений в проектирование с фиксацией состава передаваемых документов, версий и ответственности сторон", "constraints": "Передаются только утвержденные версии документов", "flowHolder": "ГИП ТЗ", "data": [{"label": "Входные данные", "value": "1. Утвержденное сводное задание2. Заключение о согласованности требований3. Решение Комитета по продукту"}, {"label": "Источник входных данных", "value": "1. Продукт2. Платформа3. Технический заказчик,4. Финансовый блок5. Продажи"}, {"label": "Точка входа", "value": "Замечания устранены, реализуемость подтверждена"}, {"label": "Выходной результат", "value": "Проектировщик принял комплект исходных данных в работу"}, {"label": "Артефакт этапа", "value": "Приложения к договору"}, {"label": "Точка выхода", "value": ""}, {"label": "Критерий приемки", "value": "Комплект документов передан, зарегистрирован и принят проектировщиком без критических замечаний"}], "management": [{"label": "Исполнитель (R)", "value": "Тех. зак"}, {"label": "Ответственный за ИКР (A)", "value": "Тех. зак"}, {"label": "Эксперт (CI)", "value": "Проектирощик , Управление по параметризации  , Продукт , Продажи , Фин.блок"}, {"label": "Информируемый (I)", "value": "Управление по параметризации "}, {"label": "Модератор подпроцесса", "value": "управление по параметризации "}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Комплект документов передан и принят проектировщиком"}, {"label": "Передает результат", "value": "Тех. зак"}, {"label": "Принимает результат", "value": "Проектировщик"}, {"label": "принимает решение о переходе", "value": "Проектировщик"}, {"label": "Тип процесса", "value": "Контрольный"}]}, {"id": "21", "number": 11, "stage": "Платформенная проверка ЭП", "goal": "Подтверждение соответствия ЭП требованиям платформы и сводного ТЗ.", "content": "Проверка ЭП на соответствие утвержденной квартирографии, платформенным ограничениям, сводному ТЗ, финансовым и градостроительным параметрам проекта", "constraints": "Утвержденная квартирография, ТЭП, КЭП, атрибутивная модель, продуктовые требования, Массинг", "flowHolder": "Платформа", "data": [{"label": "Входные данные", "value": "1. ОПР 2. Фасады 3. Благоустройство 4. Сводное ТЗ"}, {"label": "Источник входных данных", "value": "Проектировщик"}, {"label": "Точка входа", "value": "ЭП разработан и передан на проверку"}, {"label": "Выходной результат", "value": "Заключение платформы"}, {"label": "Артефакт этапа", "value": "Отчет проверки архитектурной эффективности"}, {"label": "Точка выхода", "value": "Заключение утверждено"}, {"label": "Критерий приемки", "value": "ЭП соответствует Сводному ТЗ, атрибутивной модели, ТЭП, КЭП и продуктовым требованиям. Критические отклонения отсутствуют"}], "management": [{"label": "Исполнитель (R)", "value": "Управление по параметризации "}, {"label": "Ответственный за ИКР (A)", "value": "ГАП"}, {"label": "Эксперт (CI)", "value": "Продукт , Фин.блок, Тех. зак, ГАП, ГИП"}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "ГАП"}, {"label": "Держатель потока", "value": "ГАП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Получено положительное заключение платформы"}, {"label": "Передает результат", "value": "Платформа"}, {"label": "Принимает результат", "value": "Тех. зак"}, {"label": "принимает решение о переходе", "value": "Платформа"}, {"label": "Тип процесса", "value": "Контрольный"}]}]}, {"name": "Эскизный проект", "status": "Доступно", "stages": [{"id": "22", "number": 1, "stage": "Объемно планировочные решения", "goal": "Разработка архитектурной концепции объекта на основании утвержденного платформенного решения", "content": "Разработка посадки объекта, типовых этажей, функционального зонирования, основных ТЭП и планировочной структуры", "constraints": "КЭП, ТЭП, Ликвидность, Этажность, нормативы", "flowHolder": "ГАП", "data": [{"label": "Входные данные", "value": "Сводное ТЗ или его части в составе предусмотренном этапностью работ"}, {"label": "Источник входных данных", "value": "Тех.зак"}, {"label": "Точка входа", "value": "Утвержденная квартирография"}, {"label": "Выходной результат", "value": "Согласованные объемно-планировочные решения"}, {"label": "Артефакт этапа", "value": "Альбом ОПР"}, {"label": "Точка выхода", "value": "ОПР согласовано"}, {"label": "Критерий приемки", "value": "Соответствие сводному ТЗ,ограничениям платформыи нормативным требованиям"}], "management": [{"label": "Исполнитель (R)", "value": "Управление ПД"}, {"label": "Ответственный за ИКР (A)", "value": "ГАП"}, {"label": "Эксперт (CI)", "value": "Управление по параметризации , Тех. зак"}, {"label": "Информируемый (I)", "value": "Управление по параметризации "}, {"label": "Модератор подпроцесса", "value": "ГАП"}, {"label": "Держатель потока", "value": "ГАП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "ОПР соответствует Сводному ТЗ"}, {"label": "Передает результат", "value": "Тех. зак"}, {"label": "Принимает результат", "value": "Продукт"}, {"label": "принимает решение о переходе", "value": "комитет"}, {"label": "Тип процесса", "value": "Производственный"}]}, {"id": "23", "number": 2, "stage": "Фасадные решения", "goal": "Формирование архитектурного образа объекта", "content": "Разработка фасадных решений, материалов, цветовых схем, архитектурных акцентов", "constraints": "Бюджет, технология строительства", "flowHolder": "ГАП", "data": [{"label": "Входные данные", "value": "Сводное ТЗ или его части в составе предусмотренном этапностью работ"}, {"label": "Источник входных данных", "value": "Тех.зак"}, {"label": "Точка входа", "value": "Согласованное ОПР"}, {"label": "Выходной результат", "value": "Концепция фасадов"}, {"label": "Артефакт этапа", "value": "Альбом фасадных решений"}, {"label": "Точка выхода", "value": "Фасады согласованы"}, {"label": "Критерий приемки", "value": "1. Соответствие продукту, бюджету и архитектурному образу. 2. Реалезуем"}], "management": [{"label": "Исполнитель (R)", "value": "Управление ПД"}, {"label": "Ответственный за ИКР (A)", "value": "ГАП"}, {"label": "Эксперт (CI)", "value": "Управление по параметризации  , Продукт, ГАП, ГИП"}, {"label": "Информируемый (I)", "value": "Управление по параметризации "}, {"label": "Модератор подпроцесса", "value": "ГАП"}, {"label": "Держатель потока", "value": "ГАП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Фасадная концепция утверждена"}, {"label": "Передает результат", "value": "Тех. зак"}, {"label": "Принимает результат", "value": "Продукт"}, {"label": "принимает решение о переходе", "value": "комитет"}, {"label": "Тип процесса", "value": "Производственный"}]}, {"id": "24", "number": 3, "stage": "Решения по благоустройству", "goal": "Формирование концепции благоустройства территории", "content": "Разработка функционального зонирования территории, сценариев использования, размещения площадок, озеленения и МАФ", "constraints": "Площадь участка, нормативы, бюджет", "flowHolder": "ГАП", "data": [{"label": "Входные данные", "value": "Сводное ТЗ или его части в составе предусмотренном этапностью работ"}, {"label": "Источник входных данных", "value": "Тех.зак"}, {"label": "Точка входа", "value": "Согласованное ОПР"}, {"label": "Выходной результат", "value": "Концепция благоустройства"}, {"label": "Артефакт этапа", "value": "Альбом благоустройства"}, {"label": "Точка выхода", "value": "Благоустройство согласовано"}, {"label": "Критерий приемки", "value": "Соответствие продуктовой концепции и ограничениям участка"}], "management": [{"label": "Исполнитель (R)", "value": "Градостроительное подразделение"}, {"label": "Ответственный за ИКР (A)", "value": "ГАП"}, {"label": "Эксперт (CI)", "value": "Эксплуатация, Продукт , Управление по параметризации , ГАП, ГИП"}, {"label": "Информируемый (I)", "value": "Управление по параметризации "}, {"label": "Модератор подпроцесса", "value": "Градостроительное подразделение"}, {"label": "Держатель потока", "value": "ГАП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Концепция благоустройства утверждена"}, {"label": "Передает результат", "value": "Тех. зак"}, {"label": "Принимает результат", "value": "Продукт"}, {"label": "принимает решение о переходе", "value": "комитет"}, {"label": "Тип процесса", "value": "Производственный"}]}, {"id": "25", "number": 4, "stage": "Платформенная проверка ЭП", "goal": "Подтверждение соответствия ЭП требованиям платформы и сводного ТЗ.", "content": "Проверка ЭП на соответствие утвержденной квартирографии, платформенным ограничениям, сводному ТЗ, финансовым и градостроительным параметрам проекта", "constraints": "Утвержденная квартирография, ТЭП, КЭП, атрибутивная модель, продуктовые требования, Массинг", "flowHolder": "Платформа", "data": [{"label": "Входные данные", "value": "1. ОПР\n2. Фасады\n3. Благоустройство\n4. Сводное ТЗ"}, {"label": "Источник входных данных", "value": "Проектировщик"}, {"label": "Точка входа", "value": "ЭП разработан и передан на проверку"}, {"label": "Выходной результат", "value": "Заключение платформы"}, {"label": "Артефакт этапа", "value": "Отчет проверки архитектурной эффективности"}, {"label": "Точка выхода", "value": "Заключение утверждено"}, {"label": "Критерий приемки", "value": "Критические отклонения отсутствуют"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП ТЗ"}, {"label": "Ответственный за ИКР (A)", "value": "Тех. зак"}, {"label": "Эксперт (CI)", "value": "Тех. зак, Управление по параметризации "}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "Тех. зак"}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Получено положительное заключение платформы"}, {"label": "Передает результат", "value": "Платформа"}, {"label": "Принимает результат", "value": "ГАП / Тех. зак"}, {"label": "принимает решение о переходе", "value": "Платформа"}, {"label": "Тип процесса", "value": "Контрольный"}]}]}, {"name": "Разработка стадии П", "status": "Доступно", "stages": [{"id": "25", "number": 1, "stage": "Инициация", "goal": "Запуск проектирования", "content": "Проверка готовности к началу работ, назначение участников, подтверждение состава работ", "constraints": "Договор, ТЗ", "flowHolder": "ГИП ТЗ", "data": [{"label": "Входные данные", "value": "Сводное ТЗ, договор, график"}, {"label": "Источник входных данных", "value": "Техзаказчик"}, {"label": "Точка входа", "value": "Получено задание на проектирование"}, {"label": "Выходной результат", "value": "Проект запущен"}, {"label": "Артефакт этапа", "value": "Договор или протокол запуска"}, {"label": "Точка выхода", "value": "Проект открыт"}, {"label": "Критерий приемки", "value": "Все участники назначены"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП ТЗ"}, {"label": "Ответственный за ИКР (A)", "value": "Тех. зак"}, {"label": "Эксперт (CI)", "value": "Тех. зак, Управление по параметризации "}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "Тех. зак"}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Проект готов к старту, участники назначены"}, {"label": "Передает результат", "value": "Тех. зак"}, {"label": "Принимает результат", "value": "Проектировщик"}, {"label": "принимает решение о переходе", "value": "Проектировщик"}, {"label": "Тип процесса", "value": "Управленческий"}]}, {"id": "26", "number": 2, "stage": "Исходные данные", "goal": "Обеспечение полноты ИРД", "content": "Сбор, анализ и проверка достаточности исходных данных", "constraints": "Полнота ИРД", "flowHolder": "ГИП ТЗ", "data": [{"label": "Входные данные", "value": "ИРД"}, {"label": "Источник входных данных", "value": "Техзаказчик"}, {"label": "Точка входа", "value": "Проект открыт"}, {"label": "Выходной результат", "value": "Подтвержден комплект ИРД"}, {"label": "Артефакт этапа", "value": "Реестр ИРД"}, {"label": "Точка выхода", "value": "ИРД подтверждены"}, {"label": "Критерий приемки", "value": "Отсутствуют критические пробелы"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП ТЗ"}, {"label": "Ответственный за ИКР (A)", "value": "ГИП"}, {"label": "Эксперт (CI)", "value": ""}, {"label": "Информируемый (I)", "value": ""}, {"label": "Модератор подпроцесса", "value": "ГИП"}, {"label": "Держатель потока", "value": "ГИП ТЗ"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "ИРД достаточны для начала проектирования"}, {"label": "Передает результат", "value": "Тех. зак"}, {"label": "Принимает результат", "value": "Проектировщик"}, {"label": "принимает решение о переходе", "value": "Проектировщик"}, {"label": "Тип процесса", "value": "Контрольный"}]}, {"id": "27", "number": 3, "stage": "Планирование", "goal": "Формирование производственного плана", "content": "Разработка графика выдачи заданий и выпуска разделов", "constraints": "Сроки договора", "flowHolder": "ГИП", "data": [{"label": "Входные данные", "value": "ИРД, договор"}, {"label": "Источник входных данных", "value": "ГИП"}, {"label": "Точка входа", "value": "Даты предоставления ИРД подтверждены"}, {"label": "Выходной результат", "value": "Утвержден график"}, {"label": "Артефакт этапа", "value": "График проектирования"}, {"label": "Точка выхода", "value": "График согласован"}, {"label": "Критерий приемки", "value": "Утвержден всеми участниками"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП"}, {"label": "Ответственный за ИКР (A)", "value": "ГИП"}, {"label": "Эксперт (CI)", "value": "Руководители подраздлений проектировщика "}, {"label": "Информируемый (I)", "value": "Тех. зак"}, {"label": "Модератор подпроцесса", "value": "ГИП"}, {"label": "Держатель потока", "value": "ГИП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "График проектирования согласован"}, {"label": "Передает результат", "value": "Проектировщик"}, {"label": "Принимает результат", "value": "Директор ДД"}, {"label": "принимает решение о переходе", "value": "Директор ДД"}, {"label": "Тип процесса", "value": "Управленческий"}]}, {"id": "28", "number": 4, "stage": "Выдача заданий смежникам", "goal": "Обеспечение интерфейсов между разделами", "content": "Формирование и выдача заданий смежным разделам", "constraints": "Полнота требований", "flowHolder": "ГИП", "data": [{"label": "Входные данные", "value": "График, ТЗ"}, {"label": "Источник входных данных", "value": "ГИП"}, {"label": "Точка входа", "value": "График утвержден"}, {"label": "Выходной результат", "value": "Выданы задания"}, {"label": "Артефакт этапа", "value": "Реестр заданий"}, {"label": "Точка выхода", "value": "Задания приняты"}, {"label": "Критерий приемки", "value": "Все задания зарегистрированы"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП"}, {"label": "Ответственный за ИКР (A)", "value": "ГИП"}, {"label": "Эксперт (CI)", "value": "Смежники"}, {"label": "Информируемый (I)", "value": "Проектирощик"}, {"label": "Модератор подпроцесса", "value": "ГИП"}, {"label": "Держатель потока", "value": "ГИП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Все задания выданы и приняты в работу"}, {"label": "Передает результат", "value": "Проектировщик"}, {"label": "Принимает результат", "value": "Исполнитель"}, {"label": "принимает решение о переходе", "value": "Исполнитель"}, {"label": "Тип процесса", "value": "Координационный"}]}, {"id": "29", "number": 5, "stage": "Разработка разделов", "goal": "Выпуск проектных решений", "content": "Разработка проектной документации по всем разделам", "constraints": "СП, ГОСТ, ТЗ", "flowHolder": "ГИП", "data": [{"label": "Входные данные", "value": "ИРД, задания"}, {"label": "Источник входных данных", "value": "ГИП"}, {"label": "Точка входа", "value": "Задания выданы"}, {"label": "Выходной результат", "value": "Проектные решения разработаны"}, {"label": "Артефакт этапа", "value": "Разделы ПД"}, {"label": "Точка выхода", "value": "Разделы выпущены"}, {"label": "Критерий приемки", "value": "Выполнены требования ТЗ"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП"}, {"label": "Ответственный за ИКР (A)", "value": "ГИП"}, {"label": "Эксперт (CI)", "value": "ГИП, ГАП"}, {"label": "Информируемый (I)", "value": "Тех. зак"}, {"label": "Модератор подпроцесса", "value": "ГИП"}, {"label": "Держатель потока", "value": "ГИП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Разделы ПД разработаны в объеме стадии П"}, {"label": "Передает результат", "value": "ГИП"}, {"label": "Принимает результат", "value": "Тех. зак"}, {"label": "принимает решение о переходе", "value": "Тех. зак"}, {"label": "Тип процесса", "value": "Производственный"}]}, {"id": "30", "number": 6, "stage": "Координация решений", "goal": "Увязка разделов", "content": "Проверка совместимости проектных решений", "constraints": "Междисциплинарная совместимость", "flowHolder": "ГИП", "data": [{"label": "Входные данные", "value": "Разделы ПД"}, {"label": "Источник входных данных", "value": "Руководители разделов"}, {"label": "Точка входа", "value": "Разделы выпущены"}, {"label": "Выходной результат", "value": "Увязанный проект"}, {"label": "Артефакт этапа", "value": "Сводная модель"}, {"label": "Точка выхода", "value": "Коллизии устранены"}, {"label": "Критерий приемки", "value": "Нет критических противоречий"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП"}, {"label": "Ответственный за ИКР (A)", "value": "ГИП"}, {"label": "Эксперт (CI)", "value": "Все разделы"}, {"label": "Информируемый (I)", "value": "Тех. зак"}, {"label": "Модератор подпроцесса", "value": "ГИП"}, {"label": "Держатель потока", "value": "ГИП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Критические коллизии и противоречия устранены"}, {"label": "Передает результат", "value": "ГИП"}, {"label": "Принимает результат", "value": "Исполнитель"}, {"label": "принимает решение о переходе", "value": "Исполнитель"}, {"label": "Тип процесса", "value": "Координационный"}]}, {"id": "31", "number": 7, "stage": "Управление изменениями", "goal": "Управление отклонениями", "content": "Рассмотрение изменений и оценка влияния", "constraints": "Сроки, бюджет, ТЭП", "flowHolder": "Тех. зак", "data": [{"label": "Входные данные", "value": "Запрос на изменение"}, {"label": "Источник входных данных", "value": "Любой участник"}, {"label": "Точка входа", "value": "Поступило изменение"}, {"label": "Выходной результат", "value": "Решение по изменению"}, {"label": "Артефакт этапа", "value": "Change Request"}, {"label": "Точка выхода", "value": "Решение принято"}, {"label": "Критерий приемки", "value": "Определено влияние на проект"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП/ГАП"}, {"label": "Ответственный за ИКР (A)", "value": "ГИП"}, {"label": "Эксперт (CI)", "value": "Управление по параметризации  , Продукт"}, {"label": "Информируемый (I)", "value": "Тех. зак"}, {"label": "Модератор подпроцесса", "value": "ГИП"}, {"label": "Держатель потока", "value": "Тех. зак"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Изменение согласовано и интегрировано в проект"}, {"label": "Передает результат", "value": "Тех. зак"}, {"label": "Принимает результат", "value": "Проектировщик"}, {"label": "принимает решение о переходе", "value": "Проектировщик"}, {"label": "Тип процесса", "value": "Управленческий"}]}, {"id": "32", "number": 8, "stage": "Платформенная проверка ПД", "goal": "Контроль проектной определенности", "content": "Проверка соответствия Сводному ТЗ и платформенным ограничениям", "constraints": "Квартирография, ТЭП, КЭП, АМ", "flowHolder": "Директор Платформы", "data": [{"label": "Входные данные", "value": "Комплект ПД"}, {"label": "Источник входных данных", "value": "Проектировщик"}, {"label": "Точка входа", "value": "ПД разработана"}, {"label": "Выходной результат", "value": "Заключение платформы"}, {"label": "Артефакт этапа", "value": "Отчет проверки"}, {"label": "Точка выхода", "value": "Заключение выдано"}, {"label": "Критерий приемки", "value": "Критические отклонения отсутствуют"}], "management": [{"label": "Исполнитель (R)", "value": "Управление по параметризации "}, {"label": "Ответственный за ИКР (A)", "value": "Управление по параметризации "}, {"label": "Эксперт (CI)", "value": "Управление по параметризации "}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "ГИП"}, {"label": "Держатель потока", "value": "ГИП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Получено положительное заключение платформы"}, {"label": "Передает результат", "value": "Тех. зак"}, {"label": "Принимает результат", "value": "Платформа"}, {"label": "принимает решение о переходе", "value": "Платформа"}, {"label": "Тип процесса", "value": "Контрольный"}]}, {"id": "33", "number": 9, "stage": "Внутренняя приемка", "goal": "Подтверждение готовности к экспертизе", "content": "Проверка качества и комплектности документации", "constraints": "Требования экспертизы", "flowHolder": "ГИП", "data": [{"label": "Входные данные", "value": "ПД"}, {"label": "Источник входных данных", "value": "Проектировщик"}, {"label": "Точка входа", "value": "Платформенная проверка завершена"}, {"label": "Выходной результат", "value": "Комплект ПД готов"}, {"label": "Артефакт этапа", "value": "Акт внутренней приемки"}, {"label": "Точка выхода", "value": "Приемка завершена"}, {"label": "Критерий приемки", "value": "Комплектность подтверждена"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП/ГАП"}, {"label": "Ответственный за ИКР (A)", "value": "ГИП/ГАП"}, {"label": "Эксперт (CI)", "value": "Руководители разделов"}, {"label": "Информируемый (I)", "value": "Тех. зак"}, {"label": "Модератор подпроцесса", "value": "ГИП"}, {"label": "Держатель потока", "value": "ГИП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Комплект ПД признан готовым к подаче в экспертизу"}, {"label": "Передает результат", "value": "Исполнители"}, {"label": "Принимает результат", "value": "ГИП, ГАП"}, {"label": "принимает решение о переходе", "value": "Проектировщик"}, {"label": "Тип процесса", "value": "Контрольный"}]}, {"id": "34", "number": 10, "stage": "Экспертиза", "goal": "Получение положительного заключения", "content": "Сопровождение рассмотрения документации", "constraints": "Требования экспертизы", "flowHolder": "ГИП", "data": [{"label": "Входные данные", "value": "Комплект ПД"}, {"label": "Источник входных данных", "value": "Проектировщик"}, {"label": "Точка входа", "value": "ПД подана"}, {"label": "Выходной результат", "value": "Замечания или заключение"}, {"label": "Артефакт этапа", "value": "Регисрация входящей документации"}, {"label": "Точка выхода", "value": "Получено решение"}, {"label": "Критерий приемки", "value": "Получен ответ экспертизы"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП ТЗ"}, {"label": "Ответственный за ИКР (A)", "value": "ГИП"}, {"label": "Эксперт (CI)", "value": "ГИП"}, {"label": "Информируемый (I)", "value": "Проектирощик"}, {"label": "Модератор подпроцесса", "value": "Тех. зак"}, {"label": "Держатель потока", "value": "ГИП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Получено решение экспертизы"}, {"label": "Передает результат", "value": "Тех. зак"}, {"label": "Принимает результат", "value": "Экспертиза"}, {"label": "принимает решение о переходе", "value": "Экспертиза"}, {"label": "Тип процесса", "value": "Внешний"}]}, {"id": "35", "number": 11, "stage": "Устранение замечаний", "goal": "Отработка замечаний экспертизы", "content": "Корректировка документации", "constraints": "Сроки экспертизы", "flowHolder": "ГИП", "data": [{"label": "Входные данные", "value": "Замечания экспертизы"}, {"label": "Источник входных данных", "value": "Экспертиза"}, {"label": "Точка входа", "value": "Получены замечания"}, {"label": "Выходной результат", "value": "Исправленная ПД"}, {"label": "Артефакт этапа", "value": "Корректировка ПД"}, {"label": "Точка выхода", "value": "Замечания устранены"}, {"label": "Критерий приемки", "value": "Замечания закрыты"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП/ГАП"}, {"label": "Ответственный за ИКР (A)", "value": "ГИП ТЗ"}, {"label": "Эксперт (CI)", "value": "Эксперты"}, {"label": "Информируемый (I)", "value": "Тех. зак"}, {"label": "Модератор подпроцесса", "value": "ГИП"}, {"label": "Держатель потока", "value": "ГИП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Все замечания экспертизы устранены"}, {"label": "Передает результат", "value": "ГИП"}, {"label": "Принимает результат", "value": "Тех. зак"}, {"label": "принимает решение о переходе", "value": "Экспертиза"}, {"label": "Тип процесса", "value": "Производственный"}]}, {"id": "36", "number": 12, "stage": "Завершение стадии П", "goal": "Фиксация результата", "content": "Закрытие этапа и передача в РД", "constraints": "Требования экспертизы", "flowHolder": "Проектирощик", "data": [{"label": "Входные данные", "value": "Положительное заключение"}, {"label": "Источник входных данных", "value": "Экспертиза"}, {"label": "Точка входа", "value": "Заключение получено"}, {"label": "Выходной результат", "value": "Стадия П завершена"}, {"label": "Артефакт этапа", "value": "Комплект ПД с заключением"}, {"label": "Точка выхода", "value": "Передача в РД"}, {"label": "Критерий приемки", "value": "Получено положительное заключение"}], "management": [{"label": "Исполнитель (R)", "value": "ГИП"}, {"label": "Ответственный за ИКР (A)", "value": "ГИП"}, {"label": "Эксперт (CI)", "value": "Техзаказчик, Управление по параметризации "}, {"label": "Информируемый (I)", "value": "Директор ДД"}, {"label": "Модератор подпроцесса", "value": "ГИП"}, {"label": "Держатель потока", "value": "ГИП"}, {"label": "Держатель подпроцесса", "value": "Тех. зак"}, {"label": "Основание перехода", "value": "Получено положительное заключение экспертизы"}, {"label": "Передает результат", "value": "Экспертиза"}, {"label": "Принимает результат", "value": "Тех. зак"}, {"label": "принимает решение о переходе", "value": "Тех. зак"}, {"label": "Тип процесса", "value": "Передача"}]}]}, {"name": "Разработка стадии Р", "status": "В работе", "stages": []}];
+const app = document.getElementById('app');
+const tree = document.getElementById('tree');
+let selectedProcess = null;
+let selectedStage = null;
+
+const esc = value => String(value ?? '')
+ .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+ .replaceAll('"','&quot;').replaceAll("'","&#039;");
+
+function plural(n){let n10=n%10,n100=n%100;return n10===1&&n100!==11?'этап':(n10>=2&&n10<=4&&(n100<12||n100>14)?'этапа':'этапов')}
+
+function renderTree(){
+ tree.innerHTML = PROCESS_DATA.map((p,i)=>{
+   const isOpen = selectedProcess===i;
+   return `
+   <div class="tree-group ${isOpen?'open':''}">
+     <button class="tree-process ${isOpen?'active':''}" onclick="toggleTreeProcess(${i})">
+       <span>
+         <span class="tree-title">${esc(p.name)}</span>
+         <span class="tree-meta">${p.stages.length} ${plural(p.stages.length)}</span>
+       </span>
+       <span class="chevron">›</span>
+     </button>
+     <div class="tree-stages">
+       ${p.stages.length ? p.stages.map((s,j)=>`
+         <button class="tree-stage ${selectedProcess===i && selectedStage===j?'active':''}"
+           onclick="event.stopPropagation();openTreeStage(${i},${j})">
+           <span class="tree-stage-number">${esc(s.number || (j+1))}</span>
+           <span class="tree-stage-name">${esc(s.stage)}</span>
+         </button>`).join('') :
+         `<div class="tree-stage empty">Этапы в работе</div>`}
+     </div>
+   </div>`;
+ }).join('');
+}
+function toggleTreeProcess(i){
+ if(selectedProcess===i && selectedStage===null){
+   selectedProcess=null;
+   renderTree();
+   home();
+   return;
+ }
+ openProcess(i);
+}
+function openTreeStage(i,j){
+ selectedProcess=i;
+ openStage(j);
+}
+function home(){
+ selectedProcess=null;selectedStage=null;renderTree();
+ app.innerHTML=`
+ <div class="topbar"><div>
+  <div class="eyebrow">Уровень 1</div><h2>Подпроцессы проектирования</h2>
+  <div class="subtitle">Выберите подпроцесс, чтобы перейти к его этапам и управленческой логике.</div>
+ </div>
+ <button class="back" onclick="home()"></button>
+ </div>
+ <div class="cards">${PROCESS_DATA.map((p,i)=>`
+  <article class="card" onclick="openProcess(${i})">
+   <span class="badge ${p.status==='В работе'?'work':''}">${esc(p.status)}</span>
+   <h3>${esc(p.name)}</h3>
+   <p>${p.stages.length ? `${p.stages.length} ${plural(p.stages.length)} в текущей модели` : 'Структура этапов еще не заполнена'}</p>
+   <span class="arrow">→</span>
+  </article>`).join('')}</div>`;
+}
+
+
+
+function openGlobalSearch(){
+ selectedProcess=null;
+ selectedStage=null;
+ renderTree();
+ app.innerHTML=`
+ <div class="breadcrumbs"><button onclick="home()">Подпроцессы</button><span>›</span><span>Поиск</span></div>
+ <div class="topbar"><div>
+  <div class="eyebrow">Глобальный поиск</div>
+  <h2>Все этапы процессов</h2>
+  <div class="subtitle">Введите запрос. Показываются все этапы, связанные с запросом.</div>
+ </div><input id="globalSearchInput" class="search" placeholder="Поиск по этапам..." oninput="filterGlobalSearch(this.value)"></div>
+ <div id="searchCount" class="notice" style="margin-bottom:18px">Введите запрос для поиска по всем этапам</div>
+ <div id="globalResults" class="cards">${allStageCards()}</div>`;
+}
+
+function allStageCards(){
+ return PROCESS_DATA.flatMap((p,i)=>p.stages.map((s,j)=>globalStageCard(p,s,i,j))).join('');
+}
+
+function globalStageCard(p,s,i,j){
+ const text = JSON.stringify({process:p.name,stage:s.stage,goal:s.goal,content:s.content,constraints:s.constraints,data:s.data,management:s.management,holder:s.flowHolder}).toLowerCase();
+ return `<article class="card global-stage-card" data-search="${esc((p.name+' '+text).toLowerCase())}" onclick="openSearchResult(${i},${j})">
+  <span class="badge">Этап ${esc(s.number || s.id)}</span>
+  <h3>${esc(s.stage)}</h3>
+  <p><b>Подпроцесс:</b> ${esc(p.name)}<br>${esc(s.goal || '')}</p>
+  <div class="stage-holder">Держатель потока<strong>${esc(s.flowHolder || 'Не назначен')}</strong></div>
+  <span class="arrow">→</span>
+ </article>`;
+}
+
+function filterGlobalSearch(q){
+ const query=q.toLowerCase().trim();
+ const cards=[...document.querySelectorAll('.global-stage-card')];
+ let count=0;
+ cards.forEach(el=>{
+   const show=!query || el.dataset.search.includes(query);
+   el.style.display=show?'block':'none';
+   if(show) count++;
+ });
+ let info=document.getElementById('searchCount');
+ if(info){
+   info.innerHTML=query ? `Найдено: <b>${count}</b> ${plural(count)}` : 'Введите запрос для поиска по всем этапам';
+ }
+}
+
+function openSearchResult(i,j){
+ selectedProcess=i;
+ selectedStage=j;
+ renderTree();
+ openStage(j);
+}
+
+
+function roleSearch(type, value){
+ const q=value.toLowerCase().trim();
+ if(!q) return;
+ const results=[];
+ PROCESS_DATA.forEach((p,pi)=>p.stages.forEach((s,si)=>{
+   const m={};
+   (s.management||[]).forEach(x=>m[x.label]=x.value);
+   let target='';
+   if(type==='flow') target=m['Держатель потока']||s.flowHolder||'';
+   if(type==='executor') target=m['Исполнитель (R)']||'';
+   if(type==='holder') target=m['Держатель подпроцесса']||'';
+   if(target.toLowerCase().includes(q)) results.push({p,pi,s,si,target});
+ }));
+ app.innerHTML=`<div class="topbar"><div><div class="eyebrow">Поиск ролей</div><h2>Найдено: ${results.length}</h2></div></div>
+ <div class="cards">${results.map(r=>`<article class="card" onclick="openRoleResult(${r.pi},${r.si})"><span class="badge">${esc(r.target)}</span><h3>${esc(r.s.stage)}</h3><p>${esc(r.p.name)}<br>${esc(r.s.goal||'')}</p></article>`).join('') || '<div class="notice">Ничего не найдено</div>'}</div>`;
+}
+function openRoleResult(i,j){selectedProcess=i;selectedStage=j;renderTree();openStage(j);}
+
+function openProcess(i){
+ selectedProcess=i;selectedStage=null;renderTree();
+ const p=PROCESS_DATA[i];
+ app.innerHTML=`
+ <div class="breadcrumbs"><button onclick="home()">Подпроцессы</button><span>›</span><span>${esc(p.name)}</span></div>
+ <div class="topbar"><div>
+  <div class="eyebrow">Уровень 2</div><h2>${esc(p.name)}</h2>
+  <div class="subtitle">Этапы подпроцесса. В карточке указан держатель потока.</div>
+ </div><input class="search" placeholder="Поиск этапа…" oninput="filterStages(this.value)"></div>
+ <div id="stageCards" class="cards">
+ ${p.stages.length ? p.stages.map((s,j)=>stageCard(s,j)).join('') :
+ `<div class="notice"><strong>Разработка стадии Р — в работе.</strong><br>Карточки появятся после заполнения этапов в таблице.</div>`}
+ </div>`;
+}
+
+function stageCard(s,j){
+ return `<article class="card stage-card" data-search="${esc((s.stage+' '+s.goal+' '+s.flowHolder).toLowerCase())}" onclick="openStage(${j})">
+  <span class="badge">Этап ${esc(s.number || s.id)}</span>
+  <h3>${esc(s.stage)}</h3>
+  <p>${esc(s.goal || 'Цель этапа не указана')}</p>
+  <div class="stage-holder">Держатель потока<strong>${esc(s.flowHolder || 'Не назначен')}</strong></div>
+  <span class="arrow">→</span>
+ </article>`;
+}
+
+function filterStages(q){
+ q=q.toLowerCase().trim();
+ document.querySelectorAll('.stage-card').forEach(el=>el.style.display=el.dataset.search.includes(q)?'block':'none');
+}
+
+const FLOW_PROCEDURES = [
+ {label:'Получение согласований экспертов', value:'Держатель потока обеспечивает получение позиции экспертов (CI) до передачи результата.'},
+ {label:'Подготовка решения комитета', value:'Держатель потока обеспечивает подготовку материалов и вопросов для принятия решения.'},
+ {label:'Подтверждение критериев приемки', value:'Держатель процесса подтверждает соответствие результата установленным требованиям.'}
+];
+
+function openStage(j){
+ selectedStage=j;
+ renderTree();
+ const p=PROCESS_DATA[selectedProcess], s=p.stages[j];
+ app.innerHTML=`
+ <div class="breadcrumbs"><button onclick="home()">Подпроцессы</button><span>›</span>
+ <button onclick="openProcess(${selectedProcess})">${esc(p.name)}</button><span>›</span><span>${esc(s.stage)}</span></div>
+ <div class="topbar"><div>
+  <div class="eyebrow">Уровень 3 · Этап ${esc(s.number || s.id)}</div><h2>${esc(s.stage)}</h2>
+ </div><button class="back" onclick="openProcess(${selectedProcess})">← К этапам</button></div>
+ <div class="flow-banner">
+   <div class="flow-chip"><span>Держатель потока</span><strong>${esc(s.flowHolder || 'Не назначен')}</strong></div>
+ </div>
+ <section class="hero-grid">
+  ${infoPanel('Цель этапа',s.goal)}
+  ${infoPanel('Содержание этапа',s.content)}
+  ${infoPanel('Ограничения этапа',s.constraints)}
+ </section>
+ <section class="accordion-grid">
+  ${accordion('data','Данные',s.data)}
+  ${accordion('management','Управление',s.management)}
+  ${accordion('procedures','Процедуры обеспечения потока',FLOW_PROCEDURES)}
+ </section>`;
+}
+
+
+function formatText(value){
+ const raw=String(value||'').trim();
+ if(!raw) return '<span class="empty">Не заполнено</span>';
+ const normalized=raw.replace(/\r/g,'');
+ const matches=[...normalized.matchAll(/(?:^|\n|\s)(\d+)\.\s*([^]*?)(?=(?:\n|\s)\d+\.\s|$)/g)];
+ if(matches.length>=2){
+   return `<div class="formatted-list">${matches.map(m=>`
+     <div class="formatted-item"><span class="num">${esc(m[1])}</span><span class="txt">${esc(m[2].trim())}</span></div>
+   `).join('')}</div>`;
+ }
+ const lines=normalized.split('\n').map(x=>x.trim()).filter(Boolean);
+ if(lines.length>1){
+   return `<div class="formatted-list">${lines.map((line,idx)=>`
+     <div class="formatted-item"><span class="num">${idx+1}</span><span class="txt">${esc(line.replace(/^\d+\.\s*/,''))}</span></div>
+   `).join('')}</div>`;
+ }
+ return esc(raw);
+}
+
+function infoPanel(title,value){
+ return `<article class="info-panel"><h4>${esc(title)}</h4><div>${formatText(value)}</div></article>`;
+}
+
+function rowClass(section,label){
+ if(section==='management' && label==='Держатель потока') return 'highlight-flow';
+ if(section==='management' && label==='Передает результат') return 'highlight-transfer';
+ if(section==='data' && label==='Артефакт этапа') return 'highlight-artifact';
+ return '';
+}
+
+function accordion(id,title,items){
+ return `<article class="accordion" id="${id}">
+  <button class="acc-head" onclick="toggleAcc('${id}')"><span>${esc(title)}</span><span>＋</span></button>
+  <div class="acc-body">${items.map(x=>`
+   <div class="kv ${rowClass(id,x.label)}"><div class="label">${esc(x.label)}</div>
+   <div class="value">${formatText(x.value)}</div></div>`).join('')}</div>
+ </article>`;
+}
+
+function toggleAcc(id){
+ const el=document.getElementById(id);el.classList.toggle('open');
+ el.querySelector('.acc-head span:last-child').textContent=el.classList.contains('open')?'−':'＋';
+}
+
+
+
+function openLaws(){
+ document.getElementById('lawsModal').classList.add('open');
+ document.body.style.overflow='hidden';
+ showLaw(1);
+}
+function closeLaws(){
+ document.getElementById('lawsModal').classList.remove('open');
+ document.body.style.overflow='';
+}
+function showLaw(number){
+ document.querySelectorAll('.law-detail').forEach(el=>el.classList.remove('active'));
+ const target=document.getElementById(`lawDetail${number}`);
+ if(target) target.classList.add('active');
+ document.querySelectorAll('.law-button').forEach(btn=>{
+   btn.style.borderColor = btn.dataset.law===String(number) ? 'var(--meta-mint)' : 'var(--line)';
+   btn.style.background = btn.dataset.law===String(number) ? '#f1faf7' : '#fff';
+ });
+}
+document.addEventListener('click',e=>{
+ const btn=e.target.closest('.law-button');
+ if(btn) showLaw(btn.dataset.law);
+});
+
+function openFlowHelp(){
+ document.getElementById('flowHelpModal').classList.add('open');
+ document.body.style.overflow='hidden';
+}
+function closeFlowHelp(){
+ document.getElementById('flowHelpModal').classList.remove('open');
+ if(!document.getElementById('rolesCompareModal').classList.contains('open')) document.body.style.overflow='';
+}
+function openRolesCompare(){
+ document.getElementById('rolesCompareModal').classList.add('open');
+ document.body.style.overflow='hidden';
+}
+function closeRolesCompare(){
+ document.getElementById('rolesCompareModal').classList.remove('open');
+ if(!document.getElementById('flowHelpModal').classList.contains('open')) document.body.style.overflow='';
+}
+
+function openInstruction(){
+ document.getElementById('instructionModal').classList.add('open');
+ document.body.style.overflow='hidden';
+}
+function closeInstruction(){
+ document.getElementById('instructionModal').classList.remove('open');
+ document.body.style.overflow='';
+}
+
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'){
+  closeFlowHelp();
+  closeRolesCompare();
+  closeLaws();
+ }
+});
+
+renderTree();
+home();
+</script>
+</body>
+</html>
