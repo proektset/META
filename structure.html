@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>МЕТА · Структура</title>
+<style>
+:root{--bg:#f3f7f8;--card:#fff;--ink:#14282f;--muted:#6c7d83;--line:#d7e2e6;--green:#168777;--blue:#176ca8;--gold:#b97b00}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
+header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);padding:14px 22px;display:flex;justify-content:space-between;gap:16px;align-items:center}
+.brand b{display:block;font-size:19px}.brand span{font-size:12px;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 13px;font-weight:700;cursor:pointer}.btn.primary{background:var(--green);color:#fff;border-color:var(--green)}.btn.blue{background:var(--blue);color:#fff;border-color:var(--blue)}
+main{max-width:1450px;margin:auto;padding:22px}.kicker{color:var(--green);font-size:12px;font-weight:800;letter-spacing:.1em}.hero{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:16px}.hero h1{margin:4px 0}.status{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:15px}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:0 8px 28px rgba(18,46,57,.06)}h2{font-size:18px;margin:0 0 12px}
+label{display:block;font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;margin:10px 0 5px}textarea,input{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;font:inherit}textarea{min-height:82px;resize:vertical}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px}.ind{display:grid;grid-template-columns:38px 1.3fr .6fr .45fr 38px;gap:7px;margin:8px 0}.star,.del{border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer}.star.active{background:#fff4cf;color:var(--gold);border-color:#e0bc5d}.del{color:#a33;background:#fff8f8}
+.note{margin-top:9px;background:#edf7f5;border:1px solid #cce7e2;border-radius:10px;padding:9px 11px;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.stat{border:1px solid var(--line);border-radius:11px;padding:12px;background:#fafcfd}.stat b{display:block;font-size:22px}.stat span{font-size:11px;color:var(--muted)}
+.workspace{margin-top:15px}.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}.unit{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}.unit small{color:var(--muted);font-weight:800}.unit h3{margin:6px 0}.unit p{color:var(--muted);font-size:13px;min-height:34px}.chip{display:inline-block;background:#edf3f5;border-radius:999px;padding:5px 7px;font-size:11px;margin:2px}.chip.main{background:#fff2c9;color:#805600}
+dialog{width:min(760px,96vw);border:0;border-radius:18px;padding:0;box-shadow:0 30px 80px rgba(0,0,0,.25)}dialog::backdrop{background:rgba(8,20,25,.48)}.modal{padding:18px;background:#f5f8f9}.sub{background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px;margin:10px 0}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px}.listrow{display:grid;grid-template-columns:1fr 38px;gap:7px;margin:7px 0}.modal-actions{display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:#f5f8f9;padding-top:12px}
+.empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed #b9cbd1;border-radius:13px}
+@media(max-width:900px){.grid,.twocol{grid-template-columns:1fr}.hero{display:block}.status{margin-top:8px}.ind{grid-template-columns:38px 1fr 1fr}.stats{grid-template-columns:1fr 1fr}header{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+<div class="brand"><b>МЕТА · Структура организации</b><span>КОНСТРУКТОР / 02 ИНСТРУМЕНТЫ</span></div>
+<div class="actions">
+<button class="btn primary" onclick="saveAll()">Сохранить</button>
+<button class="btn blue" onclick="exportData()">Выгрузить</button>
+<button class="btn" onclick="document.getElementById('importFile').click()">Загрузить файл</button>
+<input id="importFile" type="file" accept=".json,application/json" hidden onchange="importData(event)">
+</div>
+</header>
+<main>
+<div class="hero"><div><div class="kicker">ЦЕЛЬ → МОДЕЛЬ → СТРУКТУРА → ПРОЦЕССЫ → РОЛИ → KPI</div><h1>Структура как способ реализации цели</h1></div><div class="status" id="status">Изменения не сохранены</div></div>
+<div class="grid">
+<section class="card">
+<div class="head"><h2>ЦЕЛЬ СИСТЕМЫ</h2><button class="btn" onclick="addIndicator('system')">+ Показатель</button></div>
+<label>Сформулированная цель</label><textarea id="systemGoal" placeholder="Сформулировать цель системы"></textarea>
+<label>Количественные показатели</label><div id="systemIndicators"></div>
+<div id="systemMain" class="note">Главный показатель не выбран.</div>
+</section>
+<section class="card">
+<div class="head"><h2>СИСТЕМА / ВЕРХНИЙ УРОВЕНЬ</h2><button class="btn primary" onclick="openUnit()">+ Подразделение</button></div>
+<div class="stats"><div class="stat"><b id="sUnits">0</b><span>подразделений</span></div><div class="stat"><b id="sFunctions">0</b><span>функций</span></div><div class="stat"><b id="sTasks">0</b><span>задач</span></div><div class="stat"><b id="sRoles">0</b><span>ролей / должностей</span></div></div>
+<p style="font-size:12px;color:var(--muted)">Главный показатель подразделения — основной измеритель результата и база для дальнейшего расчёта трудоёмкости, ШР и ресурсов.</p>
+</section>
+</div>
+<section class="card workspace">
+<div class="head"><div><div class="kicker">СИСТЕМА / ВЕРХНИЙ УРОВЕНЬ</div><h2 style="margin-top:5px">Подразделения</h2></div><button class="btn" onclick="openUnit()">Открыть пустое подразделение</button></div>
+<div id="units" class="units"></div>
+</section>
+</main>
+
+<dialog id="unitDialog"><div class="modal">
+<div class="head"><div><div class="kicker">ПОДРАЗДЕЛЕНИЕ</div><h2 id="modalTitle">Новое подразделение</h2></div><button class="btn" onclick="closeUnit()">Закрыть</button></div>
+<div class="sub"><label>Название подразделения</label><input id="uName"><label>Цель подразделения</label><textarea id="uGoal"></textarea></div>
+<div class="sub"><div class="head"><b>Количественные показатели</b><button class="btn" onclick="addIndicator('unit')">+ Показатель</button></div><div id="unitIndicators"></div><div id="unitMain" class="note">Главный показатель не выбран.</div></div>
+<div class="twocol">
+<div class="sub"><div class="head"><b>Требуемые результаты</b><button class="btn" onclick="addList('results')">+</button></div><div id="resultsList"></div></div>
+<div class="sub"><div class="head"><b>Сроки</b><button class="btn" onclick="addList('deadlines')">+</button></div><div id="deadlinesList"></div></div>
+</div>
+<div class="sub"><div class="head"><b>Функции</b><button class="btn" onclick="addList('functions')">+ Функция</button></div><div id="functionsList"></div></div>
+<div class="sub"><div class="head"><b>Задачи</b><button class="btn" onclick="addList('tasks')">+ Задача</button></div><div id="tasksList"></div></div>
+<div class="twocol">
+<div class="sub"><div class="head"><b>Роли</b><button class="btn" onclick="addList('roles')">+</button></div><div id="rolesList"></div></div>
+<div class="sub"><div class="head"><b>Должности</b><button class="btn" onclick="addList('positions')">+</button></div><div id="positionsList"></div></div>
+</div>
+<div class="modal-actions"><button class="btn" onclick="deleteUnit()">Удалить</button><button class="btn primary" onclick="applyUnit()">Применить</button></div>
+</div></dialog>
+
+<script>
+var KEY='META_STRUCTURE_V4';
+var state={systemGoal:'',systemIndicators:[blankIndicator()],units:[]};
+var editIndex=-1;
+var draft=null;
+function id(){return Math.random().toString(36).slice(2,10)}
+function blankIndicator(){return{id:id(),name:'',value:'',unit:'',main:false}}
+function blankUnit(){return{id:id(),name:'',goal:'',indicators:[blankIndicator()],results:[''],deadlines:[''],functions:[''],tasks:[''],roles:[''],positions:['']}}
+function esc(v){return String(v||'').replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]})}
+function dirty(){document.getElementById('status').innerHTML='Есть <b style="color:#9d6817">несохранённые</b> изменения'}
+document.getElementById('systemGoal').addEventListener('input',dirty);
+function pullSystem(){state.systemGoal=document.getElementById('systemGoal').value;var rows=document.querySelectorAll('#systemIndicators .ind');rows.forEach(function(r,i){var x=r.querySelectorAll('input');state.systemIndicators[i].name=x[0].value;state.systemIndicators[i].value=x[1].value;state.systemIndicators[i].unit=x[2].value})}
+function renderIndicators(kind){var list=kind==='system'?state.systemIndicators:draft.indicators;var box=document.getElementById(kind==='system'?'systemIndicators':'unitIndicators');box.innerHTML='';list.forEach(function(it,i){var d=document.createElement('div');d.className='ind';d.innerHTML='<button class="star '+(it.main?'active':'')+'" onclick="makeMain(\''+kind+'\','+i+')">★</button><input placeholder="Показатель" value="'+esc(it.name)+'"><input placeholder="Значение" value="'+esc(it.value)+'"><input placeholder="Ед." value="'+esc(it.unit)+'"><button class="del" onclick="removeIndicator(\''+kind+'\','+i+')">×</button>';box.appendChild(d)});var m=list.find(function(x){return x.main});var note=document.getElementById(kind==='system'?'systemMain':'unitMain');note.innerHTML=m&&m.name?'Главный показатель: <b>'+esc(m.name)+'</b>'+(m.value?' — '+esc(m.value):'')+(m.unit?' '+esc(m.unit):''):'Главный показатель не выбран.'}
+function pullUnit(){if(!draft)return;draft.name=document.getElementById('uName').value;draft.goal=document.getElementById('uGoal').value;var rows=document.querySelectorAll('#unitIndicators .ind');rows.forEach(function(r,i){var x=r.querySelectorAll('input');draft.indicators[i].name=x[0].value;draft.indicators[i].value=x[1].value;draft.indicators[i].unit=x[2].value});['results','deadlines','functions','tasks','roles','positions'].forEach(function(k){draft[k]=Array.from(document.querySelectorAll('#'+k+'List input')).map(function(x){return x.value})})}
+function addIndicator(kind){if(kind==='system'){pullSystem();state.systemIndicators.push(blankIndicator())}else{pullUnit();draft.indicators.push(blankIndicator())}renderIndicators(kind);dirty()}
+function removeIndicator(kind,i){if(kind==='system'){pullSystem();state.systemIndicators.splice(i,1);if(!state.systemIndicators.length)state.systemIndicators.push(blankIndicator())}else{pullUnit();draft.indicators.splice(i,1);if(!draft.indicators.length)draft.indicators.push(blankIndicator())}renderIndicators(kind);dirty()}
+function makeMain(kind,i){if(kind==='system'){pullSystem();state.systemIndicators.forEach(function(x,n){x.main=n===i})}else{pullUnit();draft.indicators.forEach(function(x,n){x.main=n===i})}renderIndicators(kind);dirty()}
+function openUnit(i){editIndex=typeof i==='number'?i:-1;draft=editIndex>=0?JSON.parse(JSON.stringify(state.units[editIndex])):blankUnit();document.getElementById('uName').value=draft.name;document.getElementById('uGoal').value=draft.goal;document.getElementById('modalTitle').textContent=draft.name||'Новое подразделение';renderIndicators('unit');['results','deadlines','functions','tasks','roles','positions'].forEach(renderList);document.getElementById('unitDialog').showModal()}
+function closeUnit(){document.getElementById('unitDialog').close();draft=null;editIndex=-1}
+function renderList(k){var box=document.getElementById(k+'List');box.innerHTML='';(draft[k]||['']).forEach(function(v,i){var r=document.createElement('div');r.className='listrow';r.innerHTML='<input value="'+esc(v)+'" placeholder="Введите значение"><button class="del" onclick="removeList(\''+k+'\','+i+')">×</button>';box.appendChild(r)})}
+function addList(k){pullUnit();draft[k].push('');renderList(k);dirty()}
+function removeList(k,i){pullUnit();draft[k].splice(i,1);if(!draft[k].length)draft[k].push('');renderList(k);dirty()}
+function applyUnit(){pullUnit();if(!draft.name.trim())draft.name='Название подразделения';if(editIndex>=0)state.units[editIndex]=draft;else state.units.push(draft);closeUnit();renderUnits();dirty()}
+function deleteUnit(){if(editIndex>=0)state.units.splice(editIndex,1);closeUnit();renderUnits();dirty()}
+function renderUnits(){var box=document.getElementById('units');box.innerHTML='';if(!state.units.length){box.innerHTML='<div class="empty">Пустая структура<br><br><button class="btn primary" onclick="openUnit()">+ Добавить подразделение</button></div>'}else{state.units.forEach(function(u,i){var m=(u.indicators||[]).find(function(x){return x.main});var d=document.createElement('div');d.className='unit';var chips='';if(m&&m.name)chips+='<span class="chip main">★ '+esc(m.name)+'</span>';chips+='<span class="chip">Функции: '+(u.functions||[]).filter(Boolean).length+'</span>';chips+='<span class="chip">Задачи: '+(u.tasks||[]).filter(Boolean).length+'</span>';d.innerHTML='<small>▦ ПОДРАЗДЕЛЕНИЕ · '+String(i+1).padStart(2,'0')+'</small><h3>'+esc(u.name)+'</h3><p>'+esc(u.goal||'Цель ещё не определена')+'</p><div>'+chips+'</div><br><button class="btn primary" onclick="openUnit('+i+')">Заполнить подразделение</button>';box.appendChild(d)})}updateStats()}
+function updateStats(){document.getElementById('sUnits').textContent=state.units.length;document.getElementById('sFunctions').textContent=state.units.reduce(function(a,u){return a+(u.functions||[]).filter(Boolean).length},0);document.getElementById('sTasks').textContent=state.units.reduce(function(a,u){return a+(u.tasks||[]).filter(Boolean).length},0);document.getElementById('sRoles').textContent=state.units.reduce(function(a,u){return a+(u.roles||[]).filter(Boolean).length+(u.positions||[]).filter(Boolean).length},0)}
+function normalize(){state.systemIndicators=Array.isArray(state.systemIndicators)&&state.systemIndicators.length?state.systemIndicators:[blankIndicator()];state.units=Array.isArray(state.units)?state.units:[];state.units.forEach(function(u){u.indicators=Array.isArray(u.indicators)&&u.indicators.length?u.indicators:[blankIndicator()];['results','deadlines','functions','tasks','roles','positions'].forEach(function(k){u[k]=Array.isArray(u[k])&&u[k].length?u[k]:['']})})}
+function saveAll(){pullSystem();localStorage.setItem(KEY,JSON.stringify(state));document.getElementById('status').innerHTML='<b style="color:var(--green)">Сохранено</b> · '+new Date().toLocaleString('ru-RU')}
+function exportData(){pullSystem();var data={meta:{name:'МЕТА · Структура',version:4,exportedAt:new Date().toISOString()},data:state};var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='META_STRUCTURE_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1000)}
+function importData(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var j=JSON.parse(r.result);state=j.data||j;normalize();document.getElementById('systemGoal').value=state.systemGoal||'';renderIndicators('system');renderUnits();saveAll()}catch(err){alert('Не удалось прочитать файл')}};r.readAsText(f);e.target.value=''}
+(function(){try{var saved=localStorage.getItem(KEY);if(saved){state=JSON.parse(saved);normalize();document.getElementById('status').innerHTML='<b style="color:var(--green)">Данные восстановлены</b> из браузера'}}catch(e){}document.getElementById('systemGoal').value=state.systemGoal||'';renderIndicators('system');renderUnits()})()
+</script>
+</body></html>
