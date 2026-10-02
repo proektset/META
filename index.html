@@ -905,6 +905,25 @@ h1, h2, p { margin-top: 0; }
 @media(max-width:1450px){.admin-table{min-width:1250px!important}.admin-toolbar{grid-template-columns:minmax(220px,1fr) 170px 90px 105px auto!important}.result-count{display:none!important}}
 </style>
 
+
+<style id="meta-v44-core-release">
+.meta-core-release{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;
+  margin:0 0 16px;padding:14px 16px;border:1px solid #b9dcd5;
+  border-radius:12px;background:#eef9f6;color:#183741
+}
+.meta-core-release strong{color:#148774;font-size:15px}
+.meta-core-release span{font-size:13px;color:#506b72}
+.meta-core-new-list{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}
+.meta-core-new-chip{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 9px;
+  border-radius:999px;background:#eaf2ff;border:1px solid #bfd2f5;
+  color:#245f9e;font-size:12px;font-weight:700
+}
+.meta-core-new-chip::before{content:"+";display:inline-grid;place-items:center;
+  width:17px;height:17px;border-radius:50%;background:#246eaa;color:#fff;font-size:11px}
+</style>
+
 </head>
 <body>
   <div id="root"></div>
@@ -1691,11 +1710,16 @@ react/cjs/react-jsx-runtime.production.js:
     const detailSources = snapshot.registry?.detailSources ?? [];
     const detailSourceRows = detailSources.map((item) => `<tr><td><strong>${esc(item.object)}</strong></td><td>${esc(item.group)}</td><td class="num">${rub2.format(Number(item.amount)||0)}</td><td>${item.applied?'<strong style="color:#148774">учтено в ядре</strong>':'<span style="color:#7a6b2e">справочно</span>'}<br><small>${esc(item.note||'')}</small></td></tr>`).join("");
     const inactiveAggregates = allObjects.filter((item)=>!item.active&&item.level==="aggregate"&&["Базилик","ЯБ"].includes(item.family));
+    const newCoreKeys = new Set(["Базилик-Д3","ЯБ-19_2","ЯБ-32"]);
+    const newCoreObjects = activeObjects.filter((item)=>newCoreKeys.has(item.key));
+    const coreRevision = snapshot.registry?.coreRevision ?? "2026-10-02-v44";
 
     host.innerHTML = `
       <div class="meta-grid">
         <section class="meta-card full">
+          <div class="meta-core-release"><strong>Ядро v44 · ревизия ${esc(coreRevision)}</strong><span>Пересобрано 02.10.2026 по расширенному набору объектов и дополнительным сметным источникам.</span></div>
           <h3>Состав статистического ядра</h3>
+          <div class="meta-core-new-list">${newCoreObjects.map((item)=>`<span class="meta-core-new-chip">${esc(item.name)}</span>`).join("")}</div>
           <p>В расчёте используются <strong>${activeObjects.length}</strong> активных объектов из ${allObjects.length}; <strong>${commonRows}</strong> общих и <strong>${classRows}</strong> классовых позиций, всего <strong>${rates.length}</strong> строк реестра. Неактивные объекты (${allObjects.length - activeObjects.length}) в усреднение не входят.</p>
           <div class="meta-source-list"><strong>Исходные файлы:</strong>${sources}</div>
           <div class="meta-table-wrap"><table class="meta-table"><thead><tr><th>Объект</th><th>Класс</th><th>Продаваемая площадь</th><th>Полная ставка</th></tr></thead><tbody>${objectRows}</tbody></table></div>${inactiveAggregates.length?`<p style="margin-top:10px"><strong>Защита от двойного учёта:</strong> агрегаты ${inactiveAggregates.map(x=>esc(x.name)).join(", ")} сохранены в базе, но отключены, пока активна детализация по отдельным домам.</p>`:""}
