@@ -7637,6 +7637,8 @@ window.addEventListener('message',event=>{
  syncMetrics(event.data);
 });
 byId('metaDecompOpenV780').addEventListener('click',()=>{
+ // Re-read the scenario after an imported or restored META model.
+ restoreFromModel();
  if(!dlg.open)dlg.showModal();
 });
 byId('metaDecompCloseV780').addEventListener('click',()=>dlg.close());
