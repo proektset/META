@@ -7567,7 +7567,7 @@ const frame=byId('metaDecompIframeV780'),dlg=byId('metaDecompDialogV780');
 const fmt=n=>Math.round(n||0).toLocaleString('ru-RU');
 const METRIC_ID='META-DECOMP-780-MAX-DESIGN';
 const METRIC_NAME='Макс. проектный портфель';
-let restoring=false,updating=false,queued=false,lastSignature='';
+let restoring=Boolean(model?.system?.goalDecomposition?.scenario),updating=false,queued=false,lastSignature='';
 function targetUnits(){
  if(typeof model==='undefined'||!model||!Array.isArray(model.units))return [];
  const root=model.units.find(u=>String(u.name||'').trim().toLowerCase()==='дирекция по девелопменту');
