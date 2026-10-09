@@ -7566,7 +7566,7 @@ const byId=id=>document.getElementById(id);
 const frame=byId('metaDecompIframeV780'),dlg=byId('metaDecompDialogV780');
 const fmt=n=>Math.round(n||0).toLocaleString('ru-RU');
 const METRIC_ID='META-DECOMP-780-MAX-DESIGN';
-const METRIC_NAME='Макс. проектный портфель';
+const METRIC_NAME='Максимальный объём проектирования';
 let restoring=Boolean(model?.system?.goalDecomposition?.scenario),updating=false,queued=false,lastSignature='';
 function targetUnits(){
  if(typeof model==='undefined'||!model||!Array.isArray(model.units))return [];
