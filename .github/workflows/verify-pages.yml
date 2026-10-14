@@ -1,0 +1,34 @@
+name: Verify META Pages URLs
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/verify-pages.yml
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check published URLs and content
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking METASEBES canonical URL"
+          curl --fail --location --silent --show-error --max-time 35             --retry 5 --retry-delay 5             'https://proektset.github.io/META/metasebes/' -o /tmp/metasebes.html
+          grep -q 'v46-metaetazh-compare' /tmp/metasebes.html
+          echo "METASEBES: OK ($(wc -c < /tmp/metasebes.html) bytes)"
+
+          echo "Checking META root redirect"
+          curl --fail --location --silent --show-error --max-time 35             --retry 5 --retry-delay 5             'https://proektset.github.io/META/' -o /tmp/meta-root.html
+          grep -q 'metasebes/' /tmp/meta-root.html
+          echo "Root redirect: OK"
+
+          echo "Checking separate META System route"
+          curl --fail --location --silent --show-error --max-time 35             --retry 5 --retry-delay 5             'https://proektset.github.io/META/%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0/' -o /tmp/meta-system.html
+          grep -q -E 'МЕТА|META' /tmp/meta-system.html
+          echo "META System: OK ($(wc -c < /tmp/meta-system.html) bytes)"
