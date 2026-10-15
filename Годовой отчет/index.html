@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#eaf5f8">
-<title>МЕТА · Платформа · Годовой отчёт 2026 · v9</title>
+<title>МЕТА · Платформа · Годовой отчёт 2026 · v10</title>
 <style>
 :root{
   /* МЕТАСИСТЕМА v7.95: холодная палитра, усиленная акцентами */
@@ -234,9 +234,18 @@ body.theme-meta .new-platform-action{background:#e5efff;color:#1859c6;border-col
 body.theme-meta .brandmark{background:#2e78f0;color:white;border-color:#2e78f0;box-shadow:0 3px 10px rgba(47,113,222,.18)}
 body.theme-meta .concept-item{border-left-color:var(--accent-item,#2e78f0)}
 /* Логотип: используется знак с корпоративного домена; встроенный вектор — резерв без сети. */
-.brandmark{overflow:hidden;display:grid;place-items:center;flex:none;position:relative;border:1px solid var(--score-br);border-radius:9px;box-shadow:0 3px 12px rgba(14,79,114,.1)}
-.brandmark-fallback{width:33px;height:33px;display:block;color:white}
-.brandmark-image{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:2px}
+.brandmark{overflow:hidden;display:grid;place-items:center;flex:none;position:relative;border:none;border-radius:0;box-shadow:none;background:transparent!important;width:138px;height:42px;padding:0}
+.brandmark-fallback{display:none}
+.brandmark-image{display:block;position:static;width:138px;height:42px;object-fit:contain;background:transparent;padding:0}
+/* Compact header for 1366x768 with three theme buttons. */
+.mast .brand h1{font-size:20px}
+.mast .brand{gap:9px}
+.mast .actions{gap:5px}
+.mast .action{padding-left:8px;padding-right:8px;font-size:11px;min-width:34px}
+.mast .themes button{padding:7px 8px;font-size:11px}
+.mast .themes{padding:2px}
+.mast-line{gap:10px;min-width:0}
+.mast{min-width:0}
 /* Презентация: экран состоит ТОЛЬКО из большого табло и двух рядов малых табло. */
 body.presentation .stage{
   grid-template-rows:minmax(0,1.12fr) minmax(0,1fr) minmax(0,1fr)!important;
@@ -257,13 +266,7 @@ body.presentation .scoreboard:hover{border-color:var(--score-br)}
   <header class="mast">
     <div class="report-motto">НЕ ПРОЕКТИРУЕМ ЗДАНИЕ — ВЫЧИСЛЯЕМ, КАКИМ ОНО ДОЛЖНО БЫТЬ</div>
     <div class="mast-line">
-    <div class="brand"><div class="brandmark" aria-label="МЕТА — знак девелопера">
-      <svg class="brandmark-fallback" viewBox="0 0 76 70" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-        <path d="M7 18 38 4 69 18 69 55 38 68 7 55Z" fill="none" stroke="currentColor" stroke-width="4.7" stroke-linejoin="round"/>
-        <path d="M17 49V25l13 12 8-13 8 13 13-12v24" stroke="currentColor" stroke-width="5.4" fill="none" stroke-linejoin="miter" stroke-linecap="square"/>
-        <path d="M38 4v20M7 18l23 19m39-19L46 37" stroke="currentColor" stroke-width="2.5" fill="none" opacity=".42"/>
-      </svg>
-    </div><div><h1>Годовой отчёт · результаты Платформы</h1></div></div>
+    <div class="brand"><div class="brandmark" aria-label="МЕТА — знак девелопера"><img class="brandmark-image" src="data:image/png;base64,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" alt="МЕТА"></div><div><h1>Годовой отчёт · результаты Платформы</h1></div></div>
     <div class="actions">
       <div class="themes secondary-action" role="group" aria-label="Цветовое оформление"><button data-theme="cold" aria-pressed="true" type="button">Холодный</button><button data-theme="warm" aria-pressed="false" type="button">Тёплый</button><button data-theme="meta" aria-pressed="false" type="button">МЕТА</button></div>
       <button type="button" id="conceptOpen" class="action new-platform-action" aria-haspopup="dialog" aria-controls="conceptDialog">Новое понимание Платформы</button>
