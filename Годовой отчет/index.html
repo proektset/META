@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#eaf5f8">
-<title>МЕТА · Платформа · Годовой отчёт 2026 · v8</title>
+<title>МЕТА · Платформа · Годовой отчёт 2026 · v9</title>
 <style>
 :root{
   /* МЕТАСИСТЕМА v7.95: холодная палитра, усиленная акцентами */
@@ -203,39 +203,39 @@ body.theme-warm .rail-line{background:linear-gradient(90deg,#e18220,#f6b32d,#ffe
 .score-kep strong{color:var(--digits);font:900 15px/1 Consolas,monospace;letter-spacing:0}
 
 
-/* v8 — корпоративная тема МЕТА, фирменный небесно-синий + золото (2026) */
+/* v9 — МЕТА: чистый насыщенный корпоративный синий, светлая основа.
+   Никакого тёмно-синего оформления и смешения палитр у главного и малых табло. */
 body.theme-meta{
-  --bg:#ecf7fb;--surface:#fff;--surface2:#f1faff;--ink:#153f62;--muted:#527a99;--line:#beddea;
-  --blue:#198fd1;--cyan:#27b2eb;--teal:#087cae;--green:#158e89;--gold:#e5ad42;
-  --soft-blue:#d9f1ff;--soft-cyan:#d9f5ff;--soft-green:#d6f4ed;--soft-gold:#fff0d2;--soft-indigo:#dfe8ff;
-  --mast:#fff;--score:#102f51;--score2:#062542;--score-br:#39ade2;--digits:#f8fdff;--board-sub:#b8def0;
-  --flip-top:#08253f;--flip-bottom:#20557c;--tooltip:#0d3559;--tooltip-ink:#fff;
-  --shadow:0 12px 38px rgba(19,103,154,.13);--shadow-soft:0 4px 18px rgba(19,103,154,.10);
+  --bg:#edf3ff;--surface:#fff;--surface2:#f5f8ff;--ink:#152e55;--muted:#537198;--line:#c9d9f4;
+  --blue:#2e78f0;--cyan:#2e78f0;--teal:#2768d8;--green:#2e78f0;--gold:#2e78f0;
+  --soft-blue:#e4edff;--soft-cyan:#e3edff;--soft-green:#e7efff;--soft-gold:#f8f0e6;--soft-indigo:#e4eaff;
+  --mast:#fff;--score:#307bf2;--score2:#2871e7;--score-br:#1c60d3;--digits:#fff;--board-sub:#e7f0ff;
+  --flip-top:#194fa9;--flip-bottom:#235dbd;--tooltip:#143e86;--tooltip-ink:#fff;
+  --shadow:0 12px 38px rgba(35,88,176,.12);--shadow-soft:0 4px 18px rgba(35,88,176,.09);
 }
 body.theme-meta .viewport{
-  background:radial-gradient(ellipse at 1% 0%,rgba(42,171,231,.22),transparent 43%),
-             radial-gradient(ellipse at 99% 92%,rgba(231,172,67,.15),transparent 38%),var(--bg);
+  background:radial-gradient(ellipse at 5% 0%,rgba(47,121,239,.075),transparent 48%),var(--bg);
 }
-body.theme-meta .mast{border-color:#acd5e9;box-shadow:0 6px 19px rgba(24,129,183,.09)}
-body.theme-meta .report-motto,body.theme-meta .brand .eyebrow,body.theme-meta .footer-motto{color:#148aca}
+body.theme-meta .mast{border-color:#c6d7f3;box-shadow:0 6px 18px rgba(40,93,186,.06)}
+body.theme-meta .report-motto,body.theme-meta .footer-motto{color:#245fd0}
 body.theme-meta .scoreboard,body.theme-meta .tile{
-  border-color:#2ba8df!important;
-  background:linear-gradient(125deg,#0f3b61,#092d4d 68%,#183b56)!important;
-  box-shadow:0 13px 30px rgba(6,61,99,.16)!important;
+  border-color:#2064db!important;
+  background:linear-gradient(118deg,#337df1 0%,#2b74e9 76%,#2c72e6 100%)!important;
+  box-shadow:0 11px 28px rgba(32,100,219,.17)!important;
 }
 body.theme-meta .scoreboard:before,body.theme-meta .tile:before{
-  background:repeating-linear-gradient(119deg,transparent 0 86px,rgba(48,185,242,.055) 87px,transparent 90px),
-             linear-gradient(117deg,transparent 20%,rgba(243,188,74,.075) 50%,transparent 75%);
+  background:repeating-linear-gradient(90deg,transparent 0 100px,rgba(255,255,255,.055) 101px,transparent 102px),
+             linear-gradient(115deg,transparent 17%,rgba(255,255,255,.055) 55%,transparent 83%);
 }
-body.theme-meta .rail-line{background:linear-gradient(90deg,#36b8ed,#83dafa,#e5b14a)}
-body.theme-meta .themes{background:#e5f4fe}
-body.theme-meta .themes button[aria-pressed="true"]{background:#128fcb;color:#fff;box-shadow:0 3px 12px rgba(20,140,198,.22)}
-body.theme-meta .new-platform-action{background:linear-gradient(110deg,#e3f5ff,#fdf5dc);color:#0d6fa6;border-color:#7cc0e7}
-body.theme-meta .brandmark{background:linear-gradient(160deg,#21a7e7,#067ab5);color:white;border-color:#118fc5}
-body.theme-meta .concept-item{border-left-color:var(--accent-item,#19a5da)}
+body.theme-meta .rail-line{background:linear-gradient(90deg,#d4e7ff,#fff,#d4e7ff)}
+body.theme-meta .themes{background:#e5eeff;border-color:#bad2f9}
+body.theme-meta .themes button[aria-pressed="true"]{background:#2e78f0;color:#fff;box-shadow:0 3px 12px rgba(47,113,222,.23)}
+body.theme-meta .new-platform-action{background:#e5efff;color:#1859c6;border-color:#abc8f5}
+body.theme-meta .brandmark{background:#2e78f0;color:white;border-color:#2e78f0;box-shadow:0 3px 10px rgba(47,113,222,.18)}
+body.theme-meta .concept-item{border-left-color:var(--accent-item,#2e78f0)}
 /* Логотип: используется знак с корпоративного домена; встроенный вектор — резерв без сети. */
 .brandmark{overflow:hidden;display:grid;place-items:center;flex:none;position:relative;border:1px solid var(--score-br);border-radius:9px;box-shadow:0 3px 12px rgba(14,79,114,.1)}
-.brandmark-fallback{width:32px;height:32px;display:block;color:white}
+.brandmark-fallback{width:33px;height:33px;display:block;color:white}
 .brandmark-image{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:2px}
 /* Презентация: экран состоит ТОЛЬКО из большого табло и двух рядов малых табло. */
 body.presentation .stage{
@@ -263,8 +263,7 @@ body.presentation .scoreboard:hover{border-color:var(--score-br)}
         <path d="M17 49V25l13 12 8-13 8 13 13-12v24" stroke="currentColor" stroke-width="5.4" fill="none" stroke-linejoin="miter" stroke-linecap="square"/>
         <path d="M38 4v20M7 18l23 19m39-19L46 37" stroke="currentColor" stroke-width="2.5" fill="none" opacity=".42"/>
       </svg>
-      <img class="brandmark-image" src="https://groupmeta.ru/favicon.ico" alt="" aria-hidden="true" onerror="this.style.display='none'"/>
-    </div><div><div class="eyebrow">МЕТА / ПЛАТФОРМА / 2026</div><h1>Годовой отчёт · результаты Платформы</h1></div></div>
+    </div><div><h1>Годовой отчёт · результаты Платформы</h1></div></div>
     <div class="actions">
       <div class="themes secondary-action" role="group" aria-label="Цветовое оформление"><button data-theme="cold" aria-pressed="true" type="button">Холодный</button><button data-theme="warm" aria-pressed="false" type="button">Тёплый</button><button data-theme="meta" aria-pressed="false" type="button">МЕТА</button></div>
       <button type="button" id="conceptOpen" class="action new-platform-action" aria-haspopup="dialog" aria-controls="conceptDialog">Новое понимание Платформы</button>
