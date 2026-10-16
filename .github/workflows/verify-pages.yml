@@ -40,3 +40,10 @@ jobs:
             'https://proektset.github.io/META/metaparking/index.html?v=2.2' -o /tmp/metaparking.html
           grep -q "version:'2.2'" /tmp/metaparking.html
           echo "METAPARKING v2.2: OK ($(wc -c < /tmp/metaparking.html) bytes)"
+
+          echo "Checking METAPARKING short URL"
+          curl --fail --location --silent --show-error --max-time 35 \
+            --retry 8 --retry-delay 4 --retry-all-errors \
+            'https://proektset.github.io/META/metaparking/' -o /tmp/metaparking-short.html
+          grep -q "version:'2.2'" /tmp/metaparking-short.html
+          echo "METAPARKING short URL: OK"
