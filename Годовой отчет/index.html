@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#eaf5f8">
-<title>МЕТА · Платформа · Годовой отчёт 2026 · v11</title>
+<title>МЕТА · Платформа · Годовой отчёт 2026 · v12</title>
 <style>
 :root{
   /* МЕТАСИСТЕМА v7.95: холодная палитра, усиленная акцентами */
@@ -287,6 +287,27 @@ body.presentation .scoreboard:hover{border-color:var(--score-br)}
 .mast .action{font-size:10.5px;padding-left:7px;padding-right:7px}
 .mast .themes button{padding:7px 7px;font-size:10.5px}
 
+
+/* v12 · compact brand palette / glowing links / working information markers */
+.header-left{display:flex;align-items:center;min-width:0;gap:20px}
+.theme-dots{display:flex;flex:none;align-items:center;gap:12px;padding:2px 1px}
+.theme-dot{appearance:none;position:relative;display:block;width:20px;height:20px;flex:none;border-radius:50%;border:2px solid rgba(255,255,255,.7);padding:0;cursor:pointer;box-shadow:0 0 0 1px rgba(31,54,67,.16),0 2px 6px rgba(5,31,45,.12);transition:transform .15s ease,box-shadow .15s ease}
+.theme-dot:hover{transform:scale(1.15)}
+.theme-dot:focus-visible{outline:3px solid #1a9bf5;outline-offset:5px}
+.theme-dot[aria-pressed="true"]{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ink),0 0 10px 2px rgba(54,117,203,.25);transform:scale(1.09)}
+.dot-cold{background:#11a9b4}
+.dot-warm{background:#e6a432}
+.dot-meta{background:#337df1}
+.action.report-action{background:linear-gradient(110deg,#17c969,#04a648);border:1px solid #43ff9b;color:#fff;text-shadow:0 1px 2px rgba(0,60,15,.4);box-shadow:0 0 0 1px rgba(9,166,72,.25),0 0 13px rgba(19,226,100,.56),inset 0 1px rgba(255,255,255,.26);font-weight:900;letter-spacing:.025em}
+.action.report-action:hover{background:linear-gradient(110deg,#22e474,#05b856);box-shadow:0 0 19px rgba(17,227,106,.82),0 0 0 1px rgba(9,166,72,.28)}
+.action.google-action{background:linear-gradient(110deg,#1689ff,#0861ed);border:1px solid #70c0ff;color:#fff;text-shadow:0 1px 2px rgba(0,28,95,.4);box-shadow:0 0 0 1px rgba(24,126,245,.18),0 0 13px rgba(19,128,255,.58),inset 0 1px rgba(255,255,255,.26);font-weight:900}
+.action.google-action:hover{background:linear-gradient(110deg,#3f9fff,#1179ff);box-shadow:0 0 20px rgba(19,128,255,.82)}
+.tile>.info{z-index:20;pointer-events:auto;isolation:isolate;cursor:pointer}
+.tile .label{position:relative;z-index:1;pointer-events:none}
+.scoreboard .score-info{z-index:20;pointer-events:auto;cursor:pointer}
+.tooltip-portal{pointer-events:none!important;z-index:300000!important;min-width:220px}
+@media(max-width:800px){.header-left{gap:12px}.theme-dots{gap:7px}}
+
 </style>
 </head>
 <body class="theme-cold">
@@ -295,14 +316,18 @@ body.presentation .scoreboard:hover{border-color:var(--score-br)}
   <header class="mast">
     <div class="report-motto">НЕ ПРОЕКТИРУЕМ ЗДАНИЕ — ВЫЧИСЛЯЕМ, КАКИМ ОНО ДОЛЖНО БЫТЬ</div>
     <div class="mast-line">
+    <div class="header-left">
+      <div class="theme-dots" role="group" aria-label="Выбор цветовой темы">
+        <button type="button" class="theme-dot dot-cold" data-theme="cold" aria-pressed="true" aria-label="Холодная тема" title="Холодная тема"></button>
+        <button type="button" class="theme-dot dot-warm" data-theme="warm" aria-pressed="false" aria-label="Тёплая тема" title="Тёплая тема"></button>
+        <button type="button" class="theme-dot dot-meta" data-theme="meta" aria-pressed="false" aria-label="Тема МЕТА" title="МЕТА"></button>
+      </div>
     <div class="brand"><div class="brandmark" aria-label="МЕТА — знак девелопера"><img class="brandmark-image" src="data:image/png;base64,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" alt="МЕТА"></div><div><h1>Годовой отчёт · Платформа 2026</h1></div></div>
+    </div>
     <div class="actions">
-      <div class="themes secondary-action" role="group" aria-label="Цветовое оформление"><button data-theme="cold" aria-pressed="true" type="button">Холодный</button><button data-theme="warm" aria-pressed="false" type="button">Тёплый</button><button data-theme="meta" aria-pressed="false" type="button">МЕТА</button></div>
-      <button type="button" id="factsOpen" class="action secondary-action" aria-haspopup="dialog" aria-controls="factsDialog">Платформа в цифрах</button>
-      <button type="button" id="conceptOpen" class="action new-platform-action" aria-haspopup="dialog" aria-controls="conceptDialog">Новое понимание Платформы</button>
-      <button type="button" id="replay" class="action secondary-action" title="Повторить анимацию цифр"><span aria-hidden="true">↻</span> Повтор</button>
+      <a id="reportOpen" class="action report-action" target="_blank" rel="noopener noreferrer" href="https://proektset.github.io/META/%D0%93%D0%BE%D0%B4%D0%BE%D0%B2%D0%BE%D0%B9%20%D0%BE%D1%82%D1%87%D0%B5%D1%82/platform_annual_report_2026.pdf" title="Открыть полный годовой отчёт Платформы в PDF">Отчёт ↗</a>
       <button type="button" id="matrixOpen" class="action secondary-action" aria-haspopup="dialog" aria-controls="matrixDialog">▦ Матрица</button>
-      <a id="sourceLink" class="action secondary-action" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/spreadsheets/d/1i2fqS0VeZoWv4ocL9bl9q1b4gQfZEiE-WpWZUDzGfaM/edit?usp=drivesdk" title="Открыть Google Таблицу — исходные данные">↗ Google Таблица</a>
+      <a id="sourceLink" class="action google-action" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/spreadsheets/d/1i2fqS0VeZoWv4ocL9bl9q1b4gQfZEiE-WpWZUDzGfaM/edit?usp=drivesdk" title="Открыть Google Таблицу — исходные данные">↗ Google Таблица</a>
       <button type="button" id="present" class="action" aria-pressed="false" title="Режим презентации, полный экран"><span id="presentIcon">⛶</span> <span id="presentLabel">Презентация</span></button>
     </div>
     </div>
@@ -418,7 +443,7 @@ function userReplay(){replayBoard();resetAutoReplay()}
 const board=document.getElementById('mainBoard');
 board.addEventListener('click',e=>{if(e.target.closest('[data-info]'))return;userReplay()});
 board.addEventListener('keydown',e=>{if(e.target!==board)return;if(e.key==='Enter'||e.key===' '){e.preventDefault();userReplay()}});
-document.getElementById('replay').addEventListener('click',userReplay);
+// Кнопка «Повтор» удалена; главная панель остаётся интерактивной.
 const tooltip=document.getElementById('tooltipPortal');
 function placeTooltip(anchor){
   const ar=anchor.getBoundingClientRect();
@@ -524,7 +549,7 @@ function showFacts(){
   document.getElementById('stage').setAttribute('inert','');
   factsClose.focus();
 }
-factsOpen.addEventListener('click',showFacts);
+factsOpen?.addEventListener('click',showFacts);
 factsClose.addEventListener('click',hideFacts);
 factsBackdrop.addEventListener('click',e=>{if(e.target===factsBackdrop)hideFacts()});
 document.addEventListener('keydown',e=>{
@@ -552,7 +577,7 @@ function showConcept(){
   document.getElementById('stage').setAttribute('inert','');
   conceptClose.focus();
 }
-conceptOpen.addEventListener('click',showConcept);
+conceptOpen?.addEventListener('click',showConcept);
 conceptClose.addEventListener('click',closeConcept);
 conceptBackdrop.addEventListener('click',e=>{if(e.target===conceptBackdrop)closeConcept()});
 document.addEventListener('keydown',e=>{
