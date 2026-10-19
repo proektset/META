@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#eaf5f8">
-<title>МЕТА · Платформа · Годовой отчёт 2026 · v13</title>
+<meta name="theme-color" content="#e8e9eb">
+<title>МЕТА · Платформа · Годовой отчёт 2026 · v14</title>
 <style>
 :root{
   /* МЕТАСИСТЕМА v7.95: холодная палитра, усиленная акцентами */
-  --bg:#e9f3f6;--surface:#fff;--surface2:#f4fafb;--ink:#244a5b;--muted:#577885;--line:#c4dde3;
+  --bg:#e8e9eb;--surface:#fff;--surface2:#f4fafb;--ink:#244a5b;--muted:#577885;--line:#c4dde3;
   --blue:#1166a0;--cyan:#008fa2;--teal:#087d82;--green:#148760;--gold:#b57418;
   --soft-blue:#d4ebfa;--soft-cyan:#d0f0f2;--soft-green:#d9f2e5;--soft-gold:#f9ead0;--soft-indigo:#e4e9fa;
   --mast:#fdfefe;--score:#173747;--score2:#0d2937;--score-br:#387d91;--digits:#f8ffff;--board-sub:#c4e5ed;
@@ -309,7 +309,9 @@ body.presentation .scoreboard:hover{border-color:var(--score-br)}
 @media(max-width:800px){.header-left{gap:12px}.theme-dots{gap:7px}}
 
 
-/* v13 — три серых переключателя с цветными кольцами; единый фон верхней строки */
+/* v14 — нейтрально-серое поле, ободки тем и мягкое красное свечение кнопок */
+.viewport,body.theme-meta .viewport{background:var(--bg)!important}
+.report-motto{margin-left:-16px;text-align:left!important}
 body .stage > header.mast,
 body.theme-meta .stage > header.mast{
   background:transparent!important;
@@ -317,19 +319,18 @@ body.theme-meta .stage > header.mast{
   box-shadow:none!important;
 }
 .theme-dot{
-  background:#848a94!important;
+  background:var(--bg)!important;
   border:3px solid var(--ring-color)!important;
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.18),0 1px 3px rgba(0,0,0,.14)!important;
+  box-shadow:none!important;
 }
 .dot-cold{--ring-color:#03a7b6}
 .dot-warm{--ring-color:#e5a22e}
 .dot-meta{--ring-color:#397cf0}
 .theme-dot[aria-pressed="true"]{
-  background:#848a94!important;
-  box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ring-color),0 0 9px rgba(50,60,78,.16)!important;
+  background:var(--bg)!important;
+  box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ring-color)!important;
 }
-/* Все функциональные кнопки имеют одинаковую светлую заливку;
-   цвет служит сигналом только в пульсирующем контуре. */
+/* Нейтральные границы; пульсирует только рассеянное красное свечение. */
 .action.report-action,.action.google-action{
   position:relative;
   isolation:isolate;
@@ -342,25 +343,23 @@ body.theme-meta .stage > header.mast{
 .action.report-action:hover,.action.google-action:hover{
   background:var(--surface)!important;
   color:var(--ink)!important;
+  border-color:var(--line)!important;
 }
-.action.report-action{--outline:#12b969;--aura:rgba(15,208,108,.4)}
-.action.google-action{--outline:#1886f5;--aura:rgba(26,130,255,.4)}
 .action.report-action::after,.action.google-action::after{
   content:"";
   position:absolute;
-  inset:-2px;
-  border:2px solid var(--outline);
+  inset:-1px;
+  border:0;
   border-radius:11px;
-  box-shadow:0 0 3px var(--aura);
   pointer-events:none;
-  animation:actionOutlinePulse 2.25s ease-in-out infinite;
+  animation:actionGlowRed 2.3s ease-in-out infinite;
 }
-@keyframes actionOutlinePulse{
-  0%,100%{box-shadow:0 0 2px 0 var(--aura);opacity:.75}
-  50%{box-shadow:0 0 0 2px var(--aura),0 0 12px 3px var(--aura);opacity:1}
+@keyframes actionGlowRed{
+  0%,100%{box-shadow:0 0 4px 1px rgba(237,38,54,.20);opacity:.72}
+  50%{box-shadow:0 0 16px 4px rgba(237,38,54,.68),0 0 26px 6px rgba(237,38,54,.20);opacity:1}
 }
 @media(prefers-reduced-motion:reduce){
-  .action.report-action::after,.action.google-action::after{animation:none;opacity:1}
+  .action.report-action::after,.action.google-action::after{animation:none;box-shadow:0 0 9px 2px rgba(237,38,54,.37)}
 }
 
 </style>
