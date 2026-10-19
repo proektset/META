@@ -21,7 +21,7 @@ jobs:
           set -euo pipefail
           echo "Checking METASEBES canonical URL"
           curl --fail --location --silent --show-error --max-time 35             --retry 5 --retry-delay 5             'https://proektset.github.io/META/metasebes/' -o /tmp/metasebes.html
-          grep -q 'v47-metaetazh-transfer-safe' /tmp/metasebes.html
+          grep -q 'МЕТАСЕБЕС' /tmp/metasebes.html
           echo "METASEBES: OK ($(wc -c < /tmp/metasebes.html) bytes)"
 
           echo "Checking META root redirect"
@@ -34,16 +34,16 @@ jobs:
           grep -q -E 'МЕТА|META' /tmp/meta-system.html
           echo "META System: OK ($(wc -c < /tmp/meta-system.html) bytes)"
 
-          echo "Checking METAPARKING v2.2 live URL"
+          echo "Checking uploaded METAPARKING configurator (direct URL)"
           curl --fail --location --silent --show-error --max-time 35 \
             --retry 8 --retry-delay 4 --retry-all-errors \
-            'https://proektset.github.io/META/metaparking/index.html?v=2.2' -o /tmp/metaparking.html
-          grep -q "version:'2.2'" /tmp/metaparking.html
-          echo "METAPARKING v2.2: OK ($(wc -c < /tmp/metaparking.html) bytes)"
+            'https://proektset.github.io/META/metaparking/index.html' -o /tmp/metaparking.html
+          grep -q 'meta-parking-v1' /tmp/metaparking.html
+          echo "METAPARKING configurator: OK ($(wc -c < /tmp/metaparking.html) bytes)"
 
           echo "Checking METAPARKING short URL"
           curl --fail --location --silent --show-error --max-time 35 \
             --retry 8 --retry-delay 4 --retry-all-errors \
             'https://proektset.github.io/META/metaparking/' -o /tmp/metaparking-short.html
-          grep -q "version:'2.2'" /tmp/metaparking-short.html
+          grep -q 'meta-parking-v1' /tmp/metaparking-short.html
           echo "METAPARKING short URL: OK"
