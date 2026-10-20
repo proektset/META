@@ -34,16 +34,16 @@ jobs:
           grep -q -E 'МЕТА|META' /tmp/meta-system.html
           echo "META System: OK ($(wc -c < /tmp/meta-system.html) bytes)"
 
-          echo "Checking uploaded METAPARKING configurator (direct URL)"
+          echo "Checking METAPARKING v2.2 (direct URL)"
           curl --fail --location --silent --show-error --max-time 35 \
             --retry 8 --retry-delay 4 --retry-all-errors \
             'https://proektset.github.io/META/metaparking/index.html' -o /tmp/metaparking.html
-          grep -q 'meta-parking-v1' /tmp/metaparking.html
-          echo "METAPARKING configurator: OK ($(wc -c < /tmp/metaparking.html) bytes)"
+          grep -q "version:'2.2'" /tmp/metaparking.html
+          echo "METAPARKING v2.2: OK ($(wc -c < /tmp/metaparking.html) bytes)"
 
           echo "Checking METAPARKING short URL"
           curl --fail --location --silent --show-error --max-time 35 \
             --retry 8 --retry-delay 4 --retry-all-errors \
             'https://proektset.github.io/META/metaparking/' -o /tmp/metaparking-short.html
-          grep -q 'meta-parking-v1' /tmp/metaparking-short.html
+          grep -q "version:'2.2'" /tmp/metaparking-short.html
           echo "METAPARKING short URL: OK"
