@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#e8e9eb">
-<title>МЕТА · Платформа · Годовой отчёт 2026 · v16</title>
+<title>МЕТА · Платформа · Годовой отчёт 2026 · v17</title>
 <style>
 :root{
   /* МЕТАСИСТЕМА v7.95: холодная палитра, усиленная акцентами */
@@ -394,9 +394,9 @@ body .stage > header.mast .header-left{gap:20px!important}
     </div>
     </div>
   </header>
-  <section class="scoreboard" id="mainBoard" role="button" tabindex="0" aria-label="Интегральный эффект Платформы, диапазон от 483,4 до 574,6 миллионов рублей. Нажмите, чтобы повторить анимацию">
+  <section class="scoreboard" id="mainBoard" role="button" tabindex="0" aria-label="Интегральный эффект Платформы, диапазон от 556,2 до 831,4 миллионов рублей. Нажмите, чтобы повторить анимацию">
     <div class="score-head"><div class="score-title">ИНТЕГРАЛЬНЫЙ ЭКОНОМИЧЕСКИЙ ЭФФЕКТ</div><div class="score-kep" title="Среднее увеличение коэффициента эффективности планировок">РОСТ КЭП <strong id="kepBadgeValue"></strong></div></div>
-    <button type="button" id="scoreInfo" class="info score-info" data-info="Потенциальный эффект деятельности Платформы — не потеряно, преумножено, создано. По своду значения отрицательные по расчётной знаковой конвенции (от −483,38 до −574,57 млн ₽); на табло представлена абсолютная величина эффекта: от 483,4 до 574,6 млн ₽. Методика и допущения — в исходной таблице." aria-label="О результате Платформы">i</button>
+    <button type="button" id="scoreInfo" class="info score-info" data-info="Потенциальная деятельность Платформы — не потеряно, преумножено, создано. Диапазон оценочного экономического эффекта по актуализированному своду: от 556,24 до 831,41 млн ₽. Методика и допущения приведены в исходной таблице." aria-label="О результате Платформы">i</button>
     <div class="range-grid">
       <div class="range-side"><div class="range-cap">ОТ</div><div id="lowerFlip" class="range-number" aria-hidden="true"></div></div>
       <div class="range-divider" aria-hidden="true">—</div>
@@ -447,7 +447,7 @@ body .stage > header.mast .header-left{gap:20px!important}
   </section>
 </div>
 <script>
-const DATA={"label":"Калькулятор Оптимизаций за 26 год · лист «Свод»","values":{"objects":14,"managed_area":189221,"delta_sellable_area":1232,"delta_parking":31,"avg_kep_delta":0.0037,"gross_revenue":274540250,"money_saved":139775832,"additional_profit":164724150,"cost_reduction_per_m2":-3775.163009,"potential_effect":-483380370,"integral_effect":-574566137},"cells":{"objects":"B5","managed_area":"C5","delta_sellable_area":"B7","delta_parking":"C7","avg_kep_delta":"D7","gross_revenue":"B9","money_saved":"C9","additional_profit":"D9","cost_reduction_per_m2":"E9","potential_effect":"B11","integral_effect":"C11"},"snapshot":"20.10.2026"};
+const DATA={"label":"Калькулятор Оптимизаций за 26 год · лист «Свод»","values":{"objects":14,"managed_area":189221,"delta_sellable_area":1232,"delta_parking":31,"avg_kep_delta":0.0037,"gross_revenue":274540250,"money_saved":139775832,"additional_profit":164724150,"cost_reduction_per_m2":3655.131942,"potential_effect":556240507,"integral_effect":831405344},"cells":{"objects":"B5","managed_area":"C5","delta_sellable_area":"B7","delta_parking":"C7","avg_kep_delta":"D7","gross_revenue":"B9","money_saved":"C9","additional_profit":"D9","cost_reduction_per_m2":"E9","potential_effect":"B11","integral_effect":"C11"},"snapshot":"20.10.2026"};
 const S=DATA.values;
 const fmt=(x,d=0)=>new Intl.NumberFormat('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d}).format(x);
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -543,7 +543,7 @@ function createTile(container,{label,value,unit,color,info}){
   el.append(name,b,val,u);container.append(el);
 }
 function populate(){
-  document.getElementById('kepBadgeValue').textContent='+'+fmt(S.avg_kep_delta*100,2)+' п.п.';
+  document.getElementById('kepBadgeValue').textContent='+'+fmt(S.avg_kep_delta*100,2)+' %';
   const n=document.getElementById('naturalRow');n.replaceChildren();
   [
    {label:'Объекты в работе',value:fmt(S.objects),unit:'объектов',color:'blue',info:'Количество объектов, в проектные решения которых вовлечена Платформа.'},
@@ -556,7 +556,7 @@ function populate(){
    {label:'Дополнительная валовая выручка',value:fmt(S.gross_revenue/1e6,1),unit:'млн ₽',color:'blue',info:'Дополнительная стоимость реализуемого продукта благодаря увеличению продаваемой площади и числа машино-мест.'},
    {label:'Экономия на строительстве',value:fmt(S.money_saved/1e6,1),unit:'млн ₽',color:'green',info:'Снижение затрат на строительство благодаря рациональным конструктивным, инженерным и проектным решениям.'},
    {label:'Дополнительная прибыль',value:fmt(S.additional_profit/1e6,1),unit:'млн ₽ · оценка',color:'gold',info:'Оценка прироста прибыли, которую формирует дополнительная выручка от архитектурных решений.'},
-   {label:'Изменение себестоимости',value:fmt(S.cost_reduction_per_m2),unit:'₽/м²',color:'cyan',info:'Среднее изменение удельной себестоимости по четырём объектам. Отрицательное значение означает снижение себестоимости.'},
+   {label:'Снижение себестоимости',value:fmt(S.cost_reduction_per_m2),unit:'₽/м²',color:'cyan',info:'Снижение удельной себестоимости по принятой методике расчёта свода: 3 655,13 ₽/м².'},
   ].forEach(x=>createTile(f,x));
 }
 function setTheme(theme){
