@@ -1122,7 +1122,7 @@ react/cjs/react-jsx-runtime.production.js:
     }
     next.schema=4;
     if(!next.referenceId || !next.baseObjects.some((item)=>String(item.id)===String(next.referenceId))) next.referenceId=next.baseObjects[0].id;
-    next.rates={...clone(DEFAULT_META_RATES),...(next.rates??{})};
+    next.rates=normalizedSharedRates(next.rates);
     next.tolerance=Number.isFinite(Number(next.tolerance))?Number(next.tolerance):.03;
     return next;
   }
@@ -1237,9 +1237,31 @@ react/cjs/react-jsx-runtime.production.js:
     };
   }
 
+  // Обновляем лишь значения старых заводских ставок. Индивидуальные цены не трогаем.
+  const LEGACY_SHARED_REGISTRY = {"1:base":[8500,18000,8500,0],"2:base":[85000,0,75000,0],"3:base":[18000,9500,18000,0],"4:base":[85000,0,75000,0],"8:base":[7000,2000,18000,0],"9:brick_ext":[2200,1800,2195.07,2387.32],"9:wall_block":[1800,1500,2187.32,1444.64],"10:brick_inter":[2000,1500,1942.63,2108.63],"10:block_inter":[1800,1500,1800,1500],"10:composite":[1600,1200,1600,1200],"11:composite":[1600,1200,0,0],"11:pgp":[900,900,989.52,1393.44],"11:brick_room":[1800,1400,990.28,2490.14],"12:composite":[1600,1200,0,0],"12:pgp":[900,900,989.52,1393.44],"12:brick_room":[1800,1400,990.28,2490.14],"13:composite":[1600,1200,0,0],"13:pgp":[900,900,989.52,1393.44],"13:brick_room":[1800,1400,990.28,2490.14]};
+  const LEGACY_SYSTEM_REGISTRY = {"63":[85000,0,75000,0],"66":[85000,0,75000,0],"69":[85000,0,75000,0],"72":[85000,0,75000,0],"75":[85000,0,75000,0],"78":[85000,0,75000,0],"82":[85000,0,75000,0],"88":[6500,0,10936.61,7223.2],"89":[18000,0,8780.27,9549.3],"91":[1500,0,1036.81,1721.31],"104":[3500,0,3297.65,5327.87],"131":[900,0,311.08,311.48],"251":[2200,1800,2195.07,2387.32],"252":[1800,1500,2187.32,1444.64],"253":[2000,1500,1942.63,2108.63],"256":[1600,1200,0,0],"257":[900,900,989.52,1393.44],"258":[1800,1400,990.28,2490.14]};
+  function normalizedSharedRates(incoming) {
+    const result={...clone(DEFAULT_META_RATES),...(incoming??{})};
+    for(const [key,oldAndNew] of Object.entries(LEGACY_SHARED_REGISTRY)){
+      const cur=result[key];
+      if(!cur)continue;
+      if(Math.abs(Number(cur.materialRate)-oldAndNew[0])<.001 && Math.abs(Number(cur.workRate)-oldAndNew[1])<.001)
+        result[key]={materialRate:oldAndNew[2],workRate:oldAndNew[3]};
+    }
+    return result;
+  }
+  function normalizedSystemRates(system) {
+    if(!system || !Array.isArray(system.rates))return system;
+    return {...system,rates:system.rates.map(row=>{
+      const ref=LEGACY_SYSTEM_REGISTRY[row.id];
+      if(!ref || Math.abs(Number(row.materialRate)-ref[0])>.001 || Math.abs(Number(row.workRate)-ref[1])>.001)return row;
+      return {...row,materialRate:ref[2],workRate:ref[3]};
+    })};
+  }
+
   function ratesFromSystem(system, sharedRates) {
-    const next = { ...clone(DEFAULT_META_RATES), ...(sharedRates ?? {}) };
-    const rows = Array.isArray(system?.rates) ? system.rates : [];
+    const next = normalizedSharedRates(sharedRates);
+    const rows = normalizedSystemRates(system)?.rates ?? [];
     for (const [key, rowId] of Object.entries(RATE_LINKS)) {
       const row = rows.find((item) => Number(item.id) === rowId);
       if (!row) continue;
@@ -1252,6 +1274,7 @@ react/cjs/react-jsx-runtime.production.js:
   }
 
   function systemWithSharedRates(system, sharedRates) {
+    system=normalizedSystemRates(system); sharedRates=normalizedSharedRates(sharedRates);
     if (!system || !Array.isArray(system.rates)) return system;
     const linkedById = Object.fromEntries(
       Object.entries(RATE_LINKS).map(([key, id]) => [id, sharedRates?.[key]]),
@@ -1272,7 +1295,7 @@ react/cjs/react-jsx-runtime.production.js:
   }
 
   function baseWithSharedRates(base, sharedRates) {
-    const nextRates = { ...clone(DEFAULT_META_RATES), ...(sharedRates ?? {}) };
+    const nextRates = normalizedSharedRates(sharedRates);
     return {
       ...base,
       sharedRates: nextRates,
@@ -1282,9 +1305,9 @@ react/cjs/react-jsx-runtime.production.js:
 
   function applySystemStateFromBase(base) {
     const bridge = getBridge();
-    const effectiveSharedRates = base?.metaetazh
+    const effectiveSharedRates = normalizedSharedRates(base?.metaetazh
       ? base?.sharedRates
-      : ratesFromSystem(base?.systemState, base?.sharedRates);
+      : ratesFromSystem(base?.systemState, base?.sharedRates));
     const system = systemWithSharedRates(base?.systemState, effectiveSharedRates);
     if (!bridge?.loadSystemState || !system) return false;
     const nextHash = systemHash(system);
@@ -1305,9 +1328,9 @@ react/cjs/react-jsx-runtime.production.js:
     }
     const now = new Date().toISOString();
     const currentSystem = bridge.getSystemState();
-    const effectiveSharedRates = state.base.metaetazh
+    const effectiveSharedRates = normalizedSharedRates(state.base.metaetazh
       ? state.base.sharedRates
-      : ratesFromSystem(currentSystem, state.base.sharedRates);
+      : ratesFromSystem(currentSystem, state.base.sharedRates));
     const system = {
       ...systemWithSharedRates(currentSystem, effectiveSharedRates),
       updatedAt: now,
