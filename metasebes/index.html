@@ -2278,6 +2278,19 @@ react/cjs/react-jsx-runtime.production.js:
     const aparts=Object.values(agg).filter(x=>[256,257,258].includes(x.id));
     if(aparts.length){const baseCost=n(snapshot.core?.rowRates?.[91])*area,coreTypical=baseCost*share,newCost=aparts.reduce((s,x)=>s+x.volume*floors*totalRate(x.rate),0),vol=aparts.reduce((s,x)=>s+x.volume,0);
       info.push({label:"Квартирные перегородки",sub:aparts.map(x=>`${x.material}: ${fmt(x.volume)} м²`).join(" · "),unit:"м²",coreVol:0,metaVol:vol,houseVol:vol*floors,delta:newCost-coreTypical});}
+    // Полная проверка объёмов К: фасад, МОП и противопожарные двери.
+    const supplemental=record?.sourceMeta?.stageKOverrides??{};
+    for(const [idText,value] of Object.entries(supplemental)){
+      const id=Number(idText),v=n(value);
+      const current=(snapshot.rates??[]).find(r=>Number(r.id)===id);
+      if(!current)continue;
+      const rate=n(current.materialRate)+n(current.workRate);
+      const base=n(snapshot.core?.rowRates?.[id])*area;
+      const share=transferShare({typicalFloorArea:n(record.sellableFloorArea),typicalFloors:floors,houseSellableArea:n(record.houseSellableArea)||n(record.sellableArea)},area);
+      info.push({label:String(current.element??"Позиция "+id),sub:`Дополнительное уточнение К · ID ${id}`,unit:current.unit??"ед.",
+        coreVol:rate>0?base*share/rate/floors:0,metaVol:v,houseVol:v*floors,
+        delta:v*floors*rate-base*share});
+    }
     return info;
   }
   function validatedMeta(record) {
@@ -2338,7 +2351,7 @@ react/cjs/react-jsx-runtime.production.js:
       const host=document.createElement("div");host.className="meta-k-modal-backdrop";
       host.innerHTML=`<section class="meta-k-modal">
         <header class="meta-k-modal-head"><div><h2>Передача объёмов МЕТАЭТАЖ → МЕТАСЕБЕС</h2>
-        <p>Будут заменены только связанные строки стадии К. Остальные позиции продолжают рассчитываться по ядру.</p></div>
+        <p>Замещаются подтверждённые объёмы стадии К, остальные строки рассчитываются по ядру. Расценки МЕТАСЕБЕС не перезаписываются.</p></div>
         <button class="meta-k-modal-close" data-cancel>×</button></header>
         <div class="meta-k-control">
           <div><span>Типовой этаж</span><strong>${fmt(c.floor)} м²</strong></div>
