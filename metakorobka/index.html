@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"/><title>МЕТАКОРОБКА v13 · геометрия и сметная калибровка</title><style>
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"/><title>МЕТАКОРОБКА v14 · аудит стоимости и сценарии</title><style>
 :root{color-scheme:light;--bg:#f3f5f7;--card:#fff;--fg:#172b39;--mut:#607282;--edge:#dde5e9;--accent:#127785;--accentbg:#e7f3f4;--amber:#ad7126;--amberbg:#fff5e7;--red:#ad5148;--blue:#22566b;--dark:#172d3e}
 html[data-theme="dark"]{color-scheme:dark;--bg:#111a24;--card:#1d2b38;--fg:#edf4f8;--mut:#abbcca;--edge:#354b5e;--accent:#81d7dc;--accentbg:#23404a;--amber:#edc28c;--amberbg:#483825;--red:#f1a39e;--blue:#b8d5e4;--dark:#e1ebf1}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.52 system-ui,-apple-system,Segoe UI,Arial,sans-serif}input,select,button{font:inherit}button{cursor:pointer;color:inherit}button:disabled{opacity:.43;cursor:default}input,select{background:var(--card);color:var(--fg);border:1px solid var(--edge);border-radius:8px;min-height:36px;padding:7px 9px;min-width:0}input:focus,select:focus{border-color:var(--accent);outline:2px solid var(--accentbg)}input[type=checkbox]{min-height:0;accent-color:var(--accent)}input[type=number]{font-variant-numeric:tabular-nums}.top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--edge)}.topin{max-width:1420px;margin:auto;padding:12px 22px;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo{font-size:19px;font-weight:850;letter-spacing:.045em;color:var(--dark)}.toolbar{display:flex;gap:7px;flex-wrap:wrap}.btn{border:1px solid var(--edge);background:var(--card);padding:9px 12px;border-radius:9px}.btn:hover{border-color:var(--accent)}.btn.primary{background:var(--dark);color:var(--card)}.wrap{max-width:1420px;margin:auto;padding:22px 22px 75px}.hero{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:14px}.hero h1{font-size:26px;letter-spacing:-.035em;line-height:1.25;margin:0}.muted{color:var(--mut)}.small{font-size:12px;color:var(--mut)}.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:19px 0}.card{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:17px;min-width:0}.kpi span{font-size:11px;color:var(--mut);font-weight:700;letter-spacing:.065em;text-transform:uppercase}.kpi strong{display:block;font-size:25px;font-variant-numeric:tabular-nums;letter-spacing:-.04em;margin:8px 0 1px}.tabs{display:flex;gap:5px;overflow-x:auto;padding:0 0 12px;margin:15px 0;border-bottom:1px solid var(--edge)}.tabs button{background:transparent;border:0;border-radius:8px;padding:10px 12px;white-space:nowrap;font-weight:700;color:var(--mut)}.tabs button.active{background:var(--accentbg);color:var(--accent)}.view{display:none}.view.active{display:block}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px}.twocol>.card{align-self:start}.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.field{min-width:0}.field label{font-weight:700;font-size:11px;color:var(--mut);display:block;line-height:1.3;margin-bottom:6px}.field input,.field select{width:100%}.field .units{font-size:11px;color:var(--mut)}.line{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--edge)}.line:last-child{border:0}.line strong{font-variant-numeric:tabular-nums;white-space:nowrap}.subhead{margin:17px 0 10px;font-size:18px}.card h2{font-size:16px;margin:0 0 15px}.card h3{font-size:14px;margin:0 0 8px}.note{background:var(--accentbg);padding:10px 13px;border-left:3px solid var(--accent);border-radius:5px;margin:12px 0}.note.warn{background:var(--amberbg);border-color:var(--amber)}.note.error{background:var(--amberbg);border-color:var(--red)}.pill{font-size:11px;padding:3px 8px;border:1px solid var(--edge);border-radius:99px;display:inline-block;color:var(--mut);white-space:nowrap}.pill.ok{background:var(--accentbg);color:var(--accent)}.pill.warn{background:var(--amberbg);color:var(--amber)}.itemhead{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.section{margin-top:15px}.seccard{border:1px solid var(--edge);border-radius:10px;padding:15px;margin:12px 0;background:var(--card)}.section-title{font-weight:760;font-size:15px}.tag{font-size:11px;color:var(--mut)}.sep{height:1px;background:var(--edge);margin:15px 0}.checkline{display:flex;align-items:center;gap:8px}.checkline input{width:15px;height:15px}.tablewrap{max-width:100%;overflow:auto;border-radius:10px;border:1px solid var(--edge);background:var(--card)}table{border-collapse:collapse;width:100%;min-width:1090px}td,th{padding:9px 10px;border-bottom:1px solid var(--edge);vertical-align:middle;text-align:left}th{background:var(--bg);color:var(--mut);font-size:11px;position:sticky;top:0;text-transform:uppercase;white-space:nowrap}td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}tr:hover td{background:var(--bg)}.numinput{max-width:110px;width:100%;text-align:right}.wideinput{width:145px}.tinyselect{max-width:150px;width:100%;font-size:12px}.searchrow{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:0 0 11px}.searchrow input{flex:1;min-width:220px}.searchrow select{max-width:245px}.rowactions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.secondary{font-size:12px;border:1px solid var(--edge);padding:6px 9px;border-radius:7px;background:var(--card)}.rowhint{font-size:11px;color:var(--mut);max-width:400px}.rate--pending{color:var(--amber)}.notice{margin:10px 0;padding:11px 13px;border-radius:9px;background:var(--accentbg);display:none}.notice.visible{display:block}.notice.bad{background:var(--amberbg)}.filelabel{border:1px solid var(--edge);border-radius:8px;padding:8px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;background:var(--card)}.filelabel input{display:none}details summary{cursor:pointer;font-weight:650}details{margin:13px 0}.mono{font-variant-numeric:tabular-nums}.empty{padding:24px;text-align:center;color:var(--mut)}.errorline{color:var(--red)}@media(max-width:1000px){.fields{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.twocol{grid-template-columns:1fr}}@media(max-width:580px){.fields{grid-template-columns:1fr}.wrap{padding:14px 10px 45px}.topin{padding:10px}.kpi strong{font-size:21px}.kpis{gap:7px}}
@@ -59,10 +59,21 @@ html,body{height:100%;min-height:0;overflow:hidden!important}body{background:var
 @media(max-width:720px){#ui-root .u-actions-v9{grid-template-columns:1fr!important}#ui-root .u-actions-v9 .u-start-card{min-height:80px!important}}
 .v11-note{margin:8px 0 12px;padding:12px 14px;border:1px solid var(--ui-line);border-radius:10px;background:var(--ui-panel);font-size:12px;line-height:1.6}
 .v11-note em{font-style:normal;color:var(--ui-soft)}
+#ui-root .v14-scenario-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}
+#ui-root .v14-scenario-card{display:flex;flex-direction:column;gap:5px;border:1px solid var(--ui-line);background:var(--ui-card);padding:11px;border-radius:10px;min-width:0}
+#ui-root .v14-scenario-card span{font-size:11px;color:var(--ui-soft);font-weight:600}
+#ui-root .v14-scenario-card strong{font-size:16px;line-height:1.25;white-space:normal}
+#ui-root .v14-scenario-card small{font-size:11px;color:var(--ui-soft)}
+#ui-root .v14-financial-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px;margin:9px 0}
+#ui-root .v14-financial-grid div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--ui-line);padding:6px 0}
+#ui-root .v14-financial-grid span{font-size:11px;color:var(--ui-soft)}
+#ui-root .v14-financial-grid strong{font-size:11px;white-space:nowrap}
+#ui-root .v14-choice-group{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+@media(max-width:730px){#ui-root .v14-scenario-grid,#ui-root .v14-financial-grid{grid-template-columns:1fr}}
 </style>
 </head><body>
 <div id="ui-root">
- <header class="u-hd"><div class="u-brand"><span class="u-symbol">M</span><div><strong>МЕТАКОРОБКА <span style="font-size:10px;color:var(--ui-soft)">v13</span></strong><small>РАСЧЁТ СЕБЕСТОИМОСТИ · ПРОЕКТСЕТЬ</small></div></div><div class="u-top-tools"><span class="u-chip u-onlywide" id="u-current-project"><b></b> Новый объект</span><button class="u-btn tiny" id="u-undo" title="Отменить изменение">↶ <span class="text-hide">Назад</span></button><button class="u-btn tiny" id="u-redo" title="Повторить изменение">↷ <span class="text-hide">Вперёд</span></button><button class="u-btn tiny" id="u-theme" title="Сменить оформление">◐ <span class="text-hide">Тема</span></button><button class="u-btn tiny solid" id="u-save">Сохранение</button></div></header>
+ <header class="u-hd"><div class="u-brand"><span class="u-symbol">M</span><div><strong>МЕТАКОРОБКА <span style="font-size:10px;color:var(--ui-soft)">v14</span></strong><small>РАСЧЁТ СЕБЕСТОИМОСТИ · ПРОЕКТСЕТЬ</small></div></div><div class="u-top-tools"><span class="u-chip u-onlywide" id="u-current-project"><b></b> Новый объект</span><button class="u-btn tiny" id="u-undo" title="Отменить изменение">↶ <span class="text-hide">Назад</span></button><button class="u-btn tiny" id="u-redo" title="Повторить изменение">↷ <span class="text-hide">Вперёд</span></button><button class="u-btn tiny" id="u-theme" title="Сменить оформление">◐ <span class="text-hide">Тема</span></button><button class="u-btn tiny solid" id="u-save">Сохранение</button></div></header>
  <div class="u-content" id="u-home"><main class="u-home u-home-v9"><section class="u-actions u-actions-v9" aria-label="Выбор режима">
  <button class="u-start-card main" id="u-start-wizard"><span class="u-action-icon">01</span><h2>Сделать расчёт</h2><span class="u-card-foot">Пошаговый мастер →</span></button>
  <button class="u-start-card" id="u-open-calc"><span class="u-action-icon">↗</span><h2>Открыть расчёт</h2><span class="u-card-foot">Загрузить файл →</span></button>
@@ -131,9 +142,9 @@ function defaultSection(id=1){return {
  roofEnabled:true,roofArea:'',parapetThickness:'0.25',facadeArea:'',facadeRanges:[{from:'1',to:'',wet:'100',brick:'0',nvf:'0'}],
  liftsPassenger:'',liftsFreight:'',liftLevels:'',mopArea:''
 };}
-function fresh(){return {version:13,object:'Новый объект',product:'Стандарт',scenario:'yb7',sections:[defaultSection()],prices:clone(BASE_PRICES),operator:{},overrides:{},external:{},reasons:{},allowDraft:false,theme:'light'};}
+function fresh(){return {version:14,object:'Новый объект',product:'Стандарт',scenario:'yb7',sections:[defaultSection()],prices:clone(BASE_PRICES),operator:{},overrides:{},external:{},reasons:{},allowDraft:false,theme:'light'};}
 let state=fresh(),undoStack=[],redoStack=[],tab='input',manualFilter='',manualGroup='',adminFilter='',adminGroup='';
-try{let s=JSON.parse((localStorage.getItem('metabox_v13')||localStorage.getItem('metabox_v11')||localStorage.getItem('metabox_v10')||localStorage.getItem('metabox_v9'))||'null');if(s&&[7,8,9,10,11,12,13].includes(s.version)&&Array.isArray(s.sections)&&s.sections.length&&s.prices){state=s;state.sections=state.sections.map(sec=>({...defaultSection(sec.id),...sec,pitEnabled:sec.id>1&&sec.pitEnabled===false&&!(sec.pitSharedNote||'').trim()?true:sec.pitEnabled}));for(const key of PRICE_KEYS)if(!state.prices[key])state.prices[key]=clone(BASE_PRICES[key]);}}catch(e){}
+try{let s=JSON.parse((localStorage.getItem('metabox_v14')||localStorage.getItem('metabox_v13')||localStorage.getItem('metabox_v12')||localStorage.getItem('metabox_v11')||localStorage.getItem('metabox_v10')||localStorage.getItem('metabox_v9'))||'null');if(s&&[7,8,9,10,11,12,13,14].includes(s.version)&&Array.isArray(s.sections)&&s.sections.length&&s.prices){state=s;state.sections=state.sections.map(sec=>({...defaultSection(sec.id),...sec,pitEnabled:sec.id>1&&sec.pitEnabled===false&&!(sec.pitSharedNote||'').trim()?true:sec.pitEnabled}));for(const key of PRICE_KEYS)if(!state.prices[key])state.prices[key]=clone(BASE_PRICES[key]);state.version=14;}}catch(e){}
 function snapshot(){return JSON.stringify(state)}
 function commit(fn){let last=snapshot();fn();if(snapshot()===last)return;undoStack.push(last);if(undoStack.length>65)undoStack.shift();redoStack=[];render();}
 function showNotice(m,bad=false){let el=$('notice');el.textContent=m;el.className='notice visible'+(bad?' bad':'');}
@@ -311,8 +322,8 @@ $('admin-search').addEventListener('input',e=>{adminFilter=e.target.value.trim()
 $('reset-prices').addEventListener('click',()=>{if(!confirm('Восстановить исходные расценки и нормативы? Данные объекта останутся.'))return;commit(()=>state.prices=clone(BASE_PRICES))});
 $('undo').addEventListener('click',()=>{if(!undoStack.length)return;redoStack.push(snapshot());state=JSON.parse(undoStack.pop());render();});$('redo').addEventListener('click',()=>{if(!redoStack.length)return;undoStack.push(snapshot());state=JSON.parse(redoStack.pop());render();});$('theme').addEventListener('click',()=>commit(()=>state.theme=state.theme==='light'?'dark':'light'));
 function download(name,text,mime='application/json'){let blob=new Blob([text],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-$('save').addEventListener('click',()=>{try{localStorage.setItem('metabox_v13',snapshot());}catch(e){}download('МЕТАКОРОБКА_v13_расчёт.json',JSON.stringify({application:'МЕТАКОРОБКА',version:13,inputs:state,summary:calculate().total,exportedAt:new Date().toISOString()},null,2));showNotice('Расчёт и редактируемые ставки сохранены в JSON.')});
-$('export-prices').addEventListener('click',()=>download('МЕТАКОРОБКА_v13_расценки.json',JSON.stringify({application:'МЕТАКОРОБКА',version:12,prices:state.prices},null,2)));
+$('save').addEventListener('click',()=>{try{localStorage.setItem('metabox_v14',snapshot());}catch(e){}download('МЕТАКОРОБКА_v14_расчёт.json',JSON.stringify({application:'МЕТАКОРОБКА',version:14,inputs:state,summary:calculate().total,exportedAt:new Date().toISOString()},null,2));showNotice('Расчёт и редактируемые ставки сохранены в JSON.')});
+$('export-prices').addEventListener('click',()=>download('МЕТАКОРОБКА_v14_расценки.json',JSON.stringify({application:'МЕТАКОРОБКА',version:14,prices:state.prices},null,2)));
 $('prices-file').addEventListener('change',async e=>{let f=e.target.files[0];if(!f)return;try{let x=JSON.parse(await f.text()),input=x.prices||x;if(!input||!PRICE_KEYS.filter(k=>!Object.prototype.hasOwnProperty.call(V11_NEW_RATES,k)).every(k=>input[k]&&('rate' in input[k])))throw Error('Неполный реестр ставок');commit(()=>{for(let k of PRICE_KEYS){if(!input[k])continue;let p=input[k];if(p.rate!==null&&pos(p.rate)===null)throw Error('Некорректная цена '+k);state.prices[k].rate=p.rate;state.prices[k].status=['approved','working','pending'].includes(p.status)?p.status:'pending';}});showNotice('Реестр расценок загружен.')}catch(err){showNotice('Импорт ставок: '+err.message,true)}e.target.value='';});
 $('clear-volumes').addEventListener('click',()=>{if(!confirm('Очистить ручные объёмы и корректировки автоматических объёмов?'))return;commit(()=>{state.operator={};state.overrides={}})});
 function csvEscape(v){let x=String(v??'');return /[;"\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x}
@@ -409,8 +420,8 @@ render();
  function action(a){if(a==='add-section'){commit(()=>{let id=Math.max(0,...state.sections.map(s=>s.id))+1;state.sections.push(defaultSection(id));selectedSid=id;});}if(a==='remove-section'){if(state.sections.length===1)return;const s=currentSec();if(!confirm('Удалить секцию '+s.name+'?'))return;commit(()=>{state.sections=state.sections.filter(x=>x.id!==s.id);selectedSid=state.sections[0].id;state.operator=Object.fromEntries(Object.entries(state.operator).filter(([k])=>!k.endsWith('@'+s.id)));});}if(a==='facade')openFacade();if(a==='importcsv')$u('csv-file').click();if(a==='csv-template')$u('csv-template').click();if(a==='manual-pro')showPro('manual');if(a==='goto-results')showPro('results');if(a==='wizard')startWizard(0);if(a==='save')saveProject();if(a==='export-prices')$u('export-prices').click();if(a==='import-prices')$u('prices-file').click();if(a==='reset-prices')$u('reset-prices').click();if(a==='tests'){ $u('run-tests').click();notify($u('test-output').textContent.split('\n').slice(-1)[0]);}}
  function openFacade(){facadeSid=currentSec().id;facadePage=0;$u('u-facade-modal').hidden=false;drawFacade();}
  function drawFacade(){let s=secById(facadeSid);if(!s)return;$u('u-facade-rows').innerHTML=s.facadeRanges.map((r,i)=>({r,i})).filter(({i})=>Math.floor(i/4)===facadePage).map(({r,i})=>`<div class="u-facade-row"><div class="u-formfield"><label>С этажа</label><input type="number" min="0" data-ui-range="from" data-ui-range-index="${i}" value="${sEscape(r.from)}"></div><div class="u-formfield"><label>По этаж</label><input type="number" min="0" data-ui-range="to" data-ui-range-index="${i}" value="${sEscape(r.to)}"></div><div class="u-formfield"><label>Мокрый, %</label><input type="number" min="0" max="100" data-ui-range="wet" data-ui-range-index="${i}" value="${sEscape(r.wet)}"></div><div class="u-formfield"><label>Кирпич, %</label><input type="number" min="0" max="100" data-ui-range="brick" data-ui-range-index="${i}" value="${sEscape(r.brick)}"></div><div class="u-formfield"><label>НВФ, %</label><input type="number" min="0" max="100" data-ui-range="nvf" data-ui-range-index="${i}" value="${sEscape(r.nvf)}"></div><button class="u-btn tiny" data-ui-range-delete="${i}" style="min-width:30px;padding:6px">×</button></div>`).join('')+(s.facadeRanges.length>4?`<div class="u-pages"><span>Диапазоны ${facadePage*4+1}–${Math.min(s.facadeRanges.length,(facadePage+1)*4)} из ${s.facadeRanges.length}</span><span><button class="u-btn tiny" data-ui-facpage="-1" ${facadePage===0?'disabled':''}>←</button> ${facadePage+1}/${Math.ceil(s.facadeRanges.length/4)} <button class="u-btn tiny" data-ui-facpage="1" ${(facadePage+1)*4>=s.facadeRanges.length?'disabled':''}>→</button></span></div>`:'');}
- function saveProject(){try{localStorage.setItem('metabox_v13',snapshot());}catch(err){}download('МЕТАКОРОБКА_v13_расчёт.json',JSON.stringify({application:'МЕТАКОРОБКА',version:13,inputs:state,summary:calculate().total,exportedAt:new Date().toISOString()},null,2));notify('Расчёт и все расценки сохранены в JSON.');}
- async function openFile(e){let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text()),next=d.inputs||d;if(![7,8,9,10,11,12,13].includes(next.version)||!Array.isArray(next.sections)||!next.sections.length||!next.prices)throw Error('Не распознан расчёт МЕТАКОРОБКИ v7–v13');for(let key of PRICE_KEYS)if(!next.prices[key])next.prices[key]=clone(BASE_PRICES[key]);commit(()=>{state=next;state.sections=state.sections.map(s=>({...defaultSection(s.id),...s,pitEnabled:s.id>1&&s.pitEnabled===false&&!(s.pitSharedNote||'').trim()?true:s.pitEnabled}));state.version=13;selectedSid=next.sections[0].id});showPro('overview');notify('Расчёт открыт: '+state.object)}catch(err){notify('Не удалось открыть файл: '+err.message,true)}e.target.value='';}
+ function saveProject(){try{localStorage.setItem('metabox_v14',snapshot());}catch(err){}download('МЕТАКОРОБКА_v14_расчёт.json',JSON.stringify({application:'МЕТАКОРОБКА',version:14,inputs:state,summary:calculate().total,exportedAt:new Date().toISOString()},null,2));notify('Расчёт и все расценки сохранены в JSON.');}
+ async function openFile(e){let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text()),next=d.inputs||d;if(![7,8,9,10,11,12,13,14].includes(next.version)||!Array.isArray(next.sections)||!next.sections.length||!next.prices)throw Error('Не распознан расчёт МЕТАКОРОБКИ v7–v14');for(let key of PRICE_KEYS)if(!next.prices[key])next.prices[key]=clone(BASE_PRICES[key]);commit(()=>{state=next;state.sections=state.sections.map(s=>({...defaultSection(s.id),...s,pitEnabled:s.id>1&&s.pitEnabled===false&&!(s.pitSharedNote||'').trim()?true:s.pitEnabled}));state.version=14;selectedSid=next.sections[0].id});showPro('overview');notify('Расчёт открыт: '+state.object)}catch(err){notify('Не удалось открыть файл: '+err.message,true)}e.target.value='';}
  $u('u-start-wizard').addEventListener('click',()=>startWizard(0));$u('u-start-pro').addEventListener('click',()=>showPro('overview'));$u('u-open-calc').addEventListener('click',()=>$u('u-openfile').click());$u('u-open-in-pro').addEventListener('click',()=>$u('u-openfile').click());$u('u-openfile').addEventListener('change',openFile);$u('u-gohome').addEventListener('click',goHome);$u('u-backwizard').addEventListener('click',()=>startWizard(wizStep));$u('u-importcsv').addEventListener('click',()=>$u('csv-file').click());$u('u-wiz-close').addEventListener('click',goHome);$u('u-wiz-prev').addEventListener('click',()=>{wizStep=Math.max(0,wizStep-1);draw()});$u('u-wiz-next').addEventListener('click',()=>{if(wizStep===WIZ.length-1)showPro('results');else{wizStep++;draw()}});$u('u-undo').addEventListener('click',()=>$u('undo').click());$u('u-redo').addEventListener('click',()=>$u('redo').click());$u('u-theme').addEventListener('click',()=>$u('theme').click());$u('u-save').addEventListener('click',saveProject);$u('u-facade-close').addEventListener('click',()=>{$u('u-facade-modal').hidden=true;draw()});$u('u-facade-add').addEventListener('click',()=>commit(()=>{secById(facadeSid).facadeRanges.push({from:'',to:'',wet:'100',brick:'0',nvf:'0'});facadePage=Math.floor((secById(facadeSid).facadeRanges.length-1)/4)}));
  $u('u-facade-rows').addEventListener('change',e=>{let t=e.target,k=t.dataset.uiRange,i=Number(t.dataset.uiRangeIndex);if(!k)return;commit(()=>secById(facadeSid).facadeRanges[i][k]=t.value)});
  $u('u-facade-rows').addEventListener('click',e=>{let t=e.target,i=t.dataset.uiRangeDelete;if(t.dataset.uiFacpage!==undefined){facadePage=Math.max(0,Math.min(Math.ceil(secById(facadeSid).facadeRanges.length/4)-1,facadePage+Number(t.dataset.uiFacpage)));drawFacade();return}if(i===undefined)return;commit(()=>{if(secById(facadeSid).facadeRanges.length>1)secById(facadeSid).facadeRanges.splice(Number(i),1);facadePage=Math.min(facadePage,Math.ceil(secById(facadeSid).facadeRanges.length/4)-1)})});
@@ -582,7 +593,7 @@ function v9ReportRows(c){let rows=[];const add=(section,group,name,unit,qty,rate
  return rows;
 }
 
-function v9ReportCSV(){const c=calculate();let items=[['МЕТАКОРОБКА v13 — СМЕТА'],['Объект',state.object],['Sпрод, м²',c.areas],['Стоимость учтённая, ₽',c.total],['Стоимость на м² Sпрод, ₽',c.areas?c.total/c.areas:''],['Неполных позиций',c.missing.length],[],['Секция','Раздел','Работа','Ед.','Объём','Расценка, ₽','Стоимость, ₽','Источник','Статус']];
+function v9ReportCSV(){const c=calculate();let items=[['МЕТАКОРОБКА v14 — СМЕТА'],['Объект',state.object],['Sпрод, м²',c.areas],['Стоимость учтённая, ₽',c.total],['Стоимость на м² Sпрод, ₽',c.areas?c.total/c.areas:''],['Неполных позиций',c.missing.length],[],['Секция','Раздел','Работа','Ед.','Объём','Расценка, ₽','Стоимость, ₽','Источник','Статус']];
  for(const r of v9ReportRows(c))items.push([r.section,r.group,r.name,r.unit,r.qty??'',r.rate??'',r.amount??'',r.source,r.status]);items.push([],['ИТОГО','','','','','',c.total],['₽/м² Sпрод','','','','','',c.areas?c.total/c.areas:'']);
  download('МЕТАКОРОБКА_v12_СМЕТА.csv','\uFEFF'+items.map(a=>a.map(csvEscape).join(';')).join('\r\n'));}
 function v9ReportPrint(){const c=calculate(),rows=v9ReportRows(c);const print=$u('u-print-report');
@@ -718,13 +729,13 @@ $u('ui-root').addEventListener('click',e=>{
  commit(()=>{
   sec.mopFloorTypical=V12_WATER_MOP.floor;sec.mopWallTypical=V12_WATER_MOP.wall;
   sec.mopCeilingTypical=V12_WATER_MOP.ceiling;sec.mopDoorsTypical=V12_WATER_MOP.doors;
-  sec.mopRepeatFloors=V12_WATER_MOP.repeat;
+  sec.mopRepeatFloors=String(typicalCount(sec)??Number(V12_WATER_MOP.repeat));
   sec.mopFloorRate=V12_WATER_MOP.floorRate;sec.mopWallRate=V12_WATER_MOP.wallRate;
   sec.mopCeilingRate=V12_WATER_MOP.ceilingRate;sec.mopDoorRate=V12_WATER_MOP.doorRate;
   sec.mopFinMode='diagnostic';sec.mopBaselineIncluded='';
   sec.mopSource='Строительные объёмы / Водяная стадия К / строки 14–17 / проектная ведомость; 03.11.2026';
  });
- notify('МОП загружен из ведомости стадии К. В расчёт FIN повторно не добавлен.');
+ notify('МОП загружен из ведомости стадии К для типовых повторений секции. Первый этаж и FIN — отдельно.');
 });
 
 
@@ -840,7 +851,108 @@ drawPro=function(c){
  if(['auto','results'].includes(proView)&&$u('u-panel-body'))$u('u-panel-body').insertAdjacentHTML('afterbegin',v13FormworkPanel(c));
  if(['packages','results'].includes(proView)&&$u('u-panel-body'))$u('u-panel-body').insertAdjacentHTML('afterbegin',v13MopPanel(c));
 };
-// Стартовый экран v13. Геометрические оценки отделены от прямых данных из Revit.
+
+/* v14: проверка финансовой модели без добавления неподтверждённых цен.
+   Все группы при суммировании непересекающиеся; диапазон меняет только
+   оценочную опалубку вертикалей. МОП не прибавляется к FIN. */
+const v14CalculateBefore=calculate;
+calculate=function(){
+ const c=v14CalculateBefore(),a=c.au.filter(x=>x.amount!==null),gross=c.areas;
+ const back=(id)=>state.sections.find(x=>x.id===id);
+ const geometric=a.filter(x=>(x.id===33&&pos(back(x.sid)?.slabFormwork)===null)||x.status==='estimated');
+ const implicit=a.filter(x=>(x.id===23)||(x.id===26&&pos(back(x.sid)?.ugVerticalRebar)===null)||(x.id===29&&pos(back(x.sid)?.ugSlabRebar)===null)||(x.id===32&&pos(back(x.sid)?.slabRebar)===null)||(x.id===35&&pos(back(x.sid)?.verticalRebar)===null));
+ const amount=rows=>rows.reduce((sum,x)=>sum+x.amount,0);
+ const core=c.eng+c.fin+c.sumauto+c.summan+c.summod;
+ const eligible=a.filter(x=>x.id===36&&x.status==='estimated');
+ let lower=c.total,upper=c.total,base=c.total;
+ for(const x of eligible){
+  const sec=back(x.sid);if(!sec)continue;const g=verticalGeometryModel(sec),V=pos(sec.verticalConcrete),N=typicalCount(sec);
+  if(g.low===null||V===null||N===null||x.rate===null)continue;
+  lower+=V*N*g.low*x.rate-x.amount;upper+=V*N*g.high*x.rate-x.amount;
+  base+=V*N*g.central*x.rate-x.amount;
+ }
+ const issues=[];
+ for(const sec of state.sections){
+  const rf=pos(sec.mopRepeatFloors),rep=typicalCount(sec),text=String(sec.mopSource||'').toLowerCase();
+  if(rf!==null&&rep!==null&&Math.abs(rf-rep)>.01&&text.includes('водян')){
+   issues.push({where:sec.name,name:'МОП — число повторений',why:'По эталону МОП указано '+rf+' повторений, но типовых этажей '+rep+'. Проверить отделку первого этажа: она может иметь другой состав.'});
+  }
+ }
+ c.missing.push(...issues);
+ c.v14Audit={
+  exactReconciliation:Math.abs(core-c.total)<.01,
+  reconcileDelta:core-c.total,
+  packages:c.eng+c.fin,
+  auto:c.au.reduce((sum,x)=>sum+(x.amount??0),0),
+  typical:c.sumtypical??0,
+  manual:c.summan,
+  modules:c.summod,
+  geometric:amount(geometric),
+  normative:amount(implicit),
+  predictableShare:gross>0?amount(geometric)/gross:null,
+  range:{low:lower,base,high:upper},
+  rangeDrivenBy:eligible.length,
+  area:gross,
+  warnings:issues.length
+ };
+ return c;
+};
+function v14CostPanel(c){
+ const a=c.v14Audit,fmtCost=x=>cash(x),fmtMeter=x=>c.areas?v9Value(x/c.areas,'₽/м² Sпрод',0):'—';
+ const metrics=[
+  ['Нижняя оценка',a.range.low],
+  ['Текущий сценарий',c.total],
+  ['Верхняя оценка',a.range.high]
+ ];
+ const scenarios='<div class="v14-scenario-grid">'+metrics.map(([label,amount])=>
+  '<div class="v14-scenario-card"><span>'+sEscape(label)+'</span><strong>'+fmtMeter(amount)+'</strong><small>'+fmtCost(amount)+'</small></div>'
+ ).join('')+'</div>';
+ const book='<div class="v14-financial-grid">'+[
+  ['Приведённые пакеты ENG + FIN',a.packages],['Авто по конструкциям',a.auto],
+  ['Типовые стены / перегородки',a.typical],['Объёмы оператора',a.manual],
+  ['Модули (кровля, фасад, лифты)',a.modules]
+ ].map(([label,v])=>'<div><span>'+sEscape(label)+'</span><strong>'+fmtCost(v)+'</strong></div>').join('')+'</div>';
+ const noOverflow=c.missing.length===0?'Нет выявленных пропусков':'Неполных / спорных позиций: '+c.missing.length;
+ const slabPrice=price(state,'P31'),vertPrice=price(state,'P34'),
+  rateDiff=slabPrice!==null&&vertPrice!==null&&slabPrice>0&&vertPrice/slabPrice>1.5;
+ const rateControl=rateDiff?'<div><b>Проверка состава расценок:</b> бетон плит P31 '+V13_FMT(slabPrice)+' ₽/м³ против вертикалей P34 '+V13_FMT(vertPrice)+' ₽/м³ (в '+V13_FMT(vertPrice/slabPrice)+' раза). Объёмы сопоставимы, но состав комплексов может различаться; ставки оставлены без изменения.</div>':'';
+ return '<div class="v11-note"><b>ФИНАНСОВЫЙ АУДИТ · полная стоимость учтённых работ</b>'+
+  scenarios+'<div><b>Что изменяет диапазон:</b> только геометрический коэффициент вертикальной опалубки ('+a.rangeDrivenBy+' секц.). Другие непроверенные объёмы и ставки здесь не варьируются.</div>'+
+  '<div>Геометрически восстановленная опалубка плит и вертикалей: <b>'+fmtCost(a.geometric)+'</b> ('+fmtMeter(a.geometric)+'). Арматура по расчётным нормативам: '+fmtCost(a.normative)+'.</div>'+
+  '<div><b>Сверка состава стоимости</b> · '+(a.exactReconciliation?'Сумма составляющих = итогу':'ОБНАРУЖЕНО РАСХОЖДЕНИЕ '+fmtCost(a.reconcileDelta))+'</div>'+book+rateControl+
+  '<em>'+noOverflow+'. «Геометрическая оценка» не означает статистически подтверждённый коэффициент. Отделка МОП показана отдельно и не суммируется с FIN повторно.</em></div>';
+}
+function v14ScenarioControls(c){
+ const buttons=c.geometryAudit.map(x=>{
+  if(x.chosen==='Revit'||x.chosen==='ручная корректировка'||x.chosen==='ручной K'||x.concrete===null||x.rep===null||x.rate===null)return '';
+  const sec=state.sections.find(s=>s.id===x.sid),active=sec?.verticalGeomScenario||'base';
+  return '<div class="v11-note"><b>'+sEscape(x.sec)+' · управление сценарием вертикальной опалубки</b>'+
+    '<div class="v14-choice-group">'+[['low','Нижний'],['base','Базовый'],['high','Верхний']].map(([id,name])=>
+    '<button class="u-btn tiny '+(active===id?'solid':'')+'" data-v14-geom="'+x.sid+':'+id+'">'+name+'</button>').join('')+'</div>'+
+    '<em>Изменение сценария сразу пересчитывает стоимость, отражается в истории Назад / Вперёд. Реальные объёмы из Revit имеют приоритет.</em></div>';
+ }).filter(Boolean).join('');
+ return buttons;
+}
+const v14DrawProBefore=drawPro;
+drawPro=function(c){
+ v14DrawProBefore(c);
+ const el=$u('u-panel-body');
+ if(!el)return;
+ if(['overview','results'].includes(proView))el.insertAdjacentHTML('afterbegin',v14CostPanel(c));
+ if(['auto','results'].includes(proView))el.insertAdjacentHTML('afterbegin',v14ScenarioControls(c));
+};
+$u('ui-root').addEventListener('click',e=>{
+ const btn=e.target.closest('[data-v14-geom]');
+ if(!btn)return;
+ const [id,kind]=String(btn.dataset.v14Geom).split(':');
+ if(!['low','base','high'].includes(kind))return;
+ const sec=secById(id);
+ if(!sec)return;
+ commit(()=>{sec.verticalGeomScenario=kind;});
+ notify('Геометрическая опалубка: '+({low:'нижняя',base:'базовая',high:'верхняя'}[kind])+' оценка.');
+});
+
+// Стартовый экран v14. Аудит себестоимости, совместимость сохранений, диапазоны сценариев.
 draw();
 })();
 </script>
