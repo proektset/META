@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"/><title>МЕТАКОРОБКА v12 · калибровка МОП и опалубки</title><style>
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"/><title>МЕТАКОРОБКА v13 · геометрия и сметная калибровка</title><style>
 :root{color-scheme:light;--bg:#f3f5f7;--card:#fff;--fg:#172b39;--mut:#607282;--edge:#dde5e9;--accent:#127785;--accentbg:#e7f3f4;--amber:#ad7126;--amberbg:#fff5e7;--red:#ad5148;--blue:#22566b;--dark:#172d3e}
 html[data-theme="dark"]{color-scheme:dark;--bg:#111a24;--card:#1d2b38;--fg:#edf4f8;--mut:#abbcca;--edge:#354b5e;--accent:#81d7dc;--accentbg:#23404a;--amber:#edc28c;--amberbg:#483825;--red:#f1a39e;--blue:#b8d5e4;--dark:#e1ebf1}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.52 system-ui,-apple-system,Segoe UI,Arial,sans-serif}input,select,button{font:inherit}button{cursor:pointer;color:inherit}button:disabled{opacity:.43;cursor:default}input,select{background:var(--card);color:var(--fg);border:1px solid var(--edge);border-radius:8px;min-height:36px;padding:7px 9px;min-width:0}input:focus,select:focus{border-color:var(--accent);outline:2px solid var(--accentbg)}input[type=checkbox]{min-height:0;accent-color:var(--accent)}input[type=number]{font-variant-numeric:tabular-nums}.top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--edge)}.topin{max-width:1420px;margin:auto;padding:12px 22px;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}.logo{font-size:19px;font-weight:850;letter-spacing:.045em;color:var(--dark)}.toolbar{display:flex;gap:7px;flex-wrap:wrap}.btn{border:1px solid var(--edge);background:var(--card);padding:9px 12px;border-radius:9px}.btn:hover{border-color:var(--accent)}.btn.primary{background:var(--dark);color:var(--card)}.wrap{max-width:1420px;margin:auto;padding:22px 22px 75px}.hero{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:14px}.hero h1{font-size:26px;letter-spacing:-.035em;line-height:1.25;margin:0}.muted{color:var(--mut)}.small{font-size:12px;color:var(--mut)}.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:19px 0}.card{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:17px;min-width:0}.kpi span{font-size:11px;color:var(--mut);font-weight:700;letter-spacing:.065em;text-transform:uppercase}.kpi strong{display:block;font-size:25px;font-variant-numeric:tabular-nums;letter-spacing:-.04em;margin:8px 0 1px}.tabs{display:flex;gap:5px;overflow-x:auto;padding:0 0 12px;margin:15px 0;border-bottom:1px solid var(--edge)}.tabs button{background:transparent;border:0;border-radius:8px;padding:10px 12px;white-space:nowrap;font-weight:700;color:var(--mut)}.tabs button.active{background:var(--accentbg);color:var(--accent)}.view{display:none}.view.active{display:block}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px}.twocol>.card{align-self:start}.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.field{min-width:0}.field label{font-weight:700;font-size:11px;color:var(--mut);display:block;line-height:1.3;margin-bottom:6px}.field input,.field select{width:100%}.field .units{font-size:11px;color:var(--mut)}.line{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--edge)}.line:last-child{border:0}.line strong{font-variant-numeric:tabular-nums;white-space:nowrap}.subhead{margin:17px 0 10px;font-size:18px}.card h2{font-size:16px;margin:0 0 15px}.card h3{font-size:14px;margin:0 0 8px}.note{background:var(--accentbg);padding:10px 13px;border-left:3px solid var(--accent);border-radius:5px;margin:12px 0}.note.warn{background:var(--amberbg);border-color:var(--amber)}.note.error{background:var(--amberbg);border-color:var(--red)}.pill{font-size:11px;padding:3px 8px;border:1px solid var(--edge);border-radius:99px;display:inline-block;color:var(--mut);white-space:nowrap}.pill.ok{background:var(--accentbg);color:var(--accent)}.pill.warn{background:var(--amberbg);color:var(--amber)}.itemhead{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.section{margin-top:15px}.seccard{border:1px solid var(--edge);border-radius:10px;padding:15px;margin:12px 0;background:var(--card)}.section-title{font-weight:760;font-size:15px}.tag{font-size:11px;color:var(--mut)}.sep{height:1px;background:var(--edge);margin:15px 0}.checkline{display:flex;align-items:center;gap:8px}.checkline input{width:15px;height:15px}.tablewrap{max-width:100%;overflow:auto;border-radius:10px;border:1px solid var(--edge);background:var(--card)}table{border-collapse:collapse;width:100%;min-width:1090px}td,th{padding:9px 10px;border-bottom:1px solid var(--edge);vertical-align:middle;text-align:left}th{background:var(--bg);color:var(--mut);font-size:11px;position:sticky;top:0;text-transform:uppercase;white-space:nowrap}td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}tr:hover td{background:var(--bg)}.numinput{max-width:110px;width:100%;text-align:right}.wideinput{width:145px}.tinyselect{max-width:150px;width:100%;font-size:12px}.searchrow{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:0 0 11px}.searchrow input{flex:1;min-width:220px}.searchrow select{max-width:245px}.rowactions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.secondary{font-size:12px;border:1px solid var(--edge);padding:6px 9px;border-radius:7px;background:var(--card)}.rowhint{font-size:11px;color:var(--mut);max-width:400px}.rate--pending{color:var(--amber)}.notice{margin:10px 0;padding:11px 13px;border-radius:9px;background:var(--accentbg);display:none}.notice.visible{display:block}.notice.bad{background:var(--amberbg)}.filelabel{border:1px solid var(--edge);border-radius:8px;padding:8px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;background:var(--card)}.filelabel input{display:none}details summary{cursor:pointer;font-weight:650}details{margin:13px 0}.mono{font-variant-numeric:tabular-nums}.empty{padding:24px;text-align:center;color:var(--mut)}.errorline{color:var(--red)}@media(max-width:1000px){.fields{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.twocol{grid-template-columns:1fr}}@media(max-width:580px){.fields{grid-template-columns:1fr}.wrap{padding:14px 10px 45px}.topin{padding:10px}.kpi strong{font-size:21px}.kpis{gap:7px}}
@@ -62,7 +62,7 @@ html,body{height:100%;min-height:0;overflow:hidden!important}body{background:var
 </style>
 </head><body>
 <div id="ui-root">
- <header class="u-hd"><div class="u-brand"><span class="u-symbol">M</span><div><strong>МЕТАКОРОБКА <span style="font-size:10px;color:var(--ui-soft)">v12</span></strong><small>РАСЧЁТ СЕБЕСТОИМОСТИ · ПРОЕКТСЕТЬ</small></div></div><div class="u-top-tools"><span class="u-chip u-onlywide" id="u-current-project"><b></b> Новый объект</span><button class="u-btn tiny" id="u-undo" title="Отменить изменение">↶ <span class="text-hide">Назад</span></button><button class="u-btn tiny" id="u-redo" title="Повторить изменение">↷ <span class="text-hide">Вперёд</span></button><button class="u-btn tiny" id="u-theme" title="Сменить оформление">◐ <span class="text-hide">Тема</span></button><button class="u-btn tiny solid" id="u-save">Сохранение</button></div></header>
+ <header class="u-hd"><div class="u-brand"><span class="u-symbol">M</span><div><strong>МЕТАКОРОБКА <span style="font-size:10px;color:var(--ui-soft)">v13</span></strong><small>РАСЧЁТ СЕБЕСТОИМОСТИ · ПРОЕКТСЕТЬ</small></div></div><div class="u-top-tools"><span class="u-chip u-onlywide" id="u-current-project"><b></b> Новый объект</span><button class="u-btn tiny" id="u-undo" title="Отменить изменение">↶ <span class="text-hide">Назад</span></button><button class="u-btn tiny" id="u-redo" title="Повторить изменение">↷ <span class="text-hide">Вперёд</span></button><button class="u-btn tiny" id="u-theme" title="Сменить оформление">◐ <span class="text-hide">Тема</span></button><button class="u-btn tiny solid" id="u-save">Сохранение</button></div></header>
  <div class="u-content" id="u-home"><main class="u-home u-home-v9"><section class="u-actions u-actions-v9" aria-label="Выбор режима">
  <button class="u-start-card main" id="u-start-wizard"><span class="u-action-icon">01</span><h2>Сделать расчёт</h2><span class="u-card-foot">Пошаговый мастер →</span></button>
  <button class="u-start-card" id="u-open-calc"><span class="u-action-icon">↗</span><h2>Открыть расчёт</h2><span class="u-card-foot">Загрузить файл →</span></button>
@@ -109,7 +109,7 @@ for(const [k,[name,unit]] of Object.entries(V11_NEW_RATES))BASE_PRICES[k]={name,
 const PRICE_KEYS=Object.keys(BASE_PRICES);
 const AUTO_IDS=new Set([1,2,3,4,5,6,7,8,9,10,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,42,55]);
 const DUP_IDS=new Set(PHYSICAL.filter(i=>i.duplicate).map(i=>i.id));
-const FORMULA={1:'V механизированной выемки = геометрический V котлована − ручная доработка',2:'S дна котлована × слой ручной доработки (по умолчанию 0,10 м)',3:'Полный V котлована × доля вывоза (по умолчанию 100%)',4:'Полный V котлована × доля утилизации (по умолчанию 0%)',5:'Полный V котлована × доля засыпки',6:'V обратной засыпки (предварительное допущение)',7:'S подготовки × t песка',8:'S подготовки × t щебня',9:'Площадь геотекстиля из проекта',10:'Комплекты водопонижения',21:'S фундаментной плиты × t подбетонки',22:'S фундаментной плиты × расчётная толщина',23:'V фундаментной плиты × 150 кг/м³ / 1000 (норматив редактируется)',24:'Периметр фундаментной плиты × толщину',25:'Подземная часть: вертикали + 0,65 × периметр × t стены × H (предварительно)',26:'V вертикалей подземной части × кг/м³ / 1000',27:'Опалубка вертикалей подземной части из Revit + наружные стены (предварительно)',28:'Бетон перекрытий подземной части из Revit × N подземных',29:'V плит подземной части × кг/м³ / 1000',30:'Опалубка плит подземной части из Revit × N',31:'Бетон типовой плиты Revit × повторений',32:'Арматура типовой плиты (К) × повторений',33:'Опалубка типовой плиты: Revit либо V бетона / t плиты × повторения',34:'Бетон вертикалей Revit × повторений',35:'Арматура вертикалей (К) × повторений',36:'Опалубка вертикалей: Revit либо V × предварительный K м²/м³',42:'Площадь наружной стены подземной части',55:'Окна Revit × типовые этажи + отдельное остекление нетиповых этажей'};
+const FORMULA={1:'V механизированной выемки = геометрический V котлована − ручная доработка',2:'S дна котлована × слой ручной доработки (по умолчанию 0,10 м)',3:'Полный V котлована × доля вывоза (по умолчанию 100%)',4:'Полный V котлована × доля утилизации (по умолчанию 0%)',5:'Полный V котлована × доля засыпки',6:'V обратной засыпки (предварительное допущение)',7:'S подготовки × t песка',8:'S подготовки × t щебня',9:'Площадь геотекстиля из проекта',10:'Комплекты водопонижения',21:'S фундаментной плиты × t подбетонки',22:'S фундаментной плиты × расчётная толщина',23:'V фундаментной плиты × 150 кг/м³ / 1000 (норматив редактируется)',24:'Периметр фундаментной плиты × толщину',25:'Подземная часть: вертикали + 0,65 × периметр × t стены × H (предварительно)',26:'V вертикалей подземной части × кг/м³ / 1000',27:'Опалубка вертикалей подземной части из Revit + наружные стены (предварительно)',28:'Бетон перекрытий подземной части из Revit × N подземных',29:'V плит подземной части × кг/м³ / 1000',30:'Опалубка плит подземной части из Revit × N',31:'Бетон типовой плиты Revit × повторений',32:'Арматура типовой плиты (К) × повторений',33:'Опалубка типовой плиты: Revit либо V бетона / t плиты × повторения',34:'Бетон вертикалей Revit × повторений',35:'Арматура вертикалей (К) × повторений',36:'Опалубка вертикалей: Revit либо V×(доля монолитных стен×2/t + доля пилонов×4/a)×повторения, расчётная оценка',42:'Площадь наружной стены подземной части',55:'Окна Revit × типовые этажи + отдельное остекление нетиповых этажей'};
 const $=id=>document.getElementById(id);
 const fmt=(v,d=1)=>Number(v).toLocaleString('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=v=>v===null||v===undefined?'—':fmt(v/1e6,2)+' млн ₽';
@@ -121,7 +121,7 @@ function pos(v){let k=n(v);return k!==null&&k>=0?k:null}
 const price=(s,key)=>{let p=s.prices[key];return p&&p.status!=='pending'&&p.rate!==null&&Number.isFinite(Number(p.rate))&&Number(p.rate)>=0?Number(p.rate):null};
 const pval=(s,key)=>{let p=s.prices[key];return p?.rate===null||p?.rate===undefined?null:Number(p.rate)};
 function defaultSection(id=1){return {
- id,name:'Секция '+id,area:'',floors:'',underground:'',mopFloorTypical:'',mopWallTypical:'',mopCeilingTypical:'',mopDoorsTypical:'',mopRepeatFloors:'',mopFloorRate:'',mopWallRate:'',mopCeilingRate:'',mopDoorRate:'',mopBaselineIncluded:'',mopFinMode:'diagnostic',mopSource:'',innerWallType:'generic',innerWallThickness:'0.25',mopAreaBasis:'unknown',mopWallCoeff:'',formworkVerticalRatio:'',ugSlabThickness:'',heightTypical:'2.86',heightFirst:'3.90',heightBelow:'3.60',typicalFloors:'',
+ id,name:'Секция '+id,area:'',floors:'',underground:'',mopFloorTypical:'',mopWallTypical:'',mopCeilingTypical:'',mopDoorsTypical:'',mopRepeatFloors:'',mopFloorRate:'',mopWallRate:'',mopCeilingRate:'',mopDoorRate:'',mopBaselineIncluded:'',mopFinMode:'diagnostic',mopSource:'',innerWallType:'generic',innerWallThickness:'0.25',mopAreaBasis:'unknown',mopWallCoeff:'',formworkVerticalRatio:'',verticalWallThicknessTypical:'0.25',verticalColumnSideTypical:'0.50',verticalWallConcreteShare:'0.50',verticalGeomScenario:'base',ugSlabThickness:'',heightTypical:'2.86',heightFirst:'3.90',heightBelow:'3.60',typicalFloors:'',
  buildingL:'',buildingB:'',foundationL:'',foundationB:'',foundationThickness:'',wallBelowThickness:'0.25',prepSand:'',prepGravel:'',prepUnderlay:'0.10',
  pitEnabled:true,pitSharedNote:'',pitL:'',pitB:'',pitOffset:'0',pitDepth:'',pitSlopeType:'0',pitSlope:'',pitExtra:'0',manualSoilDepth:'0.10',haulPercent:'100',disposalPercent:'0',backfillPercent:'',groundwaterDepth:'',geoYes:false,geoArea:'',dewatering:false,dewateringSets:'',
  aptAreaTypical:'',storeroomAreaTypical:'',constructionAreaTypical:'',firstFloorSaleArea:'',
@@ -131,9 +131,9 @@ function defaultSection(id=1){return {
  roofEnabled:true,roofArea:'',parapetThickness:'0.25',facadeArea:'',facadeRanges:[{from:'1',to:'',wet:'100',brick:'0',nvf:'0'}],
  liftsPassenger:'',liftsFreight:'',liftLevels:'',mopArea:''
 };}
-function fresh(){return {version:12,object:'Новый объект',product:'Стандарт',scenario:'yb7',sections:[defaultSection()],prices:clone(BASE_PRICES),operator:{},overrides:{},external:{},reasons:{},allowDraft:false,theme:'light'};}
+function fresh(){return {version:13,object:'Новый объект',product:'Стандарт',scenario:'yb7',sections:[defaultSection()],prices:clone(BASE_PRICES),operator:{},overrides:{},external:{},reasons:{},allowDraft:false,theme:'light'};}
 let state=fresh(),undoStack=[],redoStack=[],tab='input',manualFilter='',manualGroup='',adminFilter='',adminGroup='';
-try{let s=JSON.parse((localStorage.getItem('metabox_v12')||localStorage.getItem('metabox_v11')||localStorage.getItem('metabox_v10')||localStorage.getItem('metabox_v9'))||'null');if(s&&[7,8,9,10,11,12].includes(s.version)&&Array.isArray(s.sections)&&s.sections.length&&s.prices){state=s;state.sections=state.sections.map(sec=>({...defaultSection(sec.id),...sec,pitEnabled:sec.id>1&&sec.pitEnabled===false&&!(sec.pitSharedNote||'').trim()?true:sec.pitEnabled}));for(const key of PRICE_KEYS)if(!state.prices[key])state.prices[key]=clone(BASE_PRICES[key]);}}catch(e){}
+try{let s=JSON.parse((localStorage.getItem('metabox_v13')||localStorage.getItem('metabox_v11')||localStorage.getItem('metabox_v10')||localStorage.getItem('metabox_v9'))||'null');if(s&&[7,8,9,10,11,12,13].includes(s.version)&&Array.isArray(s.sections)&&s.sections.length&&s.prices){state=s;state.sections=state.sections.map(sec=>({...defaultSection(sec.id),...sec,pitEnabled:sec.id>1&&sec.pitEnabled===false&&!(sec.pitSharedNote||'').trim()?true:sec.pitEnabled}));for(const key of PRICE_KEYS)if(!state.prices[key])state.prices[key]=clone(BASE_PRICES[key]);}}catch(e){}
 function snapshot(){return JSON.stringify(state)}
 function commit(fn){let last=snapshot();fn();if(snapshot()===last)return;undoStack.push(last);if(undoStack.length>65)undoStack.shift();redoStack=[];render();}
 function showNotice(m,bad=false){let el=$('notice');el.textContent=m;el.className='notice visible'+(bad?' bad':'');}
@@ -154,6 +154,14 @@ function heightMetrics(s){let nf=pos(s.floors),ht=pos(s.heightTypical),h1=pos(s.
  const firstClean=have(h1,slab,floor)?h1-slab-floor:null;
  const standardStair=[3,3.15,3.3].some(x=>ht!==null&&Math.abs(ht-x)<.0001)?'Серийный марш':[2.86,2.92,2.93].some(x=>ht!==null&&Math.abs(ht-x)<.0001)?'Индивидуальный марш':'Требует проверки';
  return {fire,max,arch,clean,mop,firstClean,reserve:have(fire,limit)?limit-fire:null,standardStair};}
+function verticalGeometryModel(s){
+ const wallT=pos(s.verticalWallThicknessTypical)??0.25,columnSide=pos(s.verticalColumnSideTypical)??0.50,wallShare=pos(s.verticalWallConcreteShare)??0.50;
+ const custom=pos(s.formworkVerticalRatio),valid=wallT>0&&columnSide>0&&wallShare<=1;
+ const central=valid?wallShare*2/wallT+(1-wallShare)*4/columnSide:null;
+ const low=central===null?null:central/1.2,high=central===null?null:central/0.8;
+ const geometricK=central===null?null:s.verticalGeomScenario==='low'?low:s.verticalGeomScenario==='high'?high:central;
+ return {k:custom??geometricK,central,low,high,wallT,columnSide,wallShare,source:custom!==null?'ручной K':'геометрия сечений'};
+}
 function secMath(s){
  const nf=pos(s.floors),nb=pos(s.underground),d=sectionDimensions(s);
  const L=pos(s.foundationL)??d.L,B=pos(s.foundationB)??d.B,t=fundThickness(s),h=pos(s.heightBelow),ht=pos(s.heightTypical),h1=pos(s.heightFirst),wall=pos(s.wallBelowThickness);
@@ -187,19 +195,20 @@ function secMath(s){
  const undergroundForms=usf??(pos(s.ugSlabThickness)>0?usl/pos(s.ugSlabThickness):null);a[30]=nb===0?0:have(nb,usl,undergroundForms)?nb*undergroundForms:null;
  const rebarSlab=pos(s.slabRebar)??(pos(state.prices.RAS.rate)!==null&&sl!==null?sl*pos(state.prices.RAS.rate)/1000:null);a[31]=have(rep,sl)?rep*sl:null;a[32]=have(rep,sl,rebarSlab)?rep*rebarSlab:null;
  const slabForms=sf??(pos(s.slabHeight)>0&&sl!==null?sl/pos(s.slabHeight):null);a[33]=have(rep,sl,slabForms)?rep*slabForms:null;a[34]=have(rep,ver)?rep*ver:null;
- const rebarVert=pos(s.verticalRebar)??(pos(state.prices.RAV.rate)!==null&&ver!==null?ver*pos(state.prices.RAV.rate)/1000:null),verticalForms=vf??(pos(s.formworkVerticalRatio)!==null&&ver!==null?ver*pos(s.formworkVerticalRatio):null);a[35]=have(rep,ver,rebarVert)?rep*rebarVert:null;a[36]=have(rep,ver,verticalForms)?rep*verticalForms:null;
+ const rebarVert=pos(s.verticalRebar)??(pos(state.prices.RAV.rate)!==null&&ver!==null?ver*pos(state.prices.RAV.rate)/1000:null),geomK=verticalGeometryModel(s).k,verticalForms=vf??(geomK!==null&&ver!==null?ver*geomK:null);a[35]=have(rep,ver,rebarVert)?rep*rebarVert:null;a[36]=have(rep,ver,verticalForms)?rep*verticalForms:null;
  a[42]=nb===0?0:have(nb,per,h)?per*h*nb:null;
  const spec=pos(s.windowsSpecialLevels),specialArea=pos(s.windowsSpecialArea),w=pos(s.windowsTypical);
  a[55]=have(rep,spec,w)&&spec<=rep&&(spec===0||specialArea!==null)?Math.max(0,rep-spec)*w+(spec===0?0:specialArea):null;
  return {meta:result,auto:a,depth,pitL,pitB,bottomArea,totalExc};
 }
 
-const DRAFT=new Set([27,36]);
+const DRAFT=new Set([27]);
 const shareNote=s=>String(s.pitSharedNote||'').trim();
 const pct=v=>{const x=pos(v);return x!==null&&x<=100?x:null;};
-function effectiveAutoQuantity(sec,id){let key=sec.id+':'+id,over=pos(state.overrides[key]);if(over!==null)return {qty:over,source:'корректировка',draft:false};let m=secMath(sec),v=m.auto[id];return {qty:v,source:FORMULA[id],draft:DRAFT.has(id)&&!((id===27&&pos(sec.ugVerticalFormwork)!==null)||(id===36&&pos(sec.verticalFormwork)!==null))};}
+function effectiveAutoQuantity(sec,id){let key=sec.id+':'+id,over=pos(state.overrides[key]);if(over!==null)return {qty:over,source:'корректировка',draft:false};let m=secMath(sec),v=m.auto[id];const derived36=id===36&&pos(sec.verticalFormwork)===null,gm=derived36?verticalGeometryModel(sec):null;
+ return {qty:v,source:derived36?(gm.source+' · K = '+(gm.k===null?'—':gm.k.toFixed(3))+' м²/м³ · V×K×повторения'):FORMULA[id],draft:DRAFT.has(id)&&!(id===27&&pos(sec.ugVerticalFormwork)!==null),estimated:derived36&&gm.source==='геометрия сечений'};}
 function physicalEntry(id){return PHYSICAL.find(x=>x.id===id)}
-function autoAll(){let entries=[];for(const s of state.sections){for(const id of AUTO_IDS){const item=physicalEntry(id),res=effectiveAutoQuantity(s,id),k='P'+id,pr=price(state,k);let status='counted',amount=null;if(res.qty===null)status='missing';else if(res.draft&&!state.allowDraft)status='draft';else if(pr===null)status='rate';else{amount=res.qty*pr;}entries.push({sec:s.name,sid:s.id,item,id,qty:res.qty,source:res.source,amount,status,rate:pr,draft:res.draft})}}return entries}
+function autoAll(){let entries=[];for(const s of state.sections){for(const id of AUTO_IDS){const item=physicalEntry(id),res=effectiveAutoQuantity(s,id),k='P'+id,pr=price(state,k);let status='counted',amount=null;if(res.qty===null)status='missing';else if(res.draft&&!state.allowDraft)status='draft';else if(pr===null)status='rate';else{amount=res.qty*pr;if(res.estimated)status='estimated';}entries.push({sec:s.name,sid:s.id,item,id,qty:res.qty,source:res.source,amount,status,rate:pr,draft:res.draft})}}return entries}
 function repeatCount(line){if(line.basis!=='typical')return 1;let sc=secById(line.sid||state.sections[0].id);if(!sc)return null;let override=pos(line.repeat);if(override!==null)return override;let custom=pos(sc.typicalFloors);if(custom!==null)return custom;let floors=pos(sc.floors);return floors===null?null:Math.max(0,floors-1);}
 const EXTRA_MANUAL=[51,54,56,57,58,72,106,134,135].map(n=>({id:'M'+n,method:n,name:BASE_PRICES['M'+n].name,unit:BASE_PRICES['M'+n].unit,group:BASE_PRICES['M'+n].group}));
 const OPERATOR_BASE=[...PHYSICAL.filter(i=>!AUTO_IDS.has(i.id)).map(i=>({...i,id:'P'+i.id})),...EXTRA_MANUAL];
@@ -278,14 +287,14 @@ function renderInput(c){$('project-fields').innerHTML=field('Название о
  <details><summary>Кровля, лифты, условия комплектации</summary><div class="fields" style="margin-top:10px">${field('Кровля: площадь из Revit, м² (пусто = L×B)','roofArea',s.roofArea,{sid:s.id})}${field('Пассажирских лифтов, шт.','liftsPassenger',s.liftsPassenger,{sid:s.id})}${field('Грузопассажирских лифтов, шт.','liftsFreight',s.liftsFreight,{sid:s.id})}${field('Обслуживаемых уровней на лифт','liftLevels',s.liftLevels,{sid:s.id})}${field('SМОП, м² (справочно)','mopArea',s.mopArea,{sid:s.id})}</div><div class="rowactions" style="margin-top:10px">${[['roofEnabled','Кровля секции'],['beams','Балки/капители'],['balconies','Балконы'],['piles','Свайное основание']].map(([k,label])=>`<label class="checkline"><input type="checkbox" data-check="${k}" data-sid="${s.id}" ${s[k]?'checked':''}> ${label}</label>`).join('')}</div><div class="small" style="margin-top:10px">Ставка лифта = фиксированная часть + высотная часть + двери шахт и порталы + ПНР; высотные ставки пока не утверждены.</div></details>
  </div>`}).join('');for(const o of opened){const sec=[...$('sections').querySelectorAll('[data-section]')].find(x=>x.dataset.section===o.sid);if(sec){let details=sec.querySelectorAll('details');if(details[o.idx])details[o.idx].open=true;}}}
 function renderAuto(c){let v=c.au,calced=v.filter(x=>x.amount!==null);$('auto-overview').innerHTML=`<div class="line"><span>Посчитано автоматических строк</span><strong>${calced.length} из ${v.length}</strong></div><div class="line"><span>Суммарная стоимость</span><strong>${money(c.sumauto)}</strong></div><div class="line"><span>Предварительные геометрические правила</span><strong>${DRAFT.size} типа (опалубка)</strong></div>`;
- $('auto-body').innerHTML=v.map(x=>{let key=x.sid+':'+x.id,override=state.overrides[key],rate=x.rate;const sta=x.status==='counted'?'<span class="pill ok">учтено</span>':x.status==='draft'?'<span class="pill warn">не утверждено</span>':x.status==='rate'?'<span class="pill warn">нет цены</span>':'<span class="pill">нет данных</span>';
+ $('auto-body').innerHTML=v.map(x=>{let key=x.sid+':'+x.id,override=state.overrides[key],rate=x.rate;const sta=x.status==='estimated'?'<span class="pill warn">учтено · геометрическая оценка</span>':x.status==='counted'?'<span class="pill ok">учтено</span>':x.status==='draft'?'<span class="pill warn">не утверждено</span>':x.status==='rate'?'<span class="pill warn">нет цены</span>':'<span class="pill">нет данных</span>';
  return `<tr><td>${esc(x.sec)}</td><td>${x.item.method}</td><td><b>${esc(x.item.name)}</b><div class="rowhint">${esc(FORMULA[x.id])}</div></td><td class="num">${fmtq(x.qty)} ${esc(x.item.unit)}</td><td><input type="number" step="any" min="0" class="numinput" data-override="${key}" placeholder="нет" value="${esc(override??'')}"></td><td class="num">${fmtq(rate,2)} ₽/${esc(x.item.unit)}</td><td class="num">${money(x.amount)}</td><td>${sta}</td></tr>`}).join('');}
 function renderManual(c){const res=c.manual.filter(i=>(!manualGroup||i.group===manualGroup)&&(!manualFilter||(i.name+' '+i.id+' '+i.group+' '+i.method).toLowerCase().includes(manualFilter)));$('manual-count').textContent=`${res.length} / ${c.manual.length}`;
  $('manual-body').innerHTML=res.map(x=>{const l=state.operator[x.id]||{},disabled=l.app==='na',qty=l.qty??'',code=x.method,dup=(DUP_IDS.has(Number(String(x.priceId).replace('P','')))||['P43','P44','P45','P46'].includes(x.priceId)),repeat=repeatCount({...l,sid:x.sid});let status=x.status==='counted'?money(x.amount):x.status==='na'?'не требуется':x.status==='duplicate'?'блок. двойной учёт':x.status==='rate'?'нет ставки':'нет объёма';return `<tr><td>${code}</td><td><b>${esc(x.name)}</b><div class="rowhint">${esc(x.group)} ${dup?'· возможное дублирование':''}</div>${dup?`<label class="checkline small"><input type="checkbox" data-op-field="outside" data-op-id="${x.id}" ${l.outside?'checked':''}> вне комплекса</label><input class="wideinput" style="margin-top:4px" data-op-field="reason" data-op-id="${x.id}" placeholder="обоснование" value="${esc(l.reason??'')}">`:''}</td><td>${esc(x.unit)}</td><td><input class="numinput" type="number" min="0" step="any" data-op-field="qty" data-op-id="${x.id}" value="${esc(qty)}" ${disabled?'disabled':''} placeholder="не задан"></td><td><select class="tinyselect" data-op-field="basis" data-op-id="${x.id}" ${disabled?'disabled':''}><option value="building" ${l.basis!=='typical'?'selected':''}>Здание</option><option value="typical" ${l.basis==='typical'?'selected':''}>Типовой этаж</option></select></td><td><span class="pill">${esc(x.sectionName)}</span></td><td><input class="numinput" type="number" data-op-field="repeat" data-op-id="${x.id}" placeholder="${fmtq(repeat,0)}" value="${esc(l.repeat??'')}" ${l.basis==='typical'?'':'disabled'}></td><td><select class="tinyselect" data-op-field="app" data-op-id="${x.id}"><option value="unknown" ${!l.app||l.app==='unknown'?'selected':''}>Не определено</option><option value="yes" ${l.app==='yes'?'selected':''}>Применяется</option><option value="na" ${l.app==='na'?'selected':''}>Не требуется</option></select></td><td class="num">${fmtq(x.rate,2)}</td><td class="num">${esc(status)}</td></tr>`}).join('')||'<tr><td colspan="10" class="empty">Нет подходящих позиций</td></tr>';}
 function renderAdmin(){let values=PRICE_KEYS.filter(k=>{let p=state.prices[k];return(!adminGroup||p.group===adminGroup)&&(!adminFilter||(k+' '+p.name+' '+p.group).toLowerCase().includes(adminFilter))});$('admin-count').textContent=values.length+' / '+PRICE_KEYS.length;
  $('admin-body').innerHTML=values.map(k=>{const p=state.prices[k];return `<tr><td class="mono">${esc(k)}</td><td><b>${esc(p.name)}</b><div class="rowhint">${esc(p.group)}</div></td><td>${esc(p.unit)}</td><td><input type="number" step="any" class="numinput" min="0" placeholder="не утверждена" data-price="${k}" value="${esc(p.rate??'')}"></td><td><select class="tinyselect" data-price-status="${k}"><option value="approved" ${p.status==='approved'?'selected':''}>Утверждена</option><option value="working" ${p.status==='working'?'selected':''}>Рабочая</option><option value="pending" ${p.status==='pending'?'selected':''}>Не утверждена</option></select></td><td><div class="rowhint">${esc(p.source)}</div>${p.note?`<div class="rowhint">${esc(p.note)}</div>`:''}</td></tr>`}).join('');}
 function renderResults(c){let totals=[['Инженерия',c.eng],['Отделка',c.fin],['Автоматические объёмы',c.sumauto],['Ввод оператора',c.summan],['Модули (фасады, кровля, лифты)',c.summod],['ИТОГО учтено, неполная смета',c.total]];$('totals-lines').innerHTML=totals.map(([k,v],i)=>`<div class="line"><span>${esc(k)}</span><strong style="${i===5?'font-size:18px':''}">${money(v)}</strong></div>`).join('')+`<div class="line"><span>На м² Sпрод</span><strong>${c.areas?fmt(c.total/c.areas,0)+' ₽':'—'}</strong></div>`;
- let ac=c.au.filter(x=>x.status==='counted').length,mc=c.manual.filter(x=>x.status==='counted').length;let missing=c.missing.length;$('control-lines').innerHTML=`<div class="line"><span>Секций</span><strong>${state.sections.length}</strong></div><div class="line"><span>Автоматических объёмов с ценой</span><strong>${ac} / ${c.au.length}</strong></div><div class="line"><span>Ручных объёмов с ценой</span><strong>${mc} / ${c.manual.length}</strong></div><div class="line"><span>Замечаний и пробелов</span><strong class="${missing?'errorline':''}">${missing}</strong></div><div class="line"><span>Статус</span><strong>${missing?'ПРОМЕЖУТОЧНО':'Без явных пропусков'}</strong></div>`;
+ let ac=c.au.filter(x=>x.amount!==null).length,mc=c.manual.filter(x=>x.status==='counted').length;let missing=c.missing.length;$('control-lines').innerHTML=`<div class="line"><span>Секций</span><strong>${state.sections.length}</strong></div><div class="line"><span>Автоматических объёмов с ценой</span><strong>${ac} / ${c.au.length}</strong></div><div class="line"><span>Ручных объёмов с ценой</span><strong>${mc} / ${c.manual.length}</strong></div><div class="line"><span>Замечаний и пробелов</span><strong class="${missing?'errorline':''}">${missing}</strong></div><div class="line"><span>Статус</span><strong>${missing?'ПРОМЕЖУТОЧНО':'Без явных пропусков'}</strong></div>`;
  $('issues').innerHTML=c.missing.slice(0,250).map(x=>`<tr><td>${esc(x.where)}</td><td>${esc(x.name)}</td><td>${esc(x.why)}</td><td>Уточнить/отметить неприменимость</td></tr>`).join('')||'<tr><td colspan="4" class="empty">Неучтённых позиций не обнаружено</td></tr>';}
 function activate(next){tab=next;document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('active',el.dataset.tab===next));document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+next));}
 // Event delegation: render rebuilds all editable tables, so use change events and stable data attributes.
@@ -302,8 +311,8 @@ $('admin-search').addEventListener('input',e=>{adminFilter=e.target.value.trim()
 $('reset-prices').addEventListener('click',()=>{if(!confirm('Восстановить исходные расценки и нормативы? Данные объекта останутся.'))return;commit(()=>state.prices=clone(BASE_PRICES))});
 $('undo').addEventListener('click',()=>{if(!undoStack.length)return;redoStack.push(snapshot());state=JSON.parse(undoStack.pop());render();});$('redo').addEventListener('click',()=>{if(!redoStack.length)return;undoStack.push(snapshot());state=JSON.parse(redoStack.pop());render();});$('theme').addEventListener('click',()=>commit(()=>state.theme=state.theme==='light'?'dark':'light'));
 function download(name,text,mime='application/json'){let blob=new Blob([text],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-$('save').addEventListener('click',()=>{try{localStorage.setItem('metabox_v12',snapshot());}catch(e){}download('МЕТАКОРОБКА_v12_расчёт.json',JSON.stringify({application:'МЕТАКОРОБКА',version:12,inputs:state,summary:calculate().total,exportedAt:new Date().toISOString()},null,2));showNotice('Расчёт и редактируемые ставки сохранены в JSON.')});
-$('export-prices').addEventListener('click',()=>download('МЕТАКОРОБКА_v12_расценки.json',JSON.stringify({application:'МЕТАКОРОБКА',version:12,prices:state.prices},null,2)));
+$('save').addEventListener('click',()=>{try{localStorage.setItem('metabox_v13',snapshot());}catch(e){}download('МЕТАКОРОБКА_v13_расчёт.json',JSON.stringify({application:'МЕТАКОРОБКА',version:13,inputs:state,summary:calculate().total,exportedAt:new Date().toISOString()},null,2));showNotice('Расчёт и редактируемые ставки сохранены в JSON.')});
+$('export-prices').addEventListener('click',()=>download('МЕТАКОРОБКА_v13_расценки.json',JSON.stringify({application:'МЕТАКОРОБКА',version:12,prices:state.prices},null,2)));
 $('prices-file').addEventListener('change',async e=>{let f=e.target.files[0];if(!f)return;try{let x=JSON.parse(await f.text()),input=x.prices||x;if(!input||!PRICE_KEYS.filter(k=>!Object.prototype.hasOwnProperty.call(V11_NEW_RATES,k)).every(k=>input[k]&&('rate' in input[k])))throw Error('Неполный реестр ставок');commit(()=>{for(let k of PRICE_KEYS){if(!input[k])continue;let p=input[k];if(p.rate!==null&&pos(p.rate)===null)throw Error('Некорректная цена '+k);state.prices[k].rate=p.rate;state.prices[k].status=['approved','working','pending'].includes(p.status)?p.status:'pending';}});showNotice('Реестр расценок загружен.')}catch(err){showNotice('Импорт ставок: '+err.message,true)}e.target.value='';});
 $('clear-volumes').addEventListener('click',()=>{if(!confirm('Очистить ручные объёмы и корректировки автоматических объёмов?'))return;commit(()=>{state.operator={};state.overrides={}})});
 function csvEscape(v){let x=String(v??'');return /[;"\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x}
@@ -400,8 +409,8 @@ render();
  function action(a){if(a==='add-section'){commit(()=>{let id=Math.max(0,...state.sections.map(s=>s.id))+1;state.sections.push(defaultSection(id));selectedSid=id;});}if(a==='remove-section'){if(state.sections.length===1)return;const s=currentSec();if(!confirm('Удалить секцию '+s.name+'?'))return;commit(()=>{state.sections=state.sections.filter(x=>x.id!==s.id);selectedSid=state.sections[0].id;state.operator=Object.fromEntries(Object.entries(state.operator).filter(([k])=>!k.endsWith('@'+s.id)));});}if(a==='facade')openFacade();if(a==='importcsv')$u('csv-file').click();if(a==='csv-template')$u('csv-template').click();if(a==='manual-pro')showPro('manual');if(a==='goto-results')showPro('results');if(a==='wizard')startWizard(0);if(a==='save')saveProject();if(a==='export-prices')$u('export-prices').click();if(a==='import-prices')$u('prices-file').click();if(a==='reset-prices')$u('reset-prices').click();if(a==='tests'){ $u('run-tests').click();notify($u('test-output').textContent.split('\n').slice(-1)[0]);}}
  function openFacade(){facadeSid=currentSec().id;facadePage=0;$u('u-facade-modal').hidden=false;drawFacade();}
  function drawFacade(){let s=secById(facadeSid);if(!s)return;$u('u-facade-rows').innerHTML=s.facadeRanges.map((r,i)=>({r,i})).filter(({i})=>Math.floor(i/4)===facadePage).map(({r,i})=>`<div class="u-facade-row"><div class="u-formfield"><label>С этажа</label><input type="number" min="0" data-ui-range="from" data-ui-range-index="${i}" value="${sEscape(r.from)}"></div><div class="u-formfield"><label>По этаж</label><input type="number" min="0" data-ui-range="to" data-ui-range-index="${i}" value="${sEscape(r.to)}"></div><div class="u-formfield"><label>Мокрый, %</label><input type="number" min="0" max="100" data-ui-range="wet" data-ui-range-index="${i}" value="${sEscape(r.wet)}"></div><div class="u-formfield"><label>Кирпич, %</label><input type="number" min="0" max="100" data-ui-range="brick" data-ui-range-index="${i}" value="${sEscape(r.brick)}"></div><div class="u-formfield"><label>НВФ, %</label><input type="number" min="0" max="100" data-ui-range="nvf" data-ui-range-index="${i}" value="${sEscape(r.nvf)}"></div><button class="u-btn tiny" data-ui-range-delete="${i}" style="min-width:30px;padding:6px">×</button></div>`).join('')+(s.facadeRanges.length>4?`<div class="u-pages"><span>Диапазоны ${facadePage*4+1}–${Math.min(s.facadeRanges.length,(facadePage+1)*4)} из ${s.facadeRanges.length}</span><span><button class="u-btn tiny" data-ui-facpage="-1" ${facadePage===0?'disabled':''}>←</button> ${facadePage+1}/${Math.ceil(s.facadeRanges.length/4)} <button class="u-btn tiny" data-ui-facpage="1" ${(facadePage+1)*4>=s.facadeRanges.length?'disabled':''}>→</button></span></div>`:'');}
- function saveProject(){try{localStorage.setItem('metabox_v12',snapshot());}catch(err){}download('МЕТАКОРОБКА_v12_расчёт.json',JSON.stringify({application:'МЕТАКОРОБКА',version:12,inputs:state,summary:calculate().total,exportedAt:new Date().toISOString()},null,2));notify('Расчёт и все расценки сохранены в JSON.');}
- async function openFile(e){let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text()),next=d.inputs||d;if(![7,8,9,10,11,12].includes(next.version)||!Array.isArray(next.sections)||!next.sections.length||!next.prices)throw Error('Не распознан расчёт МЕТАКОРОБКИ v7–v12');for(let key of PRICE_KEYS)if(!next.prices[key])next.prices[key]=clone(BASE_PRICES[key]);commit(()=>{state=next;state.sections=state.sections.map(s=>({...defaultSection(s.id),...s,pitEnabled:s.id>1&&s.pitEnabled===false&&!(s.pitSharedNote||'').trim()?true:s.pitEnabled}));state.version=12;selectedSid=next.sections[0].id});showPro('overview');notify('Расчёт открыт: '+state.object)}catch(err){notify('Не удалось открыть файл: '+err.message,true)}e.target.value='';}
+ function saveProject(){try{localStorage.setItem('metabox_v13',snapshot());}catch(err){}download('МЕТАКОРОБКА_v13_расчёт.json',JSON.stringify({application:'МЕТАКОРОБКА',version:13,inputs:state,summary:calculate().total,exportedAt:new Date().toISOString()},null,2));notify('Расчёт и все расценки сохранены в JSON.');}
+ async function openFile(e){let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text()),next=d.inputs||d;if(![7,8,9,10,11,12,13].includes(next.version)||!Array.isArray(next.sections)||!next.sections.length||!next.prices)throw Error('Не распознан расчёт МЕТАКОРОБКИ v7–v13');for(let key of PRICE_KEYS)if(!next.prices[key])next.prices[key]=clone(BASE_PRICES[key]);commit(()=>{state=next;state.sections=state.sections.map(s=>({...defaultSection(s.id),...s,pitEnabled:s.id>1&&s.pitEnabled===false&&!(s.pitSharedNote||'').trim()?true:s.pitEnabled}));state.version=13;selectedSid=next.sections[0].id});showPro('overview');notify('Расчёт открыт: '+state.object)}catch(err){notify('Не удалось открыть файл: '+err.message,true)}e.target.value='';}
  $u('u-start-wizard').addEventListener('click',()=>startWizard(0));$u('u-start-pro').addEventListener('click',()=>showPro('overview'));$u('u-open-calc').addEventListener('click',()=>$u('u-openfile').click());$u('u-open-in-pro').addEventListener('click',()=>$u('u-openfile').click());$u('u-openfile').addEventListener('change',openFile);$u('u-gohome').addEventListener('click',goHome);$u('u-backwizard').addEventListener('click',()=>startWizard(wizStep));$u('u-importcsv').addEventListener('click',()=>$u('csv-file').click());$u('u-wiz-close').addEventListener('click',goHome);$u('u-wiz-prev').addEventListener('click',()=>{wizStep=Math.max(0,wizStep-1);draw()});$u('u-wiz-next').addEventListener('click',()=>{if(wizStep===WIZ.length-1)showPro('results');else{wizStep++;draw()}});$u('u-undo').addEventListener('click',()=>$u('undo').click());$u('u-redo').addEventListener('click',()=>$u('redo').click());$u('u-theme').addEventListener('click',()=>$u('theme').click());$u('u-save').addEventListener('click',saveProject);$u('u-facade-close').addEventListener('click',()=>{$u('u-facade-modal').hidden=true;draw()});$u('u-facade-add').addEventListener('click',()=>commit(()=>{secById(facadeSid).facadeRanges.push({from:'',to:'',wet:'100',brick:'0',nvf:'0'});facadePage=Math.floor((secById(facadeSid).facadeRanges.length-1)/4)}));
  $u('u-facade-rows').addEventListener('change',e=>{let t=e.target,k=t.dataset.uiRange,i=Number(t.dataset.uiRangeIndex);if(!k)return;commit(()=>secById(facadeSid).facadeRanges[i][k]=t.value)});
  $u('u-facade-rows').addEventListener('click',e=>{let t=e.target,i=t.dataset.uiRangeDelete;if(t.dataset.uiFacpage!==undefined){facadePage=Math.max(0,Math.min(Math.ceil(secById(facadeSid).facadeRanges.length/4)-1,facadePage+Number(t.dataset.uiFacpage)));drawFacade();return}if(i===undefined)return;commit(()=>{if(secById(facadeSid).facadeRanges.length>1)secById(facadeSid).facadeRanges.splice(Number(i),1);facadePage=Math.min(facadePage,Math.ceil(secById(facadeSid).facadeRanges.length/4)-1)})});
@@ -558,7 +567,7 @@ drawPro=function(c){v9DrawPro(c);
  }
  if(proView==='inputs')v9ProInputs();if(proView==='results'){
  $u('u-panel-actions').innerHTML=`<button class="u-btn tiny solid" data-v9-report="csv">Смета CSV ↓</button><button class="u-btn tiny" data-v9-report="print">Печать / PDF →</button><button class="u-btn tiny" data-ui-action="tests">Проверить ядро</button>`;
- $u('u-panel-body').insertAdjacentHTML('afterbegin',`<div class="u-v9-results-head"><strong>Полная стоимость учтённых работ: ${cash(c.total)}</strong><b>${c.areas?v9Value(c.total/c.areas,'₽/м² Sпрод',0):'Sпрод не задана'}</b></div>`);
+ $u('u-panel-body').insertAdjacentHTML('afterbegin',`<div class="u-v9-results-head"><strong>Расчётная стоимость учтённых работ (включая оценки): ${cash(c.total)}</strong><b>${c.areas?v9Value(c.total/c.areas,'₽/м² Sпрод',0):'Sпрод не задана'}</b></div>`);
  }};
 // Report: all priced and unpriced rows, no substitution of zeros for missing quantities.
 function v9ReportRows(c){let rows=[];const add=(section,group,name,unit,qty,rate,amount,source,status)=>rows.push({section,group,name,unit,qty,rate,amount,source,status});
@@ -573,7 +582,7 @@ function v9ReportRows(c){let rows=[];const add=(section,group,name,unit,qty,rate
  return rows;
 }
 
-function v9ReportCSV(){const c=calculate();let items=[['МЕТАКОРОБКА v12 — СМЕТА'],['Объект',state.object],['Sпрод, м²',c.areas],['Стоимость учтённая, ₽',c.total],['Стоимость на м² Sпрод, ₽',c.areas?c.total/c.areas:''],['Неполных позиций',c.missing.length],[],['Секция','Раздел','Работа','Ед.','Объём','Расценка, ₽','Стоимость, ₽','Источник','Статус']];
+function v9ReportCSV(){const c=calculate();let items=[['МЕТАКОРОБКА v13 — СМЕТА'],['Объект',state.object],['Sпрод, м²',c.areas],['Стоимость учтённая, ₽',c.total],['Стоимость на м² Sпрод, ₽',c.areas?c.total/c.areas:''],['Неполных позиций',c.missing.length],[],['Секция','Раздел','Работа','Ед.','Объём','Расценка, ₽','Стоимость, ₽','Источник','Статус']];
  for(const r of v9ReportRows(c))items.push([r.section,r.group,r.name,r.unit,r.qty??'',r.rate??'',r.amount??'',r.source,r.status]);items.push([],['ИТОГО','','','','','',c.total],['₽/м² Sпрод','','','','','',c.areas?c.total/c.areas:'']);
  download('МЕТАКОРОБКА_v12_СМЕТА.csv','\uFEFF'+items.map(a=>a.map(csvEscape).join(';')).join('\r\n'));}
 function v9ReportPrint(){const c=calculate(),rows=v9ReportRows(c);const print=$u('u-print-report');
@@ -628,11 +637,11 @@ const v12FormworkAudit=(c)=>{
   const slabK=V!==null&&V>0&&F!==null&&rep>0?(F/rep/V):null;
   const textAmount=x=>x===null?'—':Number(x).toLocaleString('ru-RU',{maximumFractionDigits:2});
   const statusSlab=rf!==null?'объём из Revit / ручной ввод':t!==null&&t>0?'расчёт по геометрии V / t':'нет исходных данных';
-  const statusVert=rv!==null?'подтверждённый введённый объём':k!==null?'предварительное V × K; требуется разрешение':'нет объёма и утверждённого коэффициента';
+  const statusVert=rv!==null?'введённый Revit / оператором объём':k!==null?'операторский коэффициент K': 'автоматическая оценка по толщине стен и размеру пилонов (геометрическое допущение)';
   cards.push('<div class="v11-note"><b>'+sEscape(sec.name)+' — опалубка, контроль метода</b><div>Перекрытие: бетон '+textAmount(V)+' м³/этаж, толщина '+textAmount(t)+' м; опалубка '+textAmount(F!==null&&rep>0?F/rep:null)+' м²/этаж. K = '+textAmount(slabK)+' м²/м³.</div>'+
   '<div><b>Источник перекрытий:</b> '+statusSlab+'; <b>вертикали:</b> '+statusVert+'.</div>'+
   '<div>Фундамент: '+textAmount(m.auto[24])+' м², боковая поверхность по периметру и толщине.</div>'+
-  '<em>Коэффициент предыдущей модели '+oldSlabRatio.toFixed(2)+' м²/м³ приведён только для сравнения; автоматическая геометрия плит его не использует. Для стен/колонн необходимы фактические объёмы опалубки или корректная геометрическая модель.</em></div>');
+  '<em>Коэффициент предыдущей модели '+oldSlabRatio.toFixed(2)+' м²/м³ приведён только для сравнения; автоматическая геометрия плит его не использует. Для вертикальных конструкций включён геометрический прогноз по размерам монолитных стен и пилонов; результат ориентировочный, до проверки обмером.</em></div>');
  }
  return '<div class="v11-note"><b>ОПАЛУБКА · физические объёмы и происхождение расчёта</b><div>Сметная ставка выделена отдельно, 3 500 ₽/м². Расценка бетонирования проверяется на отсутствие пересечения с опалубочными работами.</div></div>'+cards.join('');
 };
@@ -686,7 +695,7 @@ drawPro=function(c){
     '<div><b>Стоимость детального комплекса:</b> '+e+'. '+impact+'.</div>'+
     '<em>'+sEscape(m.source)+'. Цена указана по материалам и работам вместе. Отдельные первые этажи и лестницы требуют уточнения.</em></div>';
    }).join('');
-   const warn='<div class="v11-note"><b>МОП · правило против двойного учёта</b><div>Изученное поле МОП 209 м² из v10 не считается площадью чистого пола. Без расшифровки источник площади не установлен.</div><em>Стоимость отделки уже содержится в общем пакете FIN. Детальная сумма отображается справочно. Замена возможна только после отдельного ввода суммы МОП, уже сидящей в FIN; тогда к итогу прибавляется разница, а не вся смета повторно.</em></div>';
+   const warn='<div class="v11-note"><b>МОП · правило против двойного учёта</b><div>Для «Водяной» старое поле 209 м² близко к разнице Sстр − Sпрод = 209,96 м², но не является площадью чистого пола МОП.</div><em>Стоимость отделки уже содержится в общем пакете FIN. Детальная сумма отображается справочно. Замена возможна только после отдельного ввода суммы МОП, уже сидящей в FIN; тогда к итогу прибавляется разница, а не вся смета повторно.</em></div>';
    $u('u-panel-body').insertAdjacentHTML('afterbegin',warn+chunks);
  }
 };
@@ -718,7 +727,120 @@ $u('ui-root').addEventListener('click',e=>{
  notify('МОП загружен из ведомости стадии К. В расчёт FIN повторно не добавлен.');
 });
 
-// Стартовый экран v12. Дальнейшие коэффициенты — только из источника или с пометкой «предварительно».
+
+/* v13: достаточный для предварительного решения расчёт без ожидания новых смет.
+   1) Монолитная стена: площадь двух граней на объём = 2/t.
+   2) Квадратный пилон: площадь боковых граней на объём = 4/a.
+   3) Доли относятся к объёму вертикального железобетона. Все размеры — модельные, не обмер Revit.
+   4) МОП по прямой ведомости или по калибровке (Sстр − Sпрод), без начисления сверх FIN. */
+const V13_REFERENCE={project:'ЖК Водяная',gross:744.96,sale:535,nonSale:209.96,
+ floor:67.76502472,wall:265,ceiling:67.76502472,doors:3,
+ checkFloor:69.51,checkWall:340.77,checkCeiling:79.88,
+ floorRate:3000,wallRate:3000,ceilingRate:2000,doorRate:40000};
+const V13_KF=V13_REFERENCE.floor/V13_REFERENCE.nonSale;
+const V13_KW=V13_REFERENCE.wall/V13_REFERENCE.floor;
+const V13_KW_ALT=V13_REFERENCE.checkWall/V13_REFERENCE.checkFloor;
+const V13_FMT=x=>x===null||x===undefined?'—':Number(x).toLocaleString('ru-RU',{maximumFractionDigits:2});
+Object.assign(labels,{
+ mopArea:'Поле старого расчёта: состав не определён; в отделку не начисляется',
+ verticalWallThicknessTypical:'Монолитные вертикальные стены: средняя толщина, м (геометрическое допущение)',
+ verticalColumnSideTypical:'Пилоны: эквивалентная сторона квадратного сечения, м (геометрическое допущение)',
+ verticalWallConcreteShare:'Доля бетонного объёма стен (от 0 до 1; остальное — пилоны)',
+ verticalGeomScenario:'Сценарий геометрической опалубки'
+});
+v9TypicalGroups.formwork.fields.push('verticalWallThicknessTypical','verticalColumnSideTypical','verticalWallConcreteShare','verticalGeomScenario');
+const v13EditFieldBefore=editField;
+editField=function(k,sec,compact=false){
+ if(k==='verticalGeomScenario'){
+  const v=sec?.verticalGeomScenario||'base',choices=[['low','Нижняя оценка: сечения на 20% больше'],['base','Базовая геометрия'],['high','Верхняя оценка: сечения на 20% меньше']];
+  return '<div class="u-formfield"><label>'+sEscape(labels[k])+'</label><select data-ui-field="'+k+'" data-ui-sec="'+sec.id+'">'+choices.map(([id,name])=>'<option value="'+id+'" '+(id===v?'selected':'')+'>'+sEscape(name)+'</option>').join('')+'</select></div>';
+ }
+ return v13EditFieldBefore(k,sec,compact);
+};
+function v13MopEstimator(sec){
+ const keys=['mopFloorTypical','mopWallTypical','mopCeilingTypical','mopDoorsTypical'];
+ if(keys.some(k=>pos(sec[k])!==null))return null; // оператор / v12 важнее
+ const water=/водян/i.test(String(state.object||'')+' '+String(sec.name||''));
+ const rep=typicalCount(sec);
+ if(rep===null)return null;
+ let floor=null,wall=null,ceiling=null,doors=null,nonSale=null,source='',kind='';
+ if(water){
+  floor=V13_REFERENCE.floor;wall=V13_REFERENCE.wall;ceiling=V13_REFERENCE.ceiling;doors=V13_REFERENCE.doors;nonSale=V13_REFERENCE.nonSale;
+  source='Прямые объёмы: вкладка «Водяная стадия К», строки 14–17';kind='reference';
+ }else{
+  const gross=pos(sec.constructionAreaTypical),sale=pos(sec.aptAreaTypical);
+  if(gross===null||sale===null||gross<=sale)return null;
+  nonSale=gross-sale;floor=nonSale*V13_KF;wall=floor*V13_KW;ceiling=floor;
+  source='Перенос коэффициента одного объекта (Водяная): (Sстр − Sпрод) × '+V13_KF.toFixed(3);
+  kind='transfer';
+ }
+ const rate=V13_REFERENCE;
+ const full=rep*(floor*rate.floorRate+wall*rate.wallRate+ceiling*rate.ceilingRate+(doors??0)*rate.doorRate);
+ const lowerWall=rep*floor*Math.min(V13_KW,V13_KW_ALT)*rate.wallRate;
+ const upperWall=rep*floor*Math.max(V13_KW,V13_KW_ALT)*rate.wallRate;
+ return {kind,source,rep,floor,wall,ceiling,doors,nonSale,estimate:full,partial:doors===null,
+          wallRatio:wall/floor,lowerWall,upperWall};
+}
+function v13CalcModel(){
+ const rows=state.sections.map(sec=>{
+  const g=verticalGeometryModel(sec),concrete=pos(sec.verticalConcrete),rep=typicalCount(sec),
+        rate=price(state,'P36'),revit=pos(sec.verticalFormwork),over=pos(state.overrides[sec.id+':36']);
+  const chosen=over!==null?'ручная корректировка':revit!==null?'Revit':g.source;
+  const quantity=over!==null?over:concrete!==null&&rep!==null?(revit??(g.k===null?null:concrete*g.k))*rep:null;
+  const bound=concrete!==null&&rep!==null&&rate!==null&&g.low!==null&&g.central!==null&&g.high!==null?{low:concrete*rep*g.low*rate,base:concrete*rep*g.central*rate,high:concrete*rep*g.high*rate}:null;
+  return {sec:sec.name,sid:sec.id,concrete,rep,rate,k:g.k,central:g.central,low:g.low,high:g.high,quantity,bound,chosen,
+   mop:v13MopEstimator(sec),legacyMop:pos(sec.mopArea)};
+ });
+ return rows;
+}
+const v13CalculateBefore=calculate;
+calculate=function(){
+ const c=v13CalculateBefore();
+ c.geometryAudit=v13CalcModel();
+ c.geometryEstimate=c.au.filter(x=>x.status==='estimated'&&x.amount!==null).reduce((a,b)=>a+b.amount,0);
+ return c;
+};
+function v13FormworkPanel(c){
+ const rows=c.geometryAudit.map(x=>{
+   const r=x.rate,fmtCost=v=>v===null?'—':cash(v);
+   const range=x.bound?'Нижняя '+fmtCost(x.bound.low)+' · база '+fmtCost(x.bound.base)+' · верхняя '+fmtCost(x.bound.high):'Недостаточно данных для стоимости';
+   return '<div class="v11-note"><b>'+sEscape(x.sec)+' — вертикальная опалубка</b>'+
+    '<div>Источник: '+sEscape(x.chosen)+'. V бетона: '+V13_FMT(x.concrete)+' м³/этаж; типовых повторений: '+V13_FMT(x.rep)+'</div>'+
+    '<div>K: '+V13_FMT(x.k)+' м²/м³; опалубка: '+V13_FMT(x.quantity)+' м² на повторяющиеся этажи; расценка: '+V13_FMT(r)+' ₽/м²</div>'+
+    '<div><b>Геометрический диапазон:</b> '+range+'</div>'+
+    '<em>База: стена 250 мм, квадратный пилон 500 мм, доля бетона стен 50%. Это гипотеза о сечениях; диапазон — изменение размеров ±20%, а не доверительный интервал по сметам.</em></div>';
+ }).join('');
+ const estimated=c.geometryEstimate;
+ return '<div class="v11-note"><b>ГЕОМЕТРИЧЕСКАЯ ОПАЛУБКА — расчёт без новых ведомостей</b>'+
+ '<div>В итог включена геометрическая оценка вертикалей: '+cash(estimated)+'. Прямой объём Revit или ручная корректировка всегда имеет приоритет.</div>'+
+ '<em>На плитах действует V/t; в вертикальных конструкциях K = доля стен × 2/t + доля пилонов × 4/a. Проверяйте состав расценки на возможное дублирование опалубки.</em></div>'+rows;
+}
+function v13MopPanel(c){
+ const found=c.geometryAudit.filter(x=>x.mop);
+ const cards=found.map(x=>{
+  const m=x.mop,source=m.kind==='reference'?'Прямые ведомости «Водяной»':'Экстраполяция на иной объект',
+      floorBand=m.kind==='transfer'?' · прогноз, не обмер':' · ведомость стадии К';
+  const estimate=m.partial?'Отделка без дверей: '+cash(m.estimate):'Комплекс полов, стен, потолков и 3 дверей: '+cash(m.estimate);
+  const v10Issue=m.kind==='reference'&&x.legacyMop!==null?'<div>Старое поле «МОП» '+V13_FMT(x.legacyMop)+' м² близко к разнице Sстр−Sпрод 209,96 м², но не к площади пола МОП 67,77 м².</div>':'';
+  const wallAlt=m.kind==='transfer'?'Прогнозная стоимость стен при отношениях '+V13_KW.toFixed(2)+'–'+V13_KW_ALT.toFixed(2)+': '+cash(m.lowerWall)+'–'+cash(m.upperWall):'Альтернативная проверочная ведомость: Sстен / Sпола = '+V13_KW_ALT.toFixed(2)+' против '+V13_KW.toFixed(2)+' в стадии К';
+  const factorNote=m.kind==='reference'?'<div>Исходная ведомость суммирует 25 этажей, но в расчёте выбран параметр типовых повторений '+V13_FMT(m.rep)+'. Первый этаж учитывается отдельно, если введён его состав.</div>':'';
+  return '<div class="v11-note"><b>'+sEscape(x.sec)+' — МОП ('+source+')</b>'+
+   '<div>Полы '+V13_FMT(m.floor)+' м²/этаж; стены '+V13_FMT(m.wall)+' м²/этаж; потолки '+V13_FMT(m.ceiling)+' м²/этаж'+floorBand+'</div>'+
+   '<div>Принято '+V13_FMT(m.rep)+' типовых повторений. '+estimate+'. <b>В общую стоимость повторно не начислено.</b></div>'+
+   '<div>'+wallAlt+'</div>'+v10Issue+factorNote+
+   '<em>'+sEscape(m.source)+'. Коэффициент пола от непродаваемой площади K = '+V13_KF.toFixed(3)+'; фактические объёмы вводятся вручную при наличии.</em></div>';
+ }).join('');
+ const note='<div class="v11-note"><b>Контроль исходной ведомости</b><div>В сводке «Водяной» при обозначении 25 этажей полный объём бетона перекрытий 3 400,02 м³ соответствует множителю 26 к 130,77 м³/этаж. Автоматический расчёт v13 не переносит этот множитель, а использует число повторений из секции.</div>'+
+ '<em>Для оценки площади пола МОП в других секциях нужен Sстр и Sпрод типового этажа; геометрическая экстраполяция не является фактическим обмером.</em></div>';
+ return cards.join('')+note;
+}
+const v13DrawProBefore=drawPro;
+drawPro=function(c){
+ v13DrawProBefore(c);
+ if(['auto','results'].includes(proView)&&$u('u-panel-body'))$u('u-panel-body').insertAdjacentHTML('afterbegin',v13FormworkPanel(c));
+ if(['packages','results'].includes(proView)&&$u('u-panel-body'))$u('u-panel-body').insertAdjacentHTML('afterbegin',v13MopPanel(c));
+};
+// Стартовый экран v13. Геометрические оценки отделены от прямых данных из Revit.
 draw();
 })();
 </script>
