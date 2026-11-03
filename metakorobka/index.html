@@ -618,6 +618,24 @@ const v12MopInputs=()=>{
  '<em>'+label+'. Данные из К — проектная оценка, а не подтверждённый факт СМР.</em></div>';
  return '<div class="v11-note"><button class="u-btn tiny solid" data-v12-calibrate-mop="1">Загрузить эталон МОП · Водяная, стадия К</button> <a href="'+V12_MOP_SOURCE_URL+'" target="_blank" rel="noopener noreferrer">Источник объёмов</a></div>'+v9Fields(v12MopFieldKeys,sc,true)+note;
 };
+
+const v12FormworkAudit=(c)=>{
+ let cards=[];
+ const oldSlabRatio=0.22924245564333715/0.09439395232372706;
+ for(const sec of state.sections){
+  const m=secMath(sec),V=pos(sec.slabConcrete),t=pos(sec.slabHeight),F=m.auto[33],rep=typicalCount(sec);
+  const rf=pos(sec.slabFormwork),rv=pos(sec.verticalFormwork),k=pos(sec.formworkVerticalRatio);
+  const slabK=V!==null&&V>0&&F!==null&&rep>0?(F/rep/V):null;
+  const textAmount=x=>x===null?'—':Number(x).toLocaleString('ru-RU',{maximumFractionDigits:2});
+  const statusSlab=rf!==null?'объём из Revit / ручной ввод':t!==null&&t>0?'расчёт по геометрии V / t':'нет исходных данных';
+  const statusVert=rv!==null?'подтверждённый введённый объём':k!==null?'предварительное V × K; требуется разрешение':'нет объёма и утверждённого коэффициента';
+  cards.push('<div class="v11-note"><b>'+sEscape(sec.name)+' — опалубка, контроль метода</b><div>Перекрытие: бетон '+textAmount(V)+' м³/этаж, толщина '+textAmount(t)+' м; опалубка '+textAmount(F!==null&&rep>0?F/rep:null)+' м²/этаж. K = '+textAmount(slabK)+' м²/м³.</div>'+
+  '<div><b>Источник перекрытий:</b> '+statusSlab+'; <b>вертикали:</b> '+statusVert+'.</div>'+
+  '<div>Фундамент: '+textAmount(m.auto[24])+' м², боковая поверхность по периметру и толщине.</div>'+
+  '<em>Коэффициент предыдущей модели '+oldSlabRatio.toFixed(2)+' м²/м³ приведён только для сравнения; автоматическая геометрия плит его не использует. Для стен/колонн необходимы фактические объёмы опалубки или корректная геометрическая модель.</em></div>');
+ }
+ return '<div class="v11-note"><b>ОПАЛУБКА · физические объёмы и происхождение расчёта</b><div>Сметная ставка выделена отдельно, 3 500 ₽/м². Расценка бетонирования проверяется на отсутствие пересечения с опалубочными работами.</div></div>'+cards.join('');
+};
 const v12CalculateBefore=calculate;
 calculate=function(){
  const c=v12CalculateBefore();c.mopReference=null;c.mopCalibrations=[];c.mopAdjustments=[];
@@ -656,6 +674,7 @@ const v12DrawProBefore=drawPro;
 drawPro=function(c){
  v12DrawProBefore(c);
  if(proView==='inputs'&&inputGroup==='lifts'&&$u('u-panel-body'))$u('u-panel-body').insertAdjacentHTML('beforeend',v12MopInputs());
+ if(['auto','results'].includes(proView)&&$u('u-panel-body'))$u('u-panel-body').insertAdjacentHTML('afterbegin',v12FormworkAudit(c));
  if(['packages','results'].includes(proView)&&$u('u-panel-body')){
    const chunks=c.mopCalibrations.map(m=>{
     const e=m.estimate!==null?cash(m.estimate):'нет полной суммы';
