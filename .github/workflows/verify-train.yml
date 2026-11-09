@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check JavaScript syntax
-        run: node --check train/app.js && node --check train/sw.js
+        run: node --check train/app.js && node --check train/sw.js && node --check train/tests.cjs && node train/tests.cjs
       - name: Check PWA manifest and required files
         shell: bash
         run: |
