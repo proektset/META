@@ -62,7 +62,7 @@ function signal(){
   });
  }catch{}
 }
-function warmupCountdown(i){const s=ses(i);return s.warmupEndAt?Math.max(0,s.warmupEndAt-Date.now()):300000;}
+function warmupCountdown(i){const s=ses(i);return s.warmupEndAt?Math.max(0,s.warmupEndAt-(s.pausedAt||Date.now())):300000;}
 function warmupPanel(i){
  const s=ses(i);
  if(s.done)return '';
@@ -276,6 +276,7 @@ function exercise(e,i,idx){
   ctrl+='<div class="control"><span class="muted">'+(e[0]==='walking'?'Минуты':e[0]==='plank'?'Секунды':'Повторы')+'</span><div class="counter"><button data-act="r-" data-i="'+i+'" data-e="'+e[0]+'">−</button><b>'+reps(e)+'</b><button data-act="r+" data-i="'+i+'" data-e="'+e[0]+'">+</button></div></div>';
   if(isweight&&prev)ctrl+='<button class="copy-previous" data-act="previous" data-i="'+i+'" data-e="'+e[0]+'">⎘ Как в прошлый раз: '+fmt(prev.w)+' кг'+(prev.r?' × '+prev.r:'')+'</button>';
  }
+ if(e[0]==='walking')ctrl+='<div class="distance-field"><label for="km-'+i+'">Пройдено километров</label><div class="distance-input"><input id="km-'+i+'" data-input="distance" data-i="'+i+'" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Например, 2.5" value="'+(Number(s.distanceKm)||'')+'"><span>км</span></div></div>';
  const rows=Array.from({length:e[2]},(_,k)=>{
   const l=logs[k],isnext=k===done;
   const buttons=l?'<button class="smallbtn" data-act="undo" data-i="'+i+'" data-e="'+e[0]+'" data-set="'+k+'" '+(s.done?'disabled':'')+'>↶</button>':isnext&&!s.done?(e[0]==='walking'||count(i)-logged(i)===1?'<button class="smallbtn" data-act="mark" data-i="'+i+'" data-e="'+e[0]+'" data-rest="0">Готово ✓</button>':'<div class="times">'+[1,2,3].map(x=>'<button data-act="mark" data-i="'+i+'" data-e="'+e[0]+'" data-rest="'+x+'">'+x+' м</button>').join('')+'</div>'):'';
@@ -288,7 +289,7 @@ function training(i){
  const forecast='<div class="remaining"><span>Осталось <b>'+(all-done)+'</b> подходов</span><span>≈ '+timeForecast(i)+' мин</span></div>';
  const rt=rest?'<div class="rest"><div class="kicker">ОТДЫХ</div><div style="display:flex;align-items:center;justify-content:space-between"><div class="timer" id="rest-time">'+minfmt(rest.end-Date.now())+'</div><button class="smallbtn" data-act="skip"> '+(rest.end<=Date.now()?'Понятно':'Пропустить')+' </button></div><div class="muted">Сигнал при заблокированном экране пока недоступен — требуется Web Push.</div></div>':'';
  return '<main class="page"><div class="top"><button class="smallbtn" data-act="home">‹ Назад</button><div class="top-controls">'+typeChip(i)+themeToggle()+'</div></div><div class="h1">'+d[0]+'</div><div class="muted">Занятие '+(S.order.indexOf(i)+1)+' из 7</div><div class="bar"><i style="width:'+(done/all*100)+'%"></i></div>'+forecast+
- '<div class="clockbox"><div><div class="tiny">Время тренировки</div><div class="timer" id="session-time">'+minfmt(dur(s))+'</div></div>'+(s.done?'<b>Готово ✓</b>':!s.startAt?'<button class="smallbtn" data-act="start" data-i="'+i+'">▶ Начать</button>':s.pausedAt?'<button class="smallbtn" data-act="resume" data-i="'+i+'">▶ Продолжить</button>':'<button class="smallbtn" data-act="pause" data-i="'+i+'">Ⅱ Пауза</button>')+'</div>'+rt+
+ '<div class="clockbox"><div><div class="tiny">Время тренировки</div><div class="timer" id="session-time">'+minfmt(dur(s))+'</div></div>'+(s.done?'<b>Готово ✓</b>':!s.startAt?'<button class="smallbtn" data-act="start" data-i="'+i+'">▶ Начать</button>':s.pausedAt?'<button class="smallbtn" data-act="resume" data-i="'+i+'">▶ Продолжить</button>':'<button class="smallbtn" data-act="pause" data-i="'+i+'">Ⅱ Пауза</button>')+'</div>'+warmupPanel(i)+rt+
  d[1].map((e,j)=>exercise(e,i,j)).join('')+
  (s.done?'<div class="panel">Завершено за '+hdur(dur(s))+'<button class="btn secondary" data-act="home">На главную</button></div>':'<button class="btn" data-act="finish" data-i="'+i+'" '+(!done?'disabled':'')+'>Завершить тренировку ✓</button>')+
  '<div class="note">«≈ мин» — ориентировочное оставшееся время, не норматив. Для гантелей указан вес одной гантели; в тоннаже учитываются обе.</div></main>';
@@ -315,21 +316,45 @@ function review(){
 function settings(){let standalone=matchMedia('(display-mode:standalone)').matches||navigator.standalone;
 return '<main class="page"><div class="top"><button class="smallbtn" data-act="home">‹ Цикл</button><div class="top-controls"><div class="kicker">НАСТРОЙКИ</div>'+themeToggle()+'</div></div><div class="h1">Приложение</div><div class="panel"><b>Тема оформления</b><p class="muted">Нажми на солнце или луну в верхнем углу. Выбранная тема сохранится на iPhone.</p><div class="install">Сейчас: '+(colorTheme==='dark'?'тёмная':'светлая')+' тема</div></div><div class="panel"><b>Установка на iPhone</b><p class="muted">Открой в Safari → Поделиться → На экран Домой. Затем запускай приложение по иконке.</p><div class="install">'+(standalone?'Приложение открыто с главного экрана.':'Открой это приложение через иконку на рабочем столе iPhone.')+'</div></div><div class="panel"><b>Уведомления при блокировке</b><p class="muted">Для сигнала нужен подключённый сервер Web Push и интернет. Сервер сейчас не подключён. При открытом экране таймер работает без интернета.</p><button class="btn secondary" disabled>Web Push: не подключён</button></div><div class="panel"><b>Порядок занятий</b><p class="muted">На главном экране тяни карточку за значок ⠿. Порядок сохраняется автоматически.</p><button class="btn secondary" data-act="defaultorder">Вернуть первоначальный порядок</button></div><div class="panel"><b>Резервное копирование</b><p class="muted">Тренировки хранятся на этом устройстве. Экспортируй JSON перед сменой телефона или удалением веб-приложения.</p><div class="two"><button class="smallbtn" data-act="export">Экспорт JSON</button><button class="smallbtn" data-act="import">Импорт JSON</button></div></div><div class="panel"><b>Демонстрация отчёта</b><p class="muted">Тестовые записи заменят текущий цикл.</p><button class="btn secondary" data-act="demo">Показать демо-цикл</button><button class="btn danger" data-act="reset">Удалить все данные</button></div><div class="note">Версия 0.6. Без аккаунта. Данные тренировок не отправляются на сервер.</div></main>'}
 function render(){app.innerHTML=(view==='home'?home():view==='day'?training(day):view==='report'?review():settings())+nav();update()}
-function update(){let s=$('#session-time');if(s)s.textContent=minfmt(dur(ses(day)));let r=$('#rest-time');if(r&&S.rest)r.textContent=minfmt(S.rest.end-Date.now());if(S.rest&&Date.now()>=S.rest.end&&!S.rest.expired){S.rest.expired=true;save();if(!document.hidden){toast('Отдых завершён');signal()}}}
+function update(){
+ let c=$('#session-time');if(c)c.textContent=minfmt(dur(ses(day)));
+ let r=$('#rest-time');if(r&&S.rest)r.textContent=minfmt(S.rest.end-Date.now());
+ if(S.rest&&Date.now()>=S.rest.end&&!S.rest.expired){const late=Date.now()-S.rest.end;S.rest.expired=true;save();if(!document.hidden){toast('Отдых завершён');if(late<15000)signal()}}
+ let a=S.sessions[day],w=$('#warmup-time');
+ if(a?.warmupEndAt&&!a.warmupDoneAt){
+  if(w)w.textContent=minfmt(warmupCountdown(day));
+  if(!a.pausedAt&&Date.now()>=a.warmupEndAt){
+   const late=Date.now()-a.warmupEndAt;a.warmupDoneAt=a.warmupEndAt;a.warmupAlerted=true;save();
+   if(!document.hidden){toast('Разминка закончена');if(late<15000)signal()}render();
+  }
+ }
+}
 function restOff(){S.rest=null;save();render()}
-function mark(i,id,minutes){let e=DAYS[i][1].find(x=>x[0]===id),s=ses(i);if(!e||s.done||s.pausedAt)return;let logs=s.logs[id]||(s.logs[id]=[]),at=Array.from({length:e[2]},(_,k)=>k).find(k=>!logs[k]);if(at===undefined)return;let weight=w(e),r=reps(e);if(e[6]&&weight<=0){toast('Сначала укажи рабочий вес');return}if(!s.startAt)s.startAt=Date.now();logs[at]={w:weight,r,time:Date.now()};let all=DAYS[i][1].every(x=>(s.logs[x[0]]||[]).filter(Boolean).length===x[2]);S.rest=minutes>0&&!all?{i,end:Date.now()+minutes*60000,expired:false}:null;save();render();if(all)toast('Все подходы выполнены. Заверши занятие.')}
-function finish(i){let s=ses(i);if(!logged(i)||s.done)return;if(logged(i)<count(i)&&!confirm('Не все подходы завершены. Закончить занятие?'))return;if(s.pausedAt){s.pausedTotal+=Date.now()-s.pausedAt;s.pausedAt=0;}s.endAt=Date.now();s.done=true;S.rest=null;save();view=finished()===7?'report':'home';render()}
-app.addEventListener('change',e=>{let t=e.target;if(t.matches('[data-input=w]')){let n=Number(t.value);if(!Number.isFinite(n)||n<0||n>1500){toast('Неверный вес');render();return}S.drafts[t.dataset.e]={...S.drafts[t.dataset.e],w:n};save()}});
+function mark(i,id,minutes){let e=DAYS[i][1].find(x=>x[0]===id),s=ses(i);if(!e||s.done||s.pausedAt)return;if(!s.warmupDoneAt&&!logged(i)){toast('Сначала выполни разминку 5 минут');return;}let logs=s.logs[id]||(s.logs[id]=[]),at=Array.from({length:e[2]},(_,k)=>k).find(k=>!logs[k]);if(at===undefined)return;let weight=w(e),r=reps(e);if(e[6]&&weight<=0){toast('Сначала укажи рабочий вес');return}if(!s.startAt)s.startAt=Date.now();logs[at]={w:weight,r,time:Date.now()};let all=DAYS[i][1].every(x=>(s.logs[x[0]]||[]).filter(Boolean).length===x[2]);S.rest=minutes>0&&!all?{i,end:Date.now()+minutes*60000,expired:false}:null;save();render();if(all)toast('Все подходы выполнены. Заверши занятие.')}
+function finish(i){let s=ses(i);if(!logged(i)||s.done)return;if(logged(i)<count(i)&&!confirm('Не все подходы завершены. Закончить занятие?'))return;if(s.pausedAt){s.pausedTotal+=Date.now()-s.pausedAt;s.pausedAt=0;}s.endAt=Date.now();s.done=true;S.rest=null;save();if(!document.hidden)signal();view=finished()===7?'report':'home';render()}
+app.addEventListener('change',e=>{
+ const t=e.target;
+ if(t.matches('[data-input=distance]')){
+  const n=Number(String(t.value).replace(',','.'));if(!Number.isFinite(n)||n<0||n>200){toast('Укажи расстояние от 0 до 200 км');render();return}
+  const i=Number(t.dataset.i);ses(i).distanceKm=Math.round(n*100)/100;save();toast('Километры сохранены');return;
+ }
+ if(t.matches('[data-input=w]')){let n=Number(t.value);if(!Number.isFinite(n)||n<0||n>1500){toast('Неверный вес');render();return}S.drafts[t.dataset.e]={...S.drafts[t.dataset.e],w:n};save()}
+});
 app.addEventListener('click',e=>{let b=e.target.closest('button[data-act]');if(!b||b.disabled)return;let a=b.dataset.act,i=Number(b.dataset.i),id=b.dataset.e;
 if(['home','report','settings'].includes(a)){view=a;render();return}
+if(['start','warmupstart','mark','warmupdone','soundtest'].includes(a))unlockAudio();
+if(a==='soundtoggle'){S.soundEnabled=!S.soundEnabled;save();render();return}
+if(a==='soundtest'){signal();toast(S.soundEnabled?'Тестовый сигнал':'Звук выключен');return}
+if(a==='warmupstart'){startWarmup(i);return}
+if(a==='warmupdone'){finishWarmup(i);return}
 if(a==='theme'){toggleTheme();return}
 if(a==='chart'){S.chartExercise=id;save();render();return}
 if(a==='previous'){let old=lastSetOf(id,i);if(!old){toast('Прошлого результата нет');return}S.drafts[id]={...S.drafts[id],w:old.w,r:old.r||S.drafts[id]?.r||DAYS[i][1].find(e=>e[0]===id)[3]};save();render();toast('Предыдущий результат подставлен');return}
 if(a==='day'){day=i;view='day';render();return}
 if(a==='defaultorder'){S.order=DAYS.map((_,i)=>i);save();render();toast('Исходный порядок восстановлен');return}
-if(a==='start'){ses(i).startAt=Date.now();save();render();return}
+if(a==='start'){startWarmup(i);return}
 if(a==='pause'){ses(i).pausedAt=Date.now();save();render();return}
-if(a==='resume'){let s=ses(i);s.pausedTotal+=Date.now()-s.pausedAt;s.pausedAt=0;save();render();return}
+if(a==='resume'){let s=ses(i),paused=Date.now()-s.pausedAt;if(s.warmupEndAt&&!s.warmupDoneAt)s.warmupEndAt+=paused;s.pausedTotal+=paused;s.pausedAt=0;save();render();return}
 if(a==='skip'){restOff();return}
 if(a==='mark'){mark(i,id,+b.dataset.rest);return}
 if(a==='finish'){finish(i);return}
