@@ -127,15 +127,27 @@ function dayStatsForHistory(){
 }
 function historyExtras(){let maxWeights={},lastSets={};DAYS.forEach((d,i)=>d[1].forEach(e=>{if(!e[6])return;let sets=(ses(i).logs[e[0]]||[]).filter(Boolean);if(sets.length){maxWeights[e[0]]=Math.max(maxWeights[e[0]]||0,...sets.map(v=>v.w));let latest=sets.at(-1);if(!lastSets[e[0]]||latest.time>lastSets[e[0]].time)lastSets[e[0]]=latest;}}));return {maxWeights,lastSets,sessionStats:dayStatsForHistory()};}
 function nav(){return '<nav class="tabbar"><button data-act="home" class="'+(view==='home'?'sel':'')+'"><b>▦</b>Цикл</button><button data-act="report" class="'+(view==='report'?'sel':'')+'"><b>▤</b>Отчёт</button><button data-act="settings" class="'+(view==='settings'?'sel':'')+'"><b>⚙</b>Настройки</button></nav>'}
+
 function home(){
-const f=finished(),n=next();
-const tabs=S.order.map((id,p)=>'<button class="daytile '+(ses(id).done?'done':id===n?'active':'')+'" data-act="day" data-i="'+id+'">'+(ses(id).done?'✓':p+1)+'<small>Д'+(p+1)+'</small></button>').join('');
-const cards=S.order.map((id,p)=>{
-const d=DAYS[id],done=ses(id).done;
-return '<div class="card workout-row '+(done?'done':id===n?'active':'')+'" data-workout="'+id+'"><button class="card-main" data-act="day" data-i="'+id+'"><span class="num">'+(done?'✓':String(p+1).padStart(2,'0'))+'</span><span class="grow"><h3>'+d[0]+'</h3><p>'+(done?'Завершено':d[1].length+' упражнения · '+count(id)+' подходов'+(id===n?' · следующий':''))+'</p></span><span class="chev">›</span></button><button class="draghandle" data-i="'+id+'" aria-label="Переместить занятие '+(p+1)+'. Перетаскивай или используй стрелки клавиатуры" title="Перетащить занятие">⠿</button></div>';
-}).join('');
-return '<main class="page"><div class="top"><div><div class="kicker">ТРЕНИРОВКИ / TRAIN</div><div class="muted">30 минут · 7 занятий · рост мышц</div></div><button class="smallbtn" data-act="settings">⚙</button></div><div class="kicker">'+(S.demo?'ДЕМОНСТРАЦИЯ':'ТВОЙ ПРОГРЕСС')+'</div><div class="h1">Цикл № '+S.cycle+'</div><div class="muted">Занятия не привязаны к календарным датам</div><div class="panel hero"><div class="kicker">Завершено занятий</div><div style="font-weight:900;font-size:40px;margin-top:5px">'+f+' <span style="font-size:20px;color:#a2bfad">/ 7</span></div><div class="bar"><i style="width:'+(f/7*100)+'%"></i></div></div><div class="statgrid"><div class="stat"><div class="bigstat">'+fmt(tonne())+'</div><div class="label">Кг поднято</div></div><div class="stat"><div class="bigstat">'+doneSets()+'</div><div class="label">Подходов</div></div><div class="stat"><div class="bigstat">'+hdur(timedone())+'</div><div class="label">Времени</div></div></div><div class="daystrip">'+tabs+'</div><div class="section">Семь занятий</div><div class="muted drag-instruction">Перетаскивай за значок ⠿ справа, чтобы изменить порядок</div><div class="workout-list">'+cards+'</div>'+(f===7?'<button class="btn" data-act="report">Посмотреть отчёт →</button>':'<button class="btn" data-act="day" data-i="'+n+'">Открыть занятие '+(S.order.indexOf(n)+1)+' →</button>')+'<div class="note">Порядок сохраняется автоматически и переносится в следующий цикл. Выполненные подходы и веса не меняются.</div></main>';
+ const f=finished(),n=next(),planned=DAYS.reduce((x,_,i)=>x+count(i),0);
+ const total=doneSets(),completedPct=Math.round(f/7*100);
+ const tabs=S.order.map((id,p)=>'<button class="daytile '+(ses(id).done?'done':id===n?'active':'')+'" data-act="day" data-i="'+id+'">'+(ses(id).done?'✓':p+1)+'<small>Д'+(p+1)+'</small></button>').join('');
+ const cards=S.order.map((id,p)=>{
+  const d=DAYS[id],state=stateFor(id),number=String(p+1).padStart(2,'0'),counted=logged(id),total=count(id);
+  const subtitle=state==='done'?'Завершено · '+counted+' подходов':state==='work'?'Выполнено '+counted+' из '+total+' подходов':d[1].length+' упражнения · '+total+' подходов';
+  return '<div class="card workout-row '+(state==='done'?'done':id===n?'active':'')+'" data-workout="'+id+'"><button class="card-main" data-act="day" data-i="'+id+'"><span class="num">'+(state==='done'?'✓':number)+'</span><span class="grow"><span class="workout-title"><span class="workout-title-text">'+d[0]+'</span>'+typeChip(id)+'</span><span class="card-status"><span class="status-dot status-'+state+'"></span><span>'+(state==='done'?'Готово':state==='work'?'В процессе':'Не начато')+'</span></span><p>'+subtitle+'</p></span><span class="chev">›</span></button><button class="draghandle" data-i="'+id+'" aria-label="Переместить занятие '+(p+1)+'. Перетаскивай или используй стрелки клавиатуры" title="Перетащить занятие">⠿</button></div>';
+ }).join('');
+ const main='<main class="page"><div class="top"><div><div class="kicker">ТРЕНИРОВКИ / TRAIN</div><div class="muted">30 минут · 7 занятий · рост мышц</div></div><div class="top-controls">'+themeToggle()+'<button class="smallbtn" data-act="settings" aria-label="Настройки">⚙</button></div></div>'+
+ '<div class="kicker">'+(S.demo?'ДЕМОНСТРАЦИЯ':'ПРОГРЕСС ЦИКЛА')+'</div><div class="h1">Цикл № '+S.cycle+'</div><div class="muted">Занятия не привязаны к календарным датам</div>'+
+ '<div class="panel hero"><div class="hero-progress"><div class="ring" style="--percentage:'+completedPct+'"><div><strong>'+f+'/7</strong><span>занятий</span></div></div><div class="hero-summary"><div class="kicker">Завершено</div><strong>'+completedPct+'%</strong><span class="muted">'+total+' / '+planned+' подходов</span><div class="bar"><i style="width:'+(planned?total/planned*100:0)+'%"></i></div></div></div></div>'+
+ '<div class="statgrid"><div class="stat"><div class="bigstat">'+fmt(tonne())+'</div><div class="label">Кг поднято</div></div><div class="stat"><div class="bigstat">'+doneSets()+'</div><div class="label">Подходов</div></div><div class="stat"><div class="bigstat">'+hdur(timedone())+'</div><div class="label">Времени</div></div></div>'+
+ '<div class="daystrip">'+tabs+'</div><div class="section">Семь занятий</div><div class="muted drag-instruction">Изменить порядок — потяни карточку за ⠿</div><div class="workout-list">'+cards+'</div>'+
+ (f===7?'<button class="btn" data-act="report">Посмотреть отчёт →</button>':'<button class="btn" data-act="day" data-i="'+n+'">Открыть занятие '+(S.order.indexOf(n)+1)+' →</button>')+
+ '<div class="section">Аналитика</div>'+loadViz()+chartSection()+weekSection()+recordsSection()+
+ '<div class="note">Порядок занятий и тема сохраняются на iPhone. Графики учитывают только записанные результаты.</div></main>';
+ return main;
 }
+
 function moveWorkout(fromId,toId){
  const from=S.order.indexOf(fromId),to=S.order.indexOf(toId);
  if(from<0||to<0||from===to)return false;
