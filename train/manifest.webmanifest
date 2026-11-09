@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "ТРЕНИРОВКИ — 7 занятий",
+  "short_name": "ТРЕНИРОВКИ",
+  "description": "Программа 7 занятий, таймер, контроль веса и отчёт",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0c1119",
+  "theme_color": "#0c1119",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
