@@ -389,8 +389,63 @@ function review(){
  (S.history.length?'<div class="section">Предыдущие циклы</div>'+S.history.map(h=>'<div class="panel">Цикл № '+h.cycle+' · '+fmt(h.volume)+' кг · '+hdur(h.time)+'</div>').join(''):'')+'</main>';
 }
 
+
+const APP_VERSION='0.8';
+function firstWorkoutSummary(){
+ const session=S.sessions[0],logs=session?.logs||{};
+ const countSaved=DAYS[0][1].reduce((total,e)=>total+(Array.isArray(logs[e[0]])?logs[e[0]].filter(x=>x&&x.r!=null).length:0),0);
+ return {count:countSaved,done:Boolean(session?.done),total:count(0)};
+}
+function restoreFirstWorkoutFromBackup(source){
+ const entry=source?.sessions?.['0']||source?.sessions?.[0];
+ if(!source||source.v!==1||!entry||!entry.logs||typeof entry.logs!=='object')throw Error('Не найден журнал первой тренировки');
+ const restored={};let copied=0;
+ for(const e of DAYS[0][1]){
+  const rows=entry.logs[e[0]];
+  if(!Array.isArray(rows))continue;
+  const valid=rows.slice(0,e[2]).map(x=>{
+   if(!x)return null;
+   const w=Number(x.w),r=Number(x.r);
+   if(!Number.isFinite(w)||w<=0||w>1500||!Number.isFinite(r)||r<=0||r>500)return null;
+   copied++;return {w,r,time:Number(x.time)||Date.now()};
+  });
+  if(valid.some(Boolean))restored[e[0]]=valid;
+ }
+ if(!copied)throw Error('В файле нет записанных подходов первой тренировки');
+ const current=firstWorkoutSummary();
+ if(current.count&&!confirm('В текущей первой тренировке есть '+current.count+' подходов. Заменить только её данные из файла?'))return false;
+ const before=S.sessions[0]||{startAt:0,endAt:0,pausedAt:0,pausedTotal:0,done:false,logs:{}};
+ S.sessions[0]={...before,...entry,logs:restored,
+  startAt:Number(entry.startAt)||0,endAt:Number(entry.endAt)||0,
+  pausedAt:0,pausedTotal:Number(entry.pausedTotal)||0,done:entry.done===true
+ };
+ if(S.rest?.i===0)S.rest=null;
+ save();view='home';render();toast('Перенесено '+copied+' подходов первой тренировки');return true;
+}
+function restoreFirstWorkoutFile(){
+ const input=document.createElement('input');input.type='file';input.accept='.json,application/json';
+ input.onchange=async()=>{try{
+   if(!input.files?.length)return;
+   const text=await input.files[0].text();
+   restoreFirstWorkoutFromBackup(JSON.parse(text));
+ }catch(e){toast(e?.message||'Не удалось открыть файл сохранения')}};
+ input.click();
+}
+async function checkAppUpdate(){
+ if(navigator.onLine===false){toast('Для обновления нужен интернет. Данные остаются на iPhone.');return;}
+ try{
+  if(!('serviceWorker'in navigator)){location.reload();return;}
+  const r=await navigator.serviceWorker.getRegistration('./');
+  if(!r){location.reload();return;}
+  await r.update();
+  if(r.waiting){r.waiting.postMessage({type:'SKIP_WAITING'});toast('Применяю новую версию…');return;}
+  if(r.installing){toast('Обновление загружается. Затем открой приложение повторно.');return;}
+  toast('Проверка завершена. Если обновление не видно, закрой и открой приложение.');
+ }catch(e){toast('Не удалось проверить обновление. Проверь интернет.')}
+}
+
 function settings(){let standalone=matchMedia('(display-mode:standalone)').matches||navigator.standalone;
-return '<main class="page"><div class="top"><button class="smallbtn" data-act="home">‹ Цикл</button><div class="top-controls"><div class="kicker">НАСТРОЙКИ</div>'+themeToggle()+'</div></div><div class="h1">Приложение</div><div class="panel"><b>Тема оформления</b><p class="muted">Нажми на солнце или луну в верхнем углу. Выбранная тема сохранится на iPhone.</p><div class="install">Сейчас: '+(colorTheme==='dark'?'тёмная':'светлая')+' тема</div></div><div class="panel"><b>Установка на iPhone</b><p class="muted">Открой в Safari → Поделиться → На экран Домой. Затем запускай приложение по иконке.</p><div class="install">'+(standalone?'Приложение открыто с главного экрана.':'Открой это приложение через иконку на рабочем столе iPhone.')+'</div></div><div class="panel"><b>Звуковой сигнал</b><p class="muted">Звуковой сигнал по завершении 5-минутной разминки, отдыха и занятия — когда приложение открыто.</p><button class="btn secondary" data-act="soundtoggle">Звук: '+(S.soundEnabled?'Включён':'Выключен')+'</button><button class="btn secondary" data-act="soundtest">Проверить сигнал</button></div><div class="panel"><b>Офлайн-режим и сохранение</b><p class="muted">Приложение открывается без интернета после первой загрузки. Результаты сразу записываются на iPhone и дублируются в локальном хранилище IndexedDB. Для автоматической отправки копии на сервер нужен отдельный сервис синхронизации — пока он не подключён.</p>'+connectionIndicator()+'</div><div class="panel"><b>Уведомления при блокировке</b><p class="muted">Для сигнала нужен подключённый сервер Web Push и интернет. Сервер сейчас не подключён. При открытом экране таймер работает без интернета.</p><button class="btn secondary" disabled>Web Push: не подключён</button></div><div class="panel"><b>Порядок занятий</b><p class="muted">На главном экране тяни карточку за значок ⠿. Порядок сохраняется автоматически.</p><button class="btn secondary" data-act="defaultorder">Вернуть первоначальный порядок</button></div><div class="panel"><b>Резервное копирование</b><p class="muted">Тренировки хранятся на этом устройстве. Экспортируй JSON перед сменой телефона или удалением веб-приложения.</p><div class="two"><button class="smallbtn" data-act="export">Экспорт JSON</button><button class="smallbtn" data-act="import">Импорт JSON</button></div></div><div class="panel"><b>Демонстрация отчёта</b><p class="muted">Тестовые записи заменят текущий цикл.</p><button class="btn secondary" data-act="demo">Показать демо-цикл</button><button class="btn danger" data-act="reset">Удалить все данные</button></div><div class="note">Версия 0.7. Без аккаунта. Данные тренировок не отправляются на сервер.</div></main>'}
+return '<main class="page"><div class="top"><button class="smallbtn" data-act="home">‹ Цикл</button><div class="top-controls"><div class="kicker">НАСТРОЙКИ</div>'+themeToggle()+'</div></div><div class="h1">Приложение</div><div class="panel"><b>Обновление приложения</b><p class="muted">Версия 0.8. Интерфейс обновляется без удаления сохранённых тренировок.</p><button class="btn secondary" data-act="updateapp">Проверить обновление</button></div><div class="panel"><b>Первая тренировка</b><p class="muted">Проверь результаты первого занятия или перенеси из резервной копии старой версии, не затрагивая другие дни.</p><div class="two"><button class="smallbtn" data-act="checkfirst">Проверить</button><button class="smallbtn" data-act="importfirst">Из JSON</button></div></div><div class="panel"><b>Тема оформления</b><p class="muted">Нажми на солнце или луну в верхнем углу. Выбранная тема сохранится на iPhone.</p><div class="install">Сейчас: '+(colorTheme==='dark'?'тёмная':'светлая')+' тема</div></div><div class="panel"><b>Установка на iPhone</b><p class="muted">Открой в Safari → Поделиться → На экран Домой. Затем запускай приложение по иконке.</p><div class="install">'+(standalone?'Приложение открыто с главного экрана.':'Открой это приложение через иконку на рабочем столе iPhone.')+'</div></div><div class="panel"><b>Звуковой сигнал</b><p class="muted">Звуковой сигнал по завершении 5-минутной разминки, отдыха и занятия — когда приложение открыто.</p><button class="btn secondary" data-act="soundtoggle">Звук: '+(S.soundEnabled?'Включён':'Выключен')+'</button><button class="btn secondary" data-act="soundtest">Проверить сигнал</button></div><div class="panel"><b>Офлайн-режим и сохранение</b><p class="muted">Приложение открывается без интернета после первой загрузки. Результаты сразу записываются на iPhone и дублируются в локальном хранилище IndexedDB. Для автоматической отправки копии на сервер нужен отдельный сервис синхронизации — пока он не подключён.</p>'+connectionIndicator()+'</div><div class="panel"><b>Уведомления при блокировке</b><p class="muted">Для сигнала нужен подключённый сервер Web Push и интернет. Сервер сейчас не подключён. При открытом экране таймер работает без интернета.</p><button class="btn secondary" disabled>Web Push: не подключён</button></div><div class="panel"><b>Порядок занятий</b><p class="muted">На главном экране тяни карточку за значок ⠿. Порядок сохраняется автоматически.</p><button class="btn secondary" data-act="defaultorder">Вернуть первоначальный порядок</button></div><div class="panel"><b>Резервное копирование</b><p class="muted">Тренировки хранятся на этом устройстве. Экспортируй JSON перед сменой телефона или удалением веб-приложения.</p><div class="two"><button class="smallbtn" data-act="export">Экспорт JSON</button><button class="smallbtn" data-act="import">Импорт JSON</button></div></div><div class="panel"><b>Демонстрация отчёта</b><p class="muted">Тестовые записи заменят текущий цикл.</p><button class="btn secondary" data-act="demo">Показать демо-цикл</button><button class="btn danger" data-act="reset">Удалить все данные</button></div><div class="note">Версия 0.8. Без аккаунта. Данные тренировок не отправляются на сервер.</div></main>'}
 function render(){app.innerHTML=(view==='home'?home():view==='day'?training(day):view==='report'?review():settings())+nav();update()}
 function update(){
  let c=$('#session-time');if(c)c.textContent=minfmt(dur(ses(day)));
@@ -424,6 +479,9 @@ if(a==='soundtest'){signal();toast(S.soundEnabled?'Тестовый сигнал
 if(a==='warmupstart'){startWarmup(i);return}
 if(a==='warmupdone'){finishWarmup(i);return}
 if(a==='theme'){toggleTheme();return}
+if(a==='updateapp'){checkAppUpdate();return}
+if(a==='checkfirst'){let z=firstWorkoutSummary();toast('Первая тренировка: '+z.count+' из '+z.total+' подходов'+(z.done?' · завершена':''));return}
+if(a==='importfirst'){restoreFirstWorkoutFile();return}
 if(a==='chart'){S.chartExercise=id;save();render();return}
 if(a==='previous'){let old=lastSetOf(id,i);if(!old){toast('Прошлого результата нет');return}S.drafts[id]={...S.drafts[id],w:old.w,r:old.r||S.drafts[id]?.r||DAYS[i][1].find(e=>e[0]===id)[3]};save();render();toast('Предыдущий результат подставлен');return}
 if(a==='day'){day=i;view='day';render();return}
@@ -443,7 +501,15 @@ if(a==='export'){let data=new Blob([JSON.stringify(S,null,2)],{type:'application
 if(a==='import'){let input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=()=>input.files[0]?.text().then(t=>{try{let z=JSON.parse(t);if(z.v!==1||!z.sessions||!z.history)throw Error('bad');if(confirm('Заменить текущие данные?')){S={...empty(),...z,rest:null};if(!validOrder(S.order))S.order=DAYS.map((_,i)=>i);save();view='home';render()}}catch{toast('Неверный файл')}});input.click();return}
 });
 window.addEventListener('visibilitychange',()=>{if(!document.hidden)update()});
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+if('serviceWorker'in navigator){
+ let updateReloading=false;
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{
+  if(!updateReloading){updateReloading=true;location.reload()}
+ });
+ navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'})
+  .then(reg=>{if(navigator.onLine!==false)reg.update().catch(()=>{})})
+  .catch(()=>{});
+}
 setInterval(update,600);render();
 try{if(localStorage.getItem(KEY))mirrorSave(JSON.stringify(S));else restoreSnapshot()}catch{restoreSnapshot()}
 window.addEventListener('online',()=>{if(view==='home'||view==='settings')render();toast('Интернет доступен · история сохранена на iPhone')});
