@@ -131,4 +131,26 @@ tr{border-color:var(--line)}
 .daily-number{font-size:11px;color:var(--muted);font-weight:700}
 .week-footer{display:grid;gap:7px;font-size:11px;color:var(--muted);padding-bottom:10px}
 .week-footer b{color:var(--accent)}
+
+/* v0.7 warmup, sound and offline status */
+.warmup-panel{margin:14px 0 12px;border:1px solid var(--accent);background:var(--soft-accent);border-radius:18px;padding:16px}
+.warmup-panel.completed{border-color:var(--line);background:var(--panel)}
+.warmup-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.warmup-head strong{display:block;margin-top:6px;font-size:16px}
+.warmup-time{font-weight:900;font-size:29px;color:var(--accent);font-variant-numeric:tabular-nums}
+.warmup-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:11px}
+.warmup-bottom .muted{font-size:11px;line-height:1.4;max-width:65%}
+.warmup-bottom button{white-space:nowrap}
+.warmup-completed{font-weight:750;color:var(--accent);font-size:13px}
+.distance-field{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0;padding:12px;border-radius:12px;background:var(--panel-2)}
+.distance-field label{font-size:12px;color:var(--muted)}
+.distance-input{display:flex;align-items:center;gap:7px}
+.distance-input input{background:var(--input);color:var(--text);width:84px;border:1px solid var(--line);border-radius:10px;padding:9px;font-size:15px;text-align:center}
+.distance-input span{font-weight:700;font-size:12px}
+.connection-tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:7px 11px;margin-top:9px}
+.connection-tag .status-dot{flex-shrink:0}
+.connection-tag.offline{color:var(--accent)}
+.distance-week{background:var(--panel-2);padding:10px;border-radius:12px;color:var(--muted);font-size:12px;margin-bottom:10px}
+.distance-week b{color:var(--text)}
+@media(max-width:350px){.warmup-bottom{flex-wrap:wrap}.warmup-bottom .muted{max-width:100%}}
 </style></head><body><div id="app"></div><script type="module" src="./app.js"></script></body></html>
