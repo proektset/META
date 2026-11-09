@@ -39,8 +39,55 @@ function toast(msg){document.querySelector('.toast')?.remove();const el=document
 function signal(){try{navigator.vibrate?.([120,65,120]);const C=window.AudioContext||window.webkitAudioContext;if(C){const c=new C(),o=c.createOscillator(),g=c.createGain();o.frequency.value=940;g.gain.value=.07;o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.18);setTimeout(()=>c.close(),300)}}catch{}}
 function nav(){return '<nav class="tabbar"><button data-act="home" class="'+(view==='home'?'sel':'')+'"><b>▦</b>Цикл</button><button data-act="report" class="'+(view==='report'?'sel':'')+'"><b>▤</b>Отчёт</button><button data-act="settings" class="'+(view==='settings'?'sel':'')+'"><b>⚙</b>Настройки</button></nav>'}
 function home(){
-let f=finished(),n=next();
-return '<main class="page"><div class="top"><div><div class="kicker">ТРЕНИРОВКИ / TRAIN</div><div class="muted">30 минут · 7 занятий · рост мышц</div></div><button class="smallbtn" data-act="settings">⚙</button></div><div class="kicker">'+(S.demo?'ДЕМОНСТРАЦИЯ':'ТВОЙ ПРОГРЕСС')+'</div><div class="h1">Цикл № '+S.cycle+'</div><div class="muted">Занятия не привязаны к календарным датам</div><div class="panel hero"><div class="kicker">Завершено занятий</div><div style="font-weight:900;font-size:40px;margin-top:5px">'+f+' <span style="font-size:20px;color:#a2bfad">/ 7</span></div><div class="bar"><i style="width:'+(f/7*100)+'%"></i></div></div><div class="statgrid"><div class="stat"><div class="bigstat">'+fmt(tonne())+'</div><div class="label">Кг поднято</div></div><div class="stat"><div class="bigstat">'+doneSets()+'</div><div class="label">Подходов</div></div><div class="stat"><div class="bigstat">'+hdur(timedone())+'</div><div class="label">Времени</div></div></div><div class="daystrip">'+DAYS.map((d,i)=>'<button class="daytile '+(ses(i).done?'done':i===n?'active':'')+'" data-act="day" data-i="'+i+'">'+(ses(i).done?'✓':(i+1))+'<small>'+['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'][i]+'</small></button>').join('')+'</div><div class="section">Семь занятий</div>'+DAYS.map((d,i)=>'<button class="card '+(ses(i).done?'done':i===n?'active':'')+'" data-act="day" data-i="'+i+'"><span class="num">'+(ses(i).done?'✓':String(i+1).padStart(2,'0'))+'</span><div class="grow"><h3>'+d[0]+'</h3><p>'+(ses(i).done?'Завершено':d[1].length+' упражнения · '+count(i)+' подходов'+(i===n?' · следующий':''))+'</p></div><span class="chev">›</span></button>').join('')+(f===7?'<button class="btn" data-act="report">Посмотреть отчёт →</button>':'<button class="btn" data-act="day" data-i="'+n+'">Открыть занятие '+(n+1)+' →</button>')+'<div class="note">Выполненные дни приглушаются. Пропуск календарного дня не сбрасывает цикл.</div></main>';}
+const f=finished(),n=next();
+const tabs=S.order.map((id,p)=>'<button class="daytile '+(ses(id).done?'done':id===n?'active':'')+'" data-act="day" data-i="'+id+'">'+(ses(id).done?'✓':p+1)+'<small>Д'+(p+1)+'</small></button>').join('');
+const cards=S.order.map((id,p)=>{
+const d=DAYS[id],done=ses(id).done;
+return '<div class="card workout-row '+(done?'done':id===n?'active':'')+'" data-workout="'+id+'"><button class="card-main" data-act="day" data-i="'+id+'"><span class="num">'+(done?'✓':String(p+1).padStart(2,'0'))+'</span><span class="grow"><h3>'+d[0]+'</h3><p>'+(done?'Завершено':d[1].length+' упражнения · '+count(id)+' подходов'+(id===n?' · следующий':''))+'</p></span><span class="chev">›</span></button><button class="draghandle" data-i="'+id+'" aria-label="Переместить занятие '+(p+1)+'. Перетаскивай или используй стрелки клавиатуры" title="Перетащить занятие">⠿</button></div>';
+}).join('');
+return '<main class="page"><div class="top"><div><div class="kicker">ТРЕНИРОВКИ / TRAIN</div><div class="muted">30 минут · 7 занятий · рост мышц</div></div><button class="smallbtn" data-act="settings">⚙</button></div><div class="kicker">'+(S.demo?'ДЕМОНСТРАЦИЯ':'ТВОЙ ПРОГРЕСС')+'</div><div class="h1">Цикл № '+S.cycle+'</div><div class="muted">Занятия не привязаны к календарным датам</div><div class="panel hero"><div class="kicker">Завершено занятий</div><div style="font-weight:900;font-size:40px;margin-top:5px">'+f+' <span style="font-size:20px;color:#a2bfad">/ 7</span></div><div class="bar"><i style="width:'+(f/7*100)+'%"></i></div></div><div class="statgrid"><div class="stat"><div class="bigstat">'+fmt(tonne())+'</div><div class="label">Кг поднято</div></div><div class="stat"><div class="bigstat">'+doneSets()+'</div><div class="label">Подходов</div></div><div class="stat"><div class="bigstat">'+hdur(timedone())+'</div><div class="label">Времени</div></div></div><div class="daystrip">'+tabs+'</div><div class="section">Семь занятий</div><div class="muted drag-instruction">Перетаскивай за значок ⠿ справа, чтобы изменить порядок</div><div class="workout-list">'+cards+'</div>'+(f===7?'<button class="btn" data-act="report">Посмотреть отчёт →</button>':'<button class="btn" data-act="day" data-i="'+n+'">Открыть занятие '+(S.order.indexOf(n)+1)+' →</button>')+'<div class="note">Порядок сохраняется автоматически и переносится в следующий цикл. Выполненные подходы и веса не меняются.</div></main>';
+}
+function moveWorkout(fromId,toId){
+ const from=S.order.indexOf(fromId),to=S.order.indexOf(toId);
+ if(from<0||to<0||from===to)return false;
+ S.order.splice(from,1);S.order.splice(to,0,fromId);save();toast('Порядок занятий сохранён');return true;
+}
+function clearDrag(commit){
+ if(!drag)return;
+ const d=drag;drag=null;
+ d.ghost.remove();
+ document.querySelectorAll('.workout-row').forEach(el=>el.classList.remove('drop-target','dragging'));
+ if(commit&&moveWorkout(d.fromId,d.toId))render();
+}
+let drag=null;
+app.addEventListener('pointerdown',e=>{
+const handle=e.target.closest('.draghandle');
+if(!handle||view!=='home'||!e.isPrimary||(e.pointerType==='mouse'&&e.button!==0))return;
+e.preventDefault();
+const card=handle.closest('.workout-row'),id=Number(handle.dataset.i),rect=card.getBoundingClientRect();
+const ghost=document.createElement('div');ghost.className='dragghost';ghost.textContent=DAYS[id][0];ghost.style.width=Math.min(rect.width-20,350)+'px';document.body.appendChild(ghost);
+const offsetY=e.clientY-rect.top;
+drag={pointerId:e.pointerId,fromId:id,toId:id,ghost,offsetY};
+card.classList.add('dragging');
+ghost.style.left=Math.max(10,Math.min(innerWidth-ghost.offsetWidth-10,rect.left+10))+'px';
+ghost.style.top=(e.clientY-offsetY)+'px';
+try{handle.setPointerCapture(e.pointerId)}catch{}
+});
+app.addEventListener('pointermove',e=>{
+if(!drag||e.pointerId!==drag.pointerId)return;
+e.preventDefault();
+drag.ghost.style.top=Math.max(7,Math.min(innerHeight-55,e.clientY-drag.offsetY))+'px';
+const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('.workout-row');
+if(target){drag.toId=Number(target.dataset.workout);document.querySelectorAll('.workout-row').forEach(el=>el.classList.toggle('drop-target',el===target&&drag.toId!==drag.fromId));}
+if(e.clientY<78)window.scrollBy(0,-10);else if(e.clientY>innerHeight-95)window.scrollBy(0,10);
+});
+app.addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.pointerId)clearDrag(true)});
+app.addEventListener('pointercancel',e=>{if(drag&&e.pointerId===drag.pointerId)clearDrag(false)});
+app.addEventListener('keydown',e=>{
+const h=e.target.closest('.draghandle');if(!h||view!=='home'||!['ArrowUp','ArrowDown'].includes(e.key))return;
+e.preventDefault();const id=Number(h.dataset.i),p=S.order.indexOf(id),to=p+(e.key==='ArrowUp'?-1:1);
+if(to>=0&&to<S.order.length&&moveWorkout(id,S.order[to])){render();app.querySelector('.draghandle[data-i="'+id+'"]')?.focus();}
+});
 function exercise(e,i,idx){
 let s=ses(i),logs=s.logs[e[0]]||[],done=logs.filter(Boolean).length,ok=done===e[2],isweight=e[6]>0;
 let head='<div class="kicker">УПРАЖНЕНИЕ '+(idx+1)+'</div><div class="extitle" style="margin-top:5px">'+e[1]+'</div><div class="exmeta">'+e[2]+' × '+e[3]+(e[3]===e[4]?'':'–'+e[4])+(e[0]==='walking'?' мин':e[0]==='plank'?' сек':' повт.')+'</div>';
