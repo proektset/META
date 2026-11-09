@@ -9,7 +9,7 @@ const DAYS=[
 ['Кардио + пресс',[['walking','Ходьба в комфортном темпе',1,20,20,1,0],['crunch','Скручивания',2,15,15,1,0],['plank','Планка (секунды)',2,30,30,5,0]]]
 ];
 const KEY='train_iphone_prototype_v1';
-const empty=()=>({v:1,cycle:1,sessions:{},drafts:{},rest:null,history:[],demo:false,order:DAYS.map((_,i)=>i)});
+const empty=()=>({v:1,cycle:1,sessions:{},drafts:{},rest:null,history:[],demo:false,order:DAYS.map((_,i)=>i),soundEnabled:true});
 let S;try{S={...empty(),...JSON.parse(localStorage.getItem(KEY))}}catch{S=empty()}
 const validOrder=o=>Array.isArray(o)&&o.length===DAYS.length&&new Set(o).size===DAYS.length&&o.every(i=>Number.isInteger(i)&&i>=0&&i<DAYS.length);
 if(!validOrder(S.order)){S.order=DAYS.map((_,i)=>i);try{localStorage.setItem(KEY,JSON.stringify(S))}catch{}}
@@ -20,7 +20,7 @@ const fmt=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(n||
 const minfmt=ms=>{let s=Math.max(0,Math.floor(ms/1000));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 const hdur=ms=>{let n=Math.round(ms/60000);return n>=60?Math.floor(n/60)+' ч '+n%60+' мин':n+' мин'};
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch{toast('Не удалось сохранить данные')}};
-const ses=i=>S.sessions[i]||(S.sessions[i]={startAt:0,endAt:0,pausedAt:0,pausedTotal:0,done:false,logs:{}});
+const ses=i=>S.sessions[i]||(S.sessions[i]={startAt:0,endAt:0,pausedAt:0,pausedTotal:0,done:false,logs:{},warmupStartedAt:0,warmupEndAt:0,warmupDoneAt:0,warmupAlerted:false,distanceKm:0});
 const count=i=>DAYS[i][1].reduce((a,e)=>a+e[2],0);
 const logged=i=>Object.values(ses(i).logs).flat().filter(Boolean).length;
 const finished=()=>DAYS.reduce((a,_,i)=>a+(ses(i).done?1:0),0);
@@ -33,115 +33,66 @@ const dur=s=>!s.startAt?0:Math.max(0,(s.endAt||s.pausedAt||Date.now())-s.startAt
 const tonne=()=>DAYS.reduce((sum,d,i)=>sum+d[1].reduce((a,e)=>a+(ses(i).logs[e[0]]||[]).filter(Boolean).reduce((t,l)=>t+l.w*l.r*e[6],0),0),0);
 const timedone=()=>DAYS.reduce((t,_,i)=>t+(ses(i).done?dur(ses(i)):0),0);
 const doneSets=()=>DAYS.reduce((t,_,i)=>t+logged(i),0);
+const kmTotal=()=>DAYS.reduce((t,_,i)=>t+(Number(S.sessions[i]?.distanceKm)||0),0);
 function weights(){const a={};DAYS.forEach((d,i)=>d[1].forEach(e=>{if(!e[6])return;const logs=(ses(i).logs[e[0]]||[]).filter(Boolean);if(logs.length)a[e[0]]=logs.at(-1).w;}));return a}
-const report=()=>({cycle:S.cycle,date:Date.now(),volume:tonne(),time:timedone(),sets:doneSets(),days:finished(),weights:weights(),order:[...S.order]});
+const report=()=>({cycle:S.cycle,date:Date.now(),volume:tonne(),time:timedone(),sets:doneSets(),days:finished(),weights:weights(),order:[...S.order],distanceKm:kmTotal()});
 function toast(msg){document.querySelector('.toast')?.remove();const el=document.createElement('div');el.className='toast';el.textContent=msg;document.body.append(el);setTimeout(()=>el.remove(),3200)}
-function signal(){try{navigator.vibrate?.([120,65,120]);const C=window.AudioContext||window.webkitAudioContext;if(C){const c=new C(),o=c.createOscillator(),g=c.createGain();o.frequency.value=940;g.gain.value=.07;o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.18);setTimeout(()=>c.close(),300)}}catch{}}
 
-/* v0.6 UI and progress analytics; data stays in existing local storage schema */
-let colorTheme=localStorage.getItem('train_theme')==='light'?'light':'dark';
-function applyTheme(){document.documentElement.dataset.theme=colorTheme;let meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=colorTheme==='light'?'#f4f7f8':'#0c1119';}
-function toggleTheme(){colorTheme=colorTheme==='dark'?'light':'dark';try{localStorage.setItem('train_theme',colorTheme)}catch{}applyTheme();render();}
-applyTheme();
-function icon(type){
- const icons={
- sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.5 1.5m11.2 11.2 1.5 1.5m0-14.2-1.5 1.5M6.4 17.6l-1.5 1.5"/>',
- moon:'<path d="M20.3 14a8.5 8.5 0 0 1-10.3-10.3A8.5 8.5 0 1 0 20.3 14z"/>',
- push:'<path d="M3 9v6m3-8v10m3-6h6m0-4v10m3-8v6m3-4v2"/>',
- pull:'<path d="M4 4h16M12 4v14m-5-5 5 5 5-5M7 7l-2 4m12-4 2 4"/>',
- legs:'<path d="M7 3l3 7-2 5-2 5m9-17-2 7 3 5 2 5M6 20h4m4 0h4"/>',
- recovery:'<path d="M20.8 8.4c0 5.1-8.8 10.9-8.8 10.9S3.2 13.5 3.2 8.4a4.6 4.6 0 0 1 8.8-1.8 4.6 4.6 0 0 1 8.8 1.8z"/><path d="M4 12h4l2-3 3 6 2-3h5"/>',
- trophy:'<path d="M7 3h10v5c0 4-2 6-5 6s-5-2-5-6zM7 5H4v2c0 3 2 4 4 4m9-6h3v2c0 3-2 4-4 4m-4 3v4m-4 3h8m-8-3h8"/>',
- chart:'<path d="M3 20V5m0 15h18M6 16l5-5 4 2 5-8"/>'
- };
- return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(icons[type]||icons.push)+'</svg>';
+let audioCtx=null;
+function unlockAudio(){
+ if(!S.soundEnabled)return;
+ try{const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;if(!audioCtx)audioCtx=new Audio();if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});}catch{}
 }
-function themeToggle(){return '<button type="button" class="theme-toggle" data-act="theme" aria-label="'+(colorTheme==='dark'?'Включить светлую тему':'Включить тёмную тему')+'" title="Светлая / тёмная тема">'+icon(colorTheme==='dark'?'sun':'moon')+'</button>';}
-function typeFor(i){return i===6?'recovery':i===0||i===3?'push':i===1||i===4?'pull':'legs'}
-const TYPE={push:{label:'Жим',short:'PUSH'},pull:{label:'Тяга',short:'PULL'},legs:{label:'Ноги',short:'LEGS'},recovery:{label:'Восстановление',short:'REST'}};
-function typeChip(i){let t=typeFor(i);return '<span class="type-chip type-'+t+'">'+icon(t)+'<span>'+TYPE[t].short+'</span></span>';}
-function stateFor(i){let s=ses(i);return s.done?'done':s.startAt||logged(i)?'work':'idle';}
-function loadByType(){return ['push','pull','legs','recovery'].map(t=>{let all=0,actual=0;DAYS.forEach((d,i)=>{if(typeFor(i)!==t)return;all+=count(i);actual+=logged(i)});return {t,all,actual};});}
+function signal(){
+ if(!S.soundEnabled)return;
+ try{
+  navigator.vibrate?.([130,80,130]);
+  const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
+  if(!audioCtx)audioCtx=new Audio();
+  if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});
+  const start=audioCtx.currentTime+.015;
+  [880,1046,1175].forEach((freq,i)=>{
+   const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+   o.type='sine';o.frequency.setValueAtTime(freq,start+i*.17);
+   g.gain.setValueAtTime(.001,start+i*.17);
+   g.gain.exponentialRampToValueAtTime(.12,start+i*.17+.015);
+   g.gain.exponentialRampToValueAtTime(.001,start+i*.17+.135);
+   o.connect(g);g.connect(audioCtx.destination);
+   o.start(start+i*.17);o.stop(start+i*.17+.15);
+  });
+ }catch{}
+}
+function warmupCountdown(i){const s=ses(i);return s.warmupEndAt?Math.max(0,s.warmupEndAt-Date.now()):300000;}
+function warmupPanel(i){
+ const s=ses(i);
+ if(s.done)return '';
+ const finished=Boolean(s.warmupDoneAt),active=Boolean(s.warmupEndAt),expired=active&&warmupCountdown(i)===0;
+ const label=finished?'Разминка выполнена':!active?'Перед тренировкой':expired?'Время вышло':'Идёт разминка';
+ const button=finished?'<span class="warmup-completed">✓ Готово</span>':
+   !active?'<button class="smallbtn" data-act="warmupstart" data-i="'+i+'">▶ Начать 5 мин</button>':
+   '<button class="smallbtn" data-act="warmupdone" data-i="'+i+'">'+(expired?'✓ Завершить':'Готово ✓')+'</button>';
+ return '<div class="warmup-panel '+(finished?'completed':'')+'"><div class="warmup-head"><div><div class="kicker">РАЗМИНКА · 5 МИН</div><strong>'+label+'</strong></div><span class="warmup-time" id="warmup-time">'+(finished?'✓':minfmt(warmupCountdown(i)))+'</span></div><div class="warmup-bottom"><span class="muted">Ходьба, лёгкая мобилизация, подготовка суставов</span>'+button+'</div></div>';
+}
+function startWarmup(i){
+ const s=ses(i);if(s.done||s.warmupDoneAt)return;
+ if(!s.startAt)s.startAt=Date.now();
+ if(!s.warmupEndAt){s.warmupStartedAt=Date.now();s.warmupEndAt=s.warmupStartedAt+300000;s.warmupAlerted=false;}
+ save();render();
+}
+function finishWarmup(i){
+ const s=ses(i);if(s.done)return;
+ if(!s.startAt)s.startAt=Date.now();
+ if(!s.warmupStartedAt)s.warmupStartedAt=Date.now();
+ if(!s.warmupEndAt)s.warmupEndAt=Date.now();
+ s.warmupDoneAt=Date.now();
+ s.warmupAlerted=true;
+ save();render();toast('Разминка завершена');
+}
+function connectionIndicator(){
+ const on=navigator.onLine!==false;
+ return '<span class="connection-tag '+(on?'online':'offline')+'"><span class="status-dot '+(on?'status-done':'status-idle')+'"></span>'+(on?'Сохранено на iPhone':'Офлайн · сохранено на iPhone')+'</span>';
+}
 
-function dailyViz(){
- const rows=S.order.map((id,pos)=>{
-  const t=typeFor(id),total=count(id),actual=logged(id),pct=total?Math.min(100,Math.round(actual/total*100)):0;
-  return '<div class="daily-item" title="Занятие '+(pos+1)+': '+actual+' из '+total+' подходов"><span class="daily-count">'+actual+'/'+total+'</span><div class="daily-track"><div class="daily-fill type-bg-'+t+'" style="height:'+pct+'%"></div></div><div class="daily-number">'+(pos+1)+'</div></div>';
- }).join('');
- return '<div class="panel viz-panel"><div class="section-inline"><b>Нагрузка по занятиям</b><span class="muted">подходы / план</span></div><div class="daily-bars">'+rows+'</div></div>';
-}
-function weeklyBestProgress(){
- const since=Date.now()-7*86400000,all=[];
- for(let i=0;i<7;i++){let s=S.sessions[i];if(!s)continue;for(let [id,sets] of Object.entries(s.logs||{})){let vals=(sets||[]).filter(Boolean);let v=vals.at(-1);if(v?.w>0&&v.time>=since)all.push({id,w:v.w,t:v.time});}}
- for(let h of S.history)for(let [id,v] of Object.entries(h.lastSets||{}))if(v.w>0&&v.time>=since)all.push({id,w:v.w,t:v.time});
- const groups={};for(let r of all)(groups[r.id]??=[]).push(r);
- let best=null;for(let [id,vals] of Object.entries(groups)){vals.sort((a,b)=>a.t-b.t);if(vals.length<2||!vals[0].w)continue;const pct=(vals.at(-1).w/vals[0].w-1)*100;if(pct>0&&(!best||pct>best.pct))best={id,pct};}
- if(!best)return null;let names={};DAYS.forEach(d=>d[1].forEach(e=>names[e[0]]=e[1]));return {pct:Math.round(best.pct*10)/10,name:names[best.id]||best.id};
-}
-function loadViz(){return '<div class="panel viz-panel"><div class="section-inline"><b>Нагрузка по типам</b><span class="muted">выполнено / план</span></div>'+loadByType().map(({t,all,actual})=>'<div class="load-row"><div class="load-label">'+icon(t)+'<span>'+TYPE[t].label+'</span></div><div class="load-track"><div class="load-fill type-bg-'+t+'" style="width:'+(all?Math.min(100,actual/all*100):0)+'%"></div></div><span class="load-value">'+actual+'/'+all+'</span></div>').join('')+'<div class="tiny">По числу рабочих подходов, без условных процентов нагрузки.</div></div>';}
-function observations(id){
- const points=[];
- for(const h of [...S.history].reverse()){let e=h.lastSets?.[id],w=Number(e?.w??h.weights?.[id]);if(Number.isFinite(w)&&w>0)points.push({w,r:e?.r||null,t:h.date||0,cycle:h.cycle});}
- DAYS.forEach((d,i)=>{if(!d[1].some(x=>x[0]===id))return;let sets=(S.sessions[i]?.logs?.[id]||[]).filter(Boolean);if(sets.length){let last=sets[sets.length-1];if(last.w>0)points.push({w:last.w,r:last.r,t:last.time||S.sessions[i]?.endAt||0,cycle:S.cycle,day:i})}});
- return points.sort((a,b)=>a.t-b.t);
-}
-function bestWeights(){let best={};for(let h of S.history){let data=h.maxWeights||h.weights||{};for(let [id,w] of Object.entries(data))if(w>0)best[id]=Math.max(best[id]||0,w);}
- DAYS.forEach((d,i)=>d[1].forEach(e=>{if(!e[6])return;for(let a of (S.sessions[i]?.logs?.[e[0]]||[]).filter(Boolean))if(a.w>0)best[e[0]]=Math.max(best[e[0]]||0,a.w)}));
- return best;
-}
-function lastSetOf(id,withoutDay=null){
- let found=null;
- for(let i=0;i<DAYS.length;i++){if(i===withoutDay)continue;for(let l of (S.sessions[i]?.logs?.[id]||[]).filter(Boolean))if(!found||(l.time||0)>(found.time||0))found={...l,source:'cycle'};}
- if(found)return found;
- for(let h of S.history){let val=h.lastSets?.[id];if(val?.w>0)return {...val,source:'history'};let w=h.weights?.[id];if(w>0)return {w,r:null,source:'history'}}
- return null;
-}
-function progressFor(id,i){const current=(S.sessions[i]?.logs?.[id]||[]).filter(Boolean).at(-1);const before=lastSetOf(id,i);if(!current||!before||!current.w||!before.w)return null;return Math.round((current.w/before.w-1)*1000)/10;}
-function progressBadge(id,i){
- let p=progressFor(id,i);
- if(p===null)return '';
- let cls=p>0?'up':p<0?'down':'flat';
- return '<span class="trend '+cls+'">'+(p>0?'↗ +':p<0?'↘ ':'→ ')+fmt(p)+'%</span>';
-}
-function plot(points){
- if(!points.length)return '<div class="chart-empty">Пока нет данных. График появится после записи подходов.</div>';
- const values=points.slice(-10),min=Math.min(...values.map(p=>p.w)),max=Math.max(...values.map(p=>p.w));
- const coords=values.map((p,j)=>{let x=15+(values.length===1?130:j*260/(values.length-1));let y=79-(max===min?33:(p.w-min)/(max-min)*58);return {x,y,w:p.w}});
- const path=coords.map((p,j)=>(j?'L':'M')+' '+p.x.toFixed(1)+' '+p.y.toFixed(1)).join(' ');
- const dots=coords.map(p=>'<circle cx="'+p.x+'" cy="'+p.y+'" r="4" fill="var(--accent)"><title>'+fmt(p.w)+' кг</title></circle>').join('');
- return '<svg class="weight-chart" viewBox="0 0 290 98" role="img" aria-label="График рабочего веса"><line x1="10" y1="45" x2="280" y2="45" stroke="var(--line)"/><line x1="10" y1="80" x2="280" y2="80" stroke="var(--line)"/><path d="'+path+'" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'+dots+'</svg>';
-}
-function chartSection(){
- let ex=[['incline','Жим гантелей'],['latpulldown','Верхний блок'],['legpress','Жим ногами']];
- let selected=S.chartExercise||ex.find(([id])=>observations(id).length)?.[0]||'incline';if(!ex.some(([id])=>id===selected))selected='incline';
- const points=observations(selected),first=points[0],last=points.at(-1),pct=first&&last&&points.length>1?Math.round((last.w/first.w-1)*1000)/10:null;
- return '<div class="panel viz-panel"><div class="section-inline"><b>Рабочий вес</b><span class="muted">по занятиям</span></div><div class="chart-tabs">'+ex.map(([id,name])=>'<button class="chart-tab '+(selected===id?'selected':'')+'" data-act="chart" data-e="'+id+'">'+name+'</button>').join('')+'</div><div class="chart-flex">'+plot(points)+'<div class="chart-side">'+(last?'<strong>'+fmt(last.w)+' кг</strong><span class="muted">'+(pct===null?'Первый результат':(pct>0?'+':'')+fmt(pct)+'%')+'</span>':'<span class="muted">Нет данных</span>')+'</div></div><div class="tiny">Вес последнего записанного подхода. Отображается только фактическая история.</div></div>';
-}
-function recordsSection(){
- let best=bestWeights(),items=Object.entries(best).filter(([id])=>Object.values(DAYS).some(d=>d[1].some(x=>x[0]===id)));
- items.sort((a,b)=>b[1]-a[1]);
- const names={};DAYS.forEach(d=>d[1].forEach(e=>names[e[0]]||=e[1]));
- return '<div class="panel viz-panel"><div class="section-inline"><b>'+icon('trophy')+' Лучшие рабочие веса</b><span class="muted">сохранённая история</span></div>'+(items.length?items.slice(0,4).map(([id,w])=>'<div class="record-row"><span>'+names[id]+'</span><b>'+fmt(w)+' кг</b></div>').join(''):'<div class="muted">Появятся после первых подходов.</div>')+'</div>';
-}
-function rollingWeek(){
- let since=Date.now()-7*86400000,days=0,volume=0,minutes=0,sets=0;
- const sessions=[];
- for(let i=0;i<7;i++)if(S.sessions[i]?.done&&S.sessions[i].endAt>=since)sessions.push({s:S.sessions[i],i});
- for(let h of S.history)for(let sesrow of (h.sessionStats||[]))if(sesrow.endAt>=since)sessions.push({archive:sesrow});
- for(let x of sessions){
- days++;if(x.archive){volume+=x.archive.volume||0;minutes+=x.archive.time||0;sets+=x.archive.sets||0;}
- else{let i=x.i,s=x.s;minutes+=dur(s);sets+=logged(i);volume+=DAYS[i][1].reduce((total,e)=>total+(s.logs[e[0]]||[]).filter(Boolean).reduce((sum,a)=>sum+a.w*a.r*e[6],0),0)}
- }
- return {days,volume,minutes,sets};
-}
-function weekSection(){
- let a=rollingWeek(),best=weeklyBestProgress();
- return '<div class="panel viz-panel"><div class="section-inline"><b>Последние 7 дней</b><span class="muted">скользящая неделя</span></div><div class="week-grid"><div><strong>'+a.days+'/7</strong><small>тренировки</small></div><div><strong>'+fmt(a.volume)+'</strong><small>кг тоннаж</small></div><div><strong>'+hdur(a.minutes)+'</strong><small>время</small></div></div><div class="week-footer"><span>План на неделю: <b>'+Math.round(a.days/7*100)+'%</b></span><span>'+(best?'<b>↗ +'+fmt(best.pct)+'%</b> · '+best.name:'Прогресс: пока нет сравнения')+'</span></div><div class="tiny">Учитываются завершённые тренировки с доступными датами. Нагрузка — по записанным подходам.</div></div>';
-}
-function dayStatsForHistory(){
- return DAYS.map((d,i)=>{let s=ses(i);return {id:i,endAt:s.endAt||0,time:s.done?dur(s):0,sets:logged(i),volume:d[1].reduce((a,e)=>a+(s.logs[e[0]]||[]).filter(Boolean).reduce((t,l)=>t+l.w*l.r*e[6],0),0)}});
-}
-function historyExtras(){let maxWeights={},lastSets={};DAYS.forEach((d,i)=>d[1].forEach(e=>{if(!e[6])return;let sets=(ses(i).logs[e[0]]||[]).filter(Boolean);if(sets.length){maxWeights[e[0]]=Math.max(maxWeights[e[0]]||0,...sets.map(v=>v.w));let latest=sets.at(-1);if(!lastSets[e[0]]||latest.time>lastSets[e[0]].time)lastSets[e[0]]=latest;}}));return {maxWeights,lastSets,sessionStats:dayStatsForHistory()};}
 function nav(){return '<nav class="tabbar"><button data-act="home" class="'+(view==='home'?'sel':'')+'"><b>▦</b>Цикл</button><button data-act="report" class="'+(view==='report'?'sel':'')+'"><b>▤</b>Отчёт</button><button data-act="settings" class="'+(view==='settings'?'sel':'')+'"><b>⚙</b>Настройки</button></nav>'}
 
 function home(){
