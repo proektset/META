@@ -72,7 +72,7 @@ function dailyViz(){
 }
 function weeklyBestProgress(){
  const since=Date.now()-7*86400000,all=[];
- for(let i=0;i<7;i++){let s=S.sessions[i];if(!s)continue;for(let [id,sets] of Object.entries(s.logs||{}))for(let v of (sets||[]).filter(Boolean))if(v.w>0&&v.time>=since)all.push({id,w:v.w,t:v.time});}
+ for(let i=0;i<7;i++){let s=S.sessions[i];if(!s)continue;for(let [id,sets] of Object.entries(s.logs||{})){let vals=(sets||[]).filter(Boolean);let v=vals.at(-1);if(v?.w>0&&v.time>=since)all.push({id,w:v.w,t:v.time});}}
  for(let h of S.history)for(let [id,v] of Object.entries(h.lastSets||{}))if(v.w>0&&v.time>=since)all.push({id,w:v.w,t:v.time});
  const groups={};for(let r of all)(groups[r.id]??=[]).push(r);
  let best=null;for(let [id,vals] of Object.entries(groups)){vals.sort((a,b)=>a.t-b.t);if(vals.length<2||!vals[0].w)continue;const pct=(vals.at(-1).w/vals[0].w-1)*100;if(pct>0&&(!best||pct>best.pct))best={id,pct};}
