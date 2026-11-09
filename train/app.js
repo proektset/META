@@ -174,12 +174,46 @@ function bestWeights(){let best={};for(let h of S.history){let data=h.maxWeights
  DAYS.forEach((d,i)=>d[1].forEach(e=>{if(!e[6])return;for(let a of (S.sessions[i]?.logs?.[e[0]]||[]).filter(Boolean))if(a.w>0)best[e[0]]=Math.max(best[e[0]]||0,a.w)}));
  return best;
 }
+function previousExerciseResult(id,excludeDay=null){
+ const found=[];
+ for(let i=0;i<DAYS.length;i++){
+  if(i===excludeDay)continue;
+  const session=S.sessions[i],sets=(session?.logs?.[id]||[]).filter(Boolean);
+  if(!sets.length)continue;
+  const when=sets.at(-1)?.time||session.endAt||session.startAt||0;
+  found.push({sets:sets.map(x=>({...x})),when,day:i,source:'cycle',distanceKm:id==='walking'?Number(session.distanceKm)||0:0});
+ }
+ for(const h of S.history){
+  let full=h.exerciseResults?.[id];
+  if(full?.sets?.length){
+   found.push({sets:full.sets.filter(Boolean).map(x=>({...x})),when:full.when||h.date||0,day:full.day,source:'history',distanceKm:Number(full.distanceKm)||0});
+   continue;
+  }
+  const single=h.lastSets?.[id],legacyWeight=h.weights?.[id];
+  if(single||legacyWeight){
+   found.push({sets:[single?{...single}:{w:legacyWeight,r:null,time:h.date||0}],when:single?.time||h.date||0,source:'history',partial:true,day:null});
+  }
+ }
+ if(!found.length)return null;
+ found.sort((a,b)=>b.when-a.when);
+ return found[0];
+}
 function lastSetOf(id,withoutDay=null){
- let found=null;
- for(let i=0;i<DAYS.length;i++){if(i===withoutDay)continue;for(let l of (S.sessions[i]?.logs?.[id]||[]).filter(Boolean))if(!found||(l.time||0)>(found.time||0))found={...l,source:'cycle'};}
- if(found)return found;
- for(let h of S.history){let val=h.lastSets?.[id];if(val?.w>0)return {...val,source:'history'};let w=h.weights?.[id];if(w>0)return {w,r:null,source:'history'}}
- return null;
+ const p=previousExerciseResult(id,withoutDay);
+ return p?.sets.at(-1)||null;
+}
+function previousExerciseCard(e,i){
+ const p=previousExerciseResult(e[0],i);
+ if(!p)return '<div class="prev-exercise empty"><span class="prev-caption">ПРОШЛЫЙ РЕЗУЛЬТАТ</span><span class="prev-muted">Первой записи пока нет</span></div>';
+ const unit=e[0]==='walking'?'мин':e[0]==='plank'?'сек':'повт.';
+ const values=p.sets.map((set,k)=>{
+  const num=Number(set.r);const repetition=Number.isFinite(num)&&num>0?fmt(num)+' '+unit:'повторы не сохранены';
+  const weight=e[6]>0&&Number(set.w)>0?fmt(set.w)+' кг × ':'';
+  return '<span class="previous-set">'+(k+1)+'. '+weight+repetition+'</span>';
+ }).join('');
+ const date=p.when?new Date(p.when).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'}):'без даты';
+ const km=e[0]==='walking'&&p.distanceKm?'<span class="previous-distance">'+fmt(p.distanceKm)+' км</span>':'';
+ return '<div class="prev-exercise"><div class="prev-head"><span class="prev-caption">ПРОШЛЫЙ РЕЗУЛЬТАТ</span><span class="prev-date">'+date+'</span></div><div class="previous-sets">'+values+km+'</div>'+(p.partial?'<div class="prev-muted">Для старых циклов сохранён последний подход</div>':'')+'</div>';
 }
 function progressFor(id,i){const current=(S.sessions[i]?.logs?.[id]||[]).filter(Boolean).at(-1);const before=lastSetOf(id,i);if(!current||!before||!current.w||!before.w)return null;return Math.round((current.w/before.w-1)*1000)/10;}
 function progressBadge(id,i){
@@ -226,7 +260,19 @@ function weekSection(){
 function dayStatsForHistory(){
  return DAYS.map((d,i)=>{let s=ses(i);return {id:i,endAt:s.endAt||0,time:s.done?dur(s):0,sets:logged(i),distanceKm:Number(s.distanceKm)||0,volume:d[1].reduce((a,e)=>a+(s.logs[e[0]]||[]).filter(Boolean).reduce((t,l)=>t+l.w*l.r*e[6],0),0)}});
 }
-function historyExtras(){let maxWeights={},lastSets={};DAYS.forEach((d,i)=>d[1].forEach(e=>{if(!e[6])return;let sets=(ses(i).logs[e[0]]||[]).filter(Boolean);if(sets.length){maxWeights[e[0]]=Math.max(maxWeights[e[0]]||0,...sets.map(v=>v.w));let latest=sets.at(-1);if(!lastSets[e[0]]||latest.time>lastSets[e[0]].time)lastSets[e[0]]=latest;}}));return {maxWeights,lastSets,sessionStats:dayStatsForHistory()};}
+function historyExtras(){
+ let maxWeights={},lastSets={},exerciseResults={};
+ DAYS.forEach((d,i)=>d[1].forEach(e=>{
+  const id=e[0],session=ses(i),sets=(session.logs[id]||[]).filter(Boolean);
+  if(!sets.length)return;
+  if(e[6]){maxWeights[id]=Math.max(maxWeights[id]||0,...sets.map(v=>v.w));const latest=sets.at(-1);if(!lastSets[id]||(latest.time||0)>(lastSets[id].time||0))lastSets[id]=latest;}
+  const when=sets.at(-1)?.time||session.endAt||session.startAt||0;
+  if(!exerciseResults[id]||when>exerciseResults[id].when)exerciseResults[id]={
+   sets:sets.map(v=>({...v})),day:i,when,distanceKm:id==='walking'?Number(session.distanceKm)||0:0
+  };
+ }));
+ return {maxWeights,lastSets,exerciseResults,sessionStats:dayStatsForHistory()};
+}
 function nav(){return '<nav class="tabbar"><button data-act="home" class="'+(view==='home'?'sel':'')+'"><b>▦</b>Цикл</button><button data-act="report" class="'+(view==='report'?'sel':'')+'"><b>▤</b>Отчёт</button><button data-act="settings" class="'+(view==='settings'?'sel':'')+'"><b>⚙</b>Настройки</button></nav>'}
 
 function home(){
@@ -312,7 +358,7 @@ function exercise(e,i,idx){
   const buttons=l?'<button class="smallbtn" data-act="undo" data-i="'+i+'" data-e="'+e[0]+'" data-set="'+k+'" '+(s.done?'disabled':'')+'>↶</button>':isnext&&!s.done?(e[0]==='walking'||count(i)-logged(i)===1?'<button class="smallbtn" data-act="mark" data-i="'+i+'" data-e="'+e[0]+'" data-rest="0">Готово ✓</button>':'<div class="times">'+[1,2,3].map(x=>'<button data-act="mark" data-i="'+i+'" data-e="'+e[0]+'" data-rest="'+x+'">'+x+' м</button>').join('')+'</div>'):'';
   return '<div class="set '+(l?'done':'')+'"><div><div style="font-size:13px;font-weight:750">'+(k+1)+'-й подход '+(l?'✓':'')+'</div><div class="tiny" style="margin-top:3px">'+(l?l.r+' '+(e[0]==='walking'?'мин':e[0]==='plank'?'сек':'повт.')+(isweight?' · '+fmt(l.w)+' кг':''):isnext?'Следующий':'Не выполнен')+'</div></div>'+buttons+'</div>';
  }).join('');
- return '<div class="exercise '+(ok?'done':'')+'">'+header+ctrl+rows+'</div>';
+ return '<div class="exercise '+(ok?'done':'')+'">'+header+previousExerciseCard(e,i)+ctrl+rows+'</div>';
 }
 function training(i){
  const d=DAYS[i],s=ses(i),done=logged(i),all=count(i),rest=S.rest?.i===i?S.rest:null;
