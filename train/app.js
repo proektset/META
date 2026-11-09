@@ -62,6 +62,22 @@ const TYPE={push:{label:'Жим',short:'PUSH'},pull:{label:'Тяга',short:'PUL
 function typeChip(i){let t=typeFor(i);return '<span class="type-chip type-'+t+'">'+icon(t)+'<span>'+TYPE[t].short+'</span></span>';}
 function stateFor(i){let s=ses(i);return s.done?'done':s.startAt||logged(i)?'work':'idle';}
 function loadByType(){return ['push','pull','legs','recovery'].map(t=>{let all=0,actual=0;DAYS.forEach((d,i)=>{if(typeFor(i)!==t)return;all+=count(i);actual+=logged(i)});return {t,all,actual};});}
+
+function dailyViz(){
+ const rows=S.order.map((id,pos)=>{
+  const t=typeFor(id),total=count(id),actual=logged(id),pct=total?Math.min(100,Math.round(actual/total*100)):0;
+  return '<div class="daily-item" title="Занятие '+(pos+1)+': '+actual+' из '+total+' подходов"><span class="daily-count">'+actual+'/'+total+'</span><div class="daily-track"><div class="daily-fill type-bg-'+t+'" style="height:'+pct+'%"></div></div><div class="daily-number">'+(pos+1)+'</div></div>';
+ }).join('');
+ return '<div class="panel viz-panel"><div class="section-inline"><b>Нагрузка по занятиям</b><span class="muted">подходы / план</span></div><div class="daily-bars">'+rows+'</div></div>';
+}
+function weeklyBestProgress(){
+ const since=Date.now()-7*86400000,all=[];
+ for(let i=0;i<7;i++){let s=S.sessions[i];if(!s)continue;for(let [id,sets] of Object.entries(s.logs||{}))for(let v of (sets||[]).filter(Boolean))if(v.w>0&&v.time>=since)all.push({id,w:v.w,t:v.time});}
+ for(let h of S.history)for(let [id,v] of Object.entries(h.lastSets||{}))if(v.w>0&&v.time>=since)all.push({id,w:v.w,t:v.time});
+ const groups={};for(let r of all)(groups[r.id]??=[]).push(r);
+ let best=null;for(let [id,vals] of Object.entries(groups)){vals.sort((a,b)=>a.t-b.t);if(vals.length<2||!vals[0].w)continue;const pct=(vals.at(-1).w/vals[0].w-1)*100;if(pct>0&&(!best||pct>best.pct))best={id,pct};}
+ if(!best)return null;let names={};DAYS.forEach(d=>d[1].forEach(e=>names[e[0]]=e[1]));return {pct:Math.round(best.pct*10)/10,name:names[best.id]||best.id};
+}
 function loadViz(){return '<div class="panel viz-panel"><div class="section-inline"><b>Нагрузка по типам</b><span class="muted">выполнено / план</span></div>'+loadByType().map(({t,all,actual})=>'<div class="load-row"><div class="load-label">'+icon(t)+'<span>'+TYPE[t].label+'</span></div><div class="load-track"><div class="load-fill type-bg-'+t+'" style="width:'+(all?Math.min(100,actual/all*100):0)+'%"></div></div><span class="load-value">'+actual+'/'+all+'</span></div>').join('')+'<div class="tiny">По числу рабочих подходов, без условных процентов нагрузки.</div></div>';}
 function observations(id){
  const points=[];
@@ -119,8 +135,8 @@ function rollingWeek(){
  return {days,volume,minutes,sets};
 }
 function weekSection(){
- let a=rollingWeek();
- return '<div class="panel viz-panel"><div class="section-inline"><b>Последние 7 дней</b><span class="muted">скользящая неделя</span></div><div class="week-grid"><div><strong>'+a.days+'</strong><small>тренировки</small></div><div><strong>'+fmt(a.volume)+'</strong><small>кг тоннаж</small></div><div><strong>'+hdur(a.minutes)+'</strong><small>время</small></div></div><div class="tiny">Исторические циклы без дневных отметок в эту сводку не включаются.</div></div>';
+ let a=rollingWeek(),best=weeklyBestProgress();
+ return '<div class="panel viz-panel"><div class="section-inline"><b>Последние 7 дней</b><span class="muted">скользящая неделя</span></div><div class="week-grid"><div><strong>'+a.days+'/7</strong><small>тренировки</small></div><div><strong>'+fmt(a.volume)+'</strong><small>кг тоннаж</small></div><div><strong>'+hdur(a.minutes)+'</strong><small>время</small></div></div><div class="week-footer"><span>План на неделю: <b>'+Math.round(a.days/7*100)+'%</b></span><span>'+(best?'<b>↗ +'+fmt(best.pct)+'%</b> · '+best.name:'Прогресс: пока нет сравнения')+'</span></div><div class="tiny">Учитываются завершённые тренировки с доступными датами. Нагрузка — по записанным подходам.</div></div>';
 }
 function dayStatsForHistory(){
  return DAYS.map((d,i)=>{let s=ses(i);return {id:i,endAt:s.endAt||0,time:s.done?dur(s):0,sets:logged(i),volume:d[1].reduce((a,e)=>a+(s.logs[e[0]]||[]).filter(Boolean).reduce((t,l)=>t+l.w*l.r*e[6],0),0)}});
@@ -143,7 +159,7 @@ function home(){
  '<div class="statgrid"><div class="stat"><div class="bigstat">'+fmt(tonne())+'</div><div class="label">Кг поднято</div></div><div class="stat"><div class="bigstat">'+doneSets()+'</div><div class="label">Подходов</div></div><div class="stat"><div class="bigstat">'+hdur(timedone())+'</div><div class="label">Времени</div></div></div>'+
  '<div class="daystrip">'+tabs+'</div><div class="section">Семь занятий</div><div class="muted drag-instruction">Изменить порядок — потяни карточку за ⠿</div><div class="workout-list">'+cards+'</div>'+
  (f===7?'<button class="btn" data-act="report">Посмотреть отчёт →</button>':'<button class="btn" data-act="day" data-i="'+n+'">Открыть занятие '+(S.order.indexOf(n)+1)+' →</button>')+
- '<div class="section">Аналитика</div>'+loadViz()+chartSection()+weekSection()+recordsSection()+
+ '<div class="section">Аналитика</div>'+dailyViz()+loadViz()+chartSection()+weekSection()+recordsSection()+
  '<div class="note">Порядок занятий и тема сохраняются на iPhone. Графики учитывают только записанные результаты.</div></main>';
  return main;
 }
