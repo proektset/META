@@ -153,4 +153,22 @@ tr{border-color:var(--line)}
 .distance-week{background:var(--panel-2);padding:10px;border-radius:12px;color:var(--muted);font-size:12px;margin-bottom:10px}
 .distance-week b{color:var(--text)}
 @media(max-width:350px){.warmup-bottom{flex-wrap:wrap}.warmup-bottom .muted{max-width:100%}}
+
+/* v0.8 previously saved exercise results */
+.prev-exercise{
+ margin:12px 0 13px;padding:11px 12px;
+ border:1px solid var(--line);background:var(--panel-2);border-radius:12px;
+ display:flex;flex-direction:column;gap:8px
+}
+.prev-exercise.empty{opacity:.76;gap:5px}
+.prev-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.prev-caption{font-size:10px;letter-spacing:.09em;font-weight:850;color:var(--accent)}
+.prev-date,.prev-muted{font-size:11px;color:var(--muted)}
+.previous-sets{display:flex;flex-wrap:wrap;gap:6px}
+.previous-set,.previous-distance{
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:8px;padding:7px 8px;font-size:12px;font-variant-numeric:tabular-nums;
+ color:var(--text)
+}
+.previous-distance{color:var(--accent);font-weight:750}
 </style></head><body><div id="app"></div><script type="module" src="./app.js"></script></body></html>
