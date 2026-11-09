@@ -43,7 +43,7 @@ assert.match(run('chartSection()'),/Пока нет данных/);
 run("ses(0).logs.chestpress=[{w:20,r:10,time:Date.now()}];save();moveWorkout(0,3);");
 assert.equal(run("S.order.join(',')"),'1,2,3,0,4,5,6');
 assert.equal(run("ses(0).logs.chestpress[0].w"),20);
-assert.match(app.innerHTML,/Жим в грудном тренажёре/,'exercise remains linked to its day after reorder');
+assert.match(run('training(0)'),/Жим в грудном тренажёре/,'exercise remains linked to its day after reorder');
 run("toggleTheme()");
 assert.equal(store.get('train_theme'),'light');
 assert.equal(doc.documentElement.dataset.theme,'light');
