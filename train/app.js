@@ -19,7 +19,37 @@ const app=$('#app');
 const fmt=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(n||0);
 const minfmt=ms=>{let s=Math.max(0,Math.floor(ms/1000));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 const hdur=ms=>{let n=Math.round(ms/60000);return n>=60?Math.floor(n/60)+' ч '+n%60+' мин':n+' мин'};
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch{toast('Не удалось сохранить данные')}};
+const save=()=>{const snap=JSON.stringify(S);try{localStorage.setItem(KEY,snap)}catch{toast('Не удалось сохранить')}mirrorSave(snap)};
+
+const LOCAL_DB='train_local_backup_v1';
+let mirrorChain=Promise.resolve();
+function snapshotDB(){return new Promise((ok,no)=>{
+ if(!('indexedDB'in window))return no(new Error('No IDB'));
+ const r=indexedDB.open(LOCAL_DB,1);
+ r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('data'))r.result.createObjectStore('data')};
+ r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);
+})}
+function mirrorSave(snapshot){
+ mirrorChain=mirrorChain.catch(()=>{}).then(async()=>{
+  let db=await snapshotDB();
+  try{await new Promise((ok,no)=>{let tx=db.transaction('data','readwrite');
+   tx.objectStore('data').put(snapshot,KEY);tx.oncomplete=ok;tx.onerror=()=>no(tx.error);
+  })}finally{db.close()}
+ }).catch(()=>{});
+}
+async function restoreSnapshot(){
+ let hasLocal=false;try{hasLocal=!!localStorage.getItem(KEY)}catch{}
+ if(hasLocal)return;
+ try{let db=await snapshotDB(),json=await new Promise((ok,no)=>{
+  let req=db.transaction('data','readonly').objectStore('data').get(KEY);
+  req.onsuccess=()=>ok(req.result);req.onerror=()=>no(req.error)
+ });db.close();if(!json)return;let z=JSON.parse(json);
+ if(z.v!==1||!z.sessions||!z.history)return;
+ S={...empty(),...z,rest:null};if(!validOrder(S.order))S.order=DAYS.map((_,i)=>i);
+ try{localStorage.setItem(KEY,JSON.stringify(S))}catch{}
+ render();toast('Локальная история восстановлена');
+ }catch{}
+}
 const ses=i=>S.sessions[i]||(S.sessions[i]={startAt:0,endAt:0,pausedAt:0,pausedTotal:0,done:false,logs:{},warmupStartedAt:0,warmupEndAt:0,warmupDoneAt:0,warmupAlerted:false,distanceKm:0});
 const count=i=>DAYS[i][1].reduce((a,e)=>a+e[2],0);
 const logged=i=>Object.values(ses(i).logs).flat().filter(Boolean).length;
@@ -179,22 +209,22 @@ function recordsSection(){
  return '<div class="panel viz-panel"><div class="section-inline"><b>'+icon('trophy')+' Лучшие рабочие веса</b><span class="muted">сохранённая история</span></div>'+(items.length?items.slice(0,4).map(([id,w])=>'<div class="record-row"><span>'+names[id]+'</span><b>'+fmt(w)+' кг</b></div>').join(''):'<div class="muted">Появятся после первых подходов.</div>')+'</div>';
 }
 function rollingWeek(){
- let since=Date.now()-7*86400000,days=0,volume=0,minutes=0,sets=0;
+ let since=Date.now()-7*86400000,days=0,volume=0,minutes=0,sets=0,kilometers=0;
  const sessions=[];
  for(let i=0;i<7;i++)if(S.sessions[i]?.done&&S.sessions[i].endAt>=since)sessions.push({s:S.sessions[i],i});
  for(let h of S.history)for(let sesrow of (h.sessionStats||[]))if(sesrow.endAt>=since)sessions.push({archive:sesrow});
  for(let x of sessions){
- days++;if(x.archive){volume+=x.archive.volume||0;minutes+=x.archive.time||0;sets+=x.archive.sets||0;}
- else{let i=x.i,s=x.s;minutes+=dur(s);sets+=logged(i);volume+=DAYS[i][1].reduce((total,e)=>total+(s.logs[e[0]]||[]).filter(Boolean).reduce((sum,a)=>sum+a.w*a.r*e[6],0),0)}
+ days++;if(x.archive){volume+=x.archive.volume||0;minutes+=x.archive.time||0;sets+=x.archive.sets||0;kilometers+=x.archive.distanceKm||0;}
+ else{let i=x.i,s=x.s;minutes+=dur(s);sets+=logged(i);kilometers+=Number(s.distanceKm)||0;volume+=DAYS[i][1].reduce((total,e)=>total+(s.logs[e[0]]||[]).filter(Boolean).reduce((sum,a)=>sum+a.w*a.r*e[6],0),0)}
  }
- return {days,volume,minutes,sets};
+ return {days,volume,minutes,sets,kilometers};
 }
 function weekSection(){
  let a=rollingWeek(),best=weeklyBestProgress();
- return '<div class="panel viz-panel"><div class="section-inline"><b>Последние 7 дней</b><span class="muted">скользящая неделя</span></div><div class="week-grid"><div><strong>'+a.days+'/7</strong><small>тренировки</small></div><div><strong>'+fmt(a.volume)+'</strong><small>кг тоннаж</small></div><div><strong>'+hdur(a.minutes)+'</strong><small>время</small></div></div><div class="week-footer"><span>План на неделю: <b>'+Math.round(a.days/7*100)+'%</b></span><span>'+(best?'<b>↗ +'+fmt(best.pct)+'%</b> · '+best.name:'Прогресс: пока нет сравнения')+'</span></div><div class="tiny">Учитываются завершённые тренировки с доступными датами. Нагрузка — по записанным подходам.</div></div>';
+ return '<div class="panel viz-panel"><div class="section-inline"><b>Последние 7 дней</b><span class="muted">скользящая неделя</span></div><div class="week-grid"><div><strong>'+a.days+'/7</strong><small>тренировки</small></div><div><strong>'+fmt(a.volume)+'</strong><small>кг тоннаж</small></div><div><strong>'+hdur(a.minutes)+'</strong><small>время</small></div></div>'+(a.kilometers?'<div class="distance-week">Ходьба: <b>'+fmt(a.kilometers)+' км</b></div>':'')+'<div class="week-footer"><span>План на неделю: <b>'+Math.round(a.days/7*100)+'%</b></span><span>'+(best?'<b>↗ +'+fmt(best.pct)+'%</b> · '+best.name:'Прогресс: пока нет сравнения')+'</span></div><div class="tiny">Учитываются завершённые тренировки с доступными датами. Нагрузка — по записанным подходам.</div></div>';
 }
 function dayStatsForHistory(){
- return DAYS.map((d,i)=>{let s=ses(i);return {id:i,endAt:s.endAt||0,time:s.done?dur(s):0,sets:logged(i),volume:d[1].reduce((a,e)=>a+(s.logs[e[0]]||[]).filter(Boolean).reduce((t,l)=>t+l.w*l.r*e[6],0),0)}});
+ return DAYS.map((d,i)=>{let s=ses(i);return {id:i,endAt:s.endAt||0,time:s.done?dur(s):0,sets:logged(i),distanceKm:Number(s.distanceKm)||0,volume:d[1].reduce((a,e)=>a+(s.logs[e[0]]||[]).filter(Boolean).reduce((t,l)=>t+l.w*l.r*e[6],0),0)}});
 }
 function historyExtras(){let maxWeights={},lastSets={};DAYS.forEach((d,i)=>d[1].forEach(e=>{if(!e[6])return;let sets=(ses(i).logs[e[0]]||[]).filter(Boolean);if(sets.length){maxWeights[e[0]]=Math.max(maxWeights[e[0]]||0,...sets.map(v=>v.w));let latest=sets.at(-1);if(!lastSets[e[0]]||latest.time>lastSets[e[0]].time)lastSets[e[0]]=latest;}}));return {maxWeights,lastSets,sessionStats:dayStatsForHistory()};}
 function nav(){return '<nav class="tabbar"><button data-act="home" class="'+(view==='home'?'sel':'')+'"><b>▦</b>Цикл</button><button data-act="report" class="'+(view==='report'?'sel':'')+'"><b>▤</b>Отчёт</button><button data-act="settings" class="'+(view==='settings'?'sel':'')+'"><b>⚙</b>Настройки</button></nav>'}
@@ -209,7 +239,7 @@ function home(){
   return '<div class="card workout-row '+(state==='done'?'done':id===n?'active':'')+'" data-workout="'+id+'"><button class="card-main" data-act="day" data-i="'+id+'"><span class="num">'+(state==='done'?'✓':number)+'</span><span class="grow"><span class="workout-title"><span class="workout-title-text">'+d[0]+'</span>'+typeChip(id)+'</span><span class="card-status"><span class="status-dot status-'+state+'"></span><span>'+(state==='done'?'Готово':state==='work'?'В процессе':'Не начато')+'</span></span><p>'+subtitle+'</p></span><span class="chev">›</span></button><button class="draghandle" data-i="'+id+'" aria-label="Переместить занятие '+(p+1)+'. Перетаскивай или используй стрелки клавиатуры" title="Перетащить занятие">⠿</button></div>';
  }).join('');
  const main='<main class="page"><div class="top"><div><div class="kicker">ТРЕНИРОВКИ / TRAIN</div><div class="muted">30 минут · 7 занятий · рост мышц</div></div><div class="top-controls">'+themeToggle()+'<button class="smallbtn" data-act="settings" aria-label="Настройки">⚙</button></div></div>'+
- '<div class="kicker">'+(S.demo?'ДЕМОНСТРАЦИЯ':'ПРОГРЕСС ЦИКЛА')+'</div><div class="h1">Цикл № '+S.cycle+'</div><div class="muted">Занятия не привязаны к календарным датам</div>'+
+ '<div class="kicker">'+(S.demo?'ДЕМОНСТРАЦИЯ':'ПРОГРЕСС ЦИКЛА')+'</div><div class="h1">Цикл № '+S.cycle+'</div><div class="muted">Занятия не привязаны к календарным датам</div>'+connectionIndicator()+
  '<div class="panel hero"><div class="hero-progress"><div class="ring" style="--percentage:'+completedPct+'"><div><strong>'+f+'/7</strong><span>занятий</span></div></div><div class="hero-summary"><div class="kicker">Завершено</div><strong>'+completedPct+'%</strong><span class="muted">'+total+' / '+planned+' подходов</span><div class="bar"><i style="width:'+(planned?total/planned*100:0)+'%"></i></div></div></div></div>'+
  '<div class="statgrid"><div class="stat"><div class="bigstat">'+fmt(tonne())+'</div><div class="label">Кг поднято</div></div><div class="stat"><div class="bigstat">'+doneSets()+'</div><div class="label">Подходов</div></div><div class="stat"><div class="bigstat">'+hdur(timedone())+'</div><div class="label">Времени</div></div></div>'+
  '<div class="daystrip">'+tabs+'</div><div class="section">Семь занятий</div><div class="muted drag-instruction">Изменить порядок — потяни карточку за ⠿</div><div class="workout-list">'+cards+'</div>'+
@@ -304,7 +334,7 @@ function review(){
   const from=prev?.weights?.[id]||vals[0].w,to=vals.at(-1).w;
   return from>0&&(prev||vals.length>1)?[{name:vals[0].name,from,to,pct:Math.round((to/from-1)*1000)/10}]:[];
  });
- const summary='<div class="reportgrid"><div class="reportmetric"><b>'+fmt(cur.volume)+'</b><span>Всего поднято, кг</span></div><div class="reportmetric"><b>'+hdur(cur.time)+'</b><span>Время занятий</span></div><div class="reportmetric"><b>'+cur.sets+'</b><span>Подходов</span></div><div class="reportmetric"><b>'+(cur.days?Math.round(cur.time/60000/cur.days):0)+' мин</b><span>Среднее время</span></div></div>';
+ const summary='<div class="reportgrid"><div class="reportmetric"><b>'+fmt(cur.volume)+'</b><span>Всего поднято, кг</span></div><div class="reportmetric"><b>'+hdur(cur.time)+'</b><span>Время занятий</span></div><div class="reportmetric"><b>'+cur.sets+'</b><span>Подходов</span></div><div class="reportmetric"><b>'+(cur.days?Math.round(cur.time/60000/cur.days):0)+' мин</b><span>Среднее время</span></div></div>'+(cur.distanceKm?'<div class="panel"><b>Ходьба: '+fmt(cur.distanceKm)+' км</b><div class="muted">Расстояние введено вручную</div></div>':'');
  const changeTable=changes.length?'<div class="panel"><table>'+changes.map(c=>'<tr><td>'+c.name+'</td><td>'+fmt(c.from)+' → '+fmt(c.to)+'</td><td class="'+(c.pct>0?'positive':'')+'">'+(c.pct>0?'+':'')+fmt(c.pct)+'%</td></tr>').join('')+'</table></div>':'<div class="note">Сравнение появится после повторной тренировки этого упражнения или со следующего цикла.</div>';
  return '<main class="page"><div class="top"><button class="smallbtn" data-act="home">‹ Цикл</button>'+themeToggle()+'</div><div class="kicker">ОТЧЁТ ПО ТРЕНИРОВКАМ</div><div class="h1">Цикл № '+S.cycle+'</div><div class="muted">'+cur.days+' из 7 занятий завершено</div>'+summary+
  '<div class="section">Изменение рабочих весов</div>'+changeTable+chartSection()+recordsSection()+weekSection()+loadViz()+
@@ -368,4 +398,4 @@ if(a==='import'){let input=document.createElement('input');input.type='file';inp
 });
 window.addEventListener('visibilitychange',()=>{if(!document.hidden)update()});
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-setInterval(update,600);render();
+setInterval(update,600);render();restoreSnapshot();
