@@ -294,7 +294,7 @@ if(to>=0&&to<S.order.length&&moveWorkout(id,S.order[to])){render();app.querySele
 function timeForecast(i){
  const rem=Math.max(0,count(i)-logged(i));
  if(!rem)return 0;
- return Math.max(1,Math.round(rem*2.25+(ses(i).startAt?0:5)));
+ const session=ses(i),warmupLeft=session.warmupDoneAt?0:session.warmupEndAt?warmupCountdown(i)/60000:5;return Math.max(1,Math.round(rem*2.25+warmupLeft));
 }
 function exercise(e,i,idx){
  const s=ses(i),logs=s.logs[e[0]]||[],done=logs.filter(Boolean).length,ok=done===e[2],isweight=e[6]>0;
