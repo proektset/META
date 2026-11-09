@@ -88,4 +88,23 @@ ctx.navigator.onLine=true;
 assert.match(run('connectionIndicator()'),/Сохранено на iPhone/);
 console.log('TRAIN v0.7 tests OK — warmup, km, sound switch, offline status');
 
+
+/* In-place update must retain the existing key and all other days. */
+assert.match(src,/train_iphone_prototype_v1/);
+assert.equal(run('APP_VERSION'),'0.8');
+assert.match(run('settings()'),/Проверить обновление/);
+assert.match(run('settings()'),/Первая тренировка/);
+assert.equal(run('firstWorkoutSummary().count'),1);
+const day2Before=run('JSON.stringify(S.sessions[1])');
+const orderBefore=run('S.order.join(",")');
+run("restoreFirstWorkoutFromBackup({v:1,sessions:{0:{startAt:111000,endAt:222000,done:true,logs:{chestpress:[{w:31,r:8,time:115000},{w:32,r:9,time:116000}],incline:[{w:16,r:10,time:117000}]}}},history:[]})");
+assert.equal(run('firstWorkoutSummary().count'),3);
+assert.equal(run('S.sessions[0].logs.chestpress[0].w'),31);
+assert.equal(run('S.sessions[0].logs.incline[0].r'),10);
+assert.equal(run('S.sessions[0].done'),true);
+assert.equal(run('JSON.stringify(S.sessions[1])'),day2Before);
+assert.equal(run('S.order.join(",")'),orderBefore);
+assert.equal(run('S.history.length'),0);
+console.log('TRAIN v0.8 tests OK — preserves local key and transfers only first workout');
+
 console.log('TRAIN PWA smoke checks OK — theme, UI, progress, order, history');
