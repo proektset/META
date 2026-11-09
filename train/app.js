@@ -504,7 +504,9 @@ window.addEventListener('visibilitychange',()=>{if(!document.hidden)update()});
 if('serviceWorker'in navigator){
  let updateReloading=false;
  navigator.serviceWorker.addEventListener('controllerchange',()=>{
-  if(!updateReloading){updateReloading=true;location.reload()}
+  if(updateReloading)return;
+  if(view==='day'){toast('Новая версия готова. Закрой и открой приложение после тренировки.');return;}
+  updateReloading=true;location.reload();
  });
  navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'})
   .then(reg=>{if(navigator.onLine!==false)reg.update().catch(()=>{})})
