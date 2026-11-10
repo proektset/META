@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c1119">
+<title>Обновление · ТРЕНИРОВКИ</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;background:#0e151e;color:#edf7f0}*{box-sizing:border-box}body{margin:0}main{max-width:480px;margin:auto;padding:calc(34px + env(safe-area-inset-top)) 20px 40px;min-height:100dvh}
+h1{font-size:25px;margin:6px 0 12px;letter-spacing:-.03em}p{line-height:1.5;color:#a9bcc1;font-size:14px}.section{border:1px solid #32424a;border-radius:16px;padding:16px;margin-top:14px;background:#1a2831}.small{font-size:12px;color:#b1c9c3}
+button,a.button{display:block;width:100%;padding:14px 12px;border-radius:12px;font-size:15px;font-weight:700;text-align:center;text-decoration:none;background:#9ce8b8;color:#0d2e1a;border:0;margin-top:12px}
+button.secondary{background:#263a43;color:#d4e8dc;border:1px solid #52616d}
+b{color:#fff}code{font-size:12px;word-break:break-all}.tag{font-weight:800;color:#8de5b0;font-size:11px;letter-spacing:.15em}
+</style></head><body><main>
+<div class="tag">ТРЕНИРОВКИ / ДИАГНОСТИКА</div>
+<h1>Обновление без потери данных</h1>
+<p>Проверка установленной версии и сохранений. Этот экран не удаляет результаты тренировок.</p>
+<div class="section"><b>Текущее хранилище</b><p id="status">Проверяю сохранение…</p><div class="small" id="address"></div></div>
+<div class="section"><b>Обновление</b><p id="version">Текущая версия на GitHub: 0.9</p>
+<button id="update">Загрузить последнюю версию</button>
+<button class="secondary" id="export">Скачать резервную копию данных</button>
+<p id="result" role="status" aria-live="polite"></p></div>
+<p>Важно: Safari и приложение, установленное на экран «Домой», могут использовать отдельные хранилища. Если здесь показано «0 подходов», а в старой версии они видны, не удаляй старое приложение — сначала экспортируй данные из него.</p>
+<a class="button" href="./">Вернуться к тренировкам</a>
+</main>
+<script>
+(()=>{
+const key='train_iphone_prototype_v1';
+const out=document.getElementById('status'),result=document.getElementById('result'),address=document.getElementById('address');
+address.textContent=location.origin+location.pathname;
+let saved=null;
+try{saved=JSON.parse(localStorage.getItem(key)||'null')}catch{}
+let first=0,total=0;
+try{
+for(const day of Object.values(saved?.sessions||{}))for(const arr of Object.values(day.logs||{}))if(Array.isArray(arr))total+=arr.filter(Boolean).length;
+for(const arr of Object.values(saved?.sessions?.['0']?.logs||{}))if(Array.isArray(arr))first+=arr.filter(Boolean).length;
+out.textContent=saved?'Найдено '+total+' подходов, первая тренировка: '+first+'. Цикл № '+(saved.cycle||1)+'.':'В этом контексте сохранений пока нет.';
+}catch{out.textContent='Не удалось прочитать локальный журнал.'}
+document.getElementById('export').addEventListener('click',()=>{
+const raw=localStorage.getItem(key);if(!raw){result.textContent='Здесь нет сохранений. Открой старую версию, где видны результаты.';return}
+const blob=new Blob([raw],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='train-preserve-'+Date.now()+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+result.textContent='Резервная копия подготовлена.';
+});
+document.getElementById('update').addEventListener('click',async()=>{
+result.textContent='Проверка обновления…';
+try{
+if(!navigator.onLine)throw new Error('Нет соединения с интернетом');
+if('serviceWorker'in navigator){
+const reg=await navigator.serviceWorker.getRegistration('./');if(reg){await reg.update();if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});}
+}
+const response=await fetch('./index.html?fresh='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('Не удалось получить новую версию с сервера');
+result.textContent='Новая версия получена. Открываю приложение…';
+location.replace('./?updated=09&fresh='+Date.now());
+}catch(e){result.textContent='Обновление не выполнено: '+(e.message||'ошибка сети')+'. Данные остались на телефоне.'}
+});
+})();
+</script></body></html>
