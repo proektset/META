@@ -60,7 +60,36 @@ for(let i=6;i>=0;i--){const s=S.sessions[i]?.logs[e[0]];if(s){const k=s.filter(B
 for(const h of S.history){if(h.weights?.[e[0]])return h.weights[e[0]]}return 0};
 const reps=e=>S.drafts[e[0]]?.r??e[3];
 const dur=s=>!s.startAt?0:Math.max(0,(s.endAt||s.pausedAt||Date.now())-s.startAt-(s.pausedTotal||0));
-const tonne=()=>DAYS.reduce((sum,d,i)=>sum+d[1].reduce((a,e)=>a+(ses(i).logs[e[0]]||[]).filter(Boolean).reduce((t,l)=>t+l.w*l.r*e[6],0),0),0);
+/* One auditable rule for every tonnage number (session, cycle, week and history).
+   e[6]: 0 = not weighted, 1 = one apparatus, 2 = two dumbbells.
+   w = weight of one dumbbell when e[6] is 2. */
+const setVolume=(e,l)=>{
+ if(!l||!e||!(e[6]>0))return 0;
+ const weight=Number(l.w),repetitions=Number(l.r),multiplier=Number(e[6]);
+ if(!Number.isFinite(weight)||!Number.isFinite(repetitions)||weight<=0||repetitions<=0||
+    !Number.isFinite(multiplier)||weight>1500||repetitions>500)return 0;
+ return Math.round(weight*repetitions*multiplier*100)/100;
+};
+const loggedSets=(e,i)=>{
+ const rows=S.sessions[i]?.logs?.[e[0]];
+ return Array.isArray(rows)?rows.slice(0,e[2]).filter(Boolean):[];
+};
+const exerciseVolume=(e,i)=>loggedSets(e,i).reduce((sum,l)=>sum+setVolume(e,l),0);
+const volumeForDay=i=>DAYS[i][1].reduce((sum,e)=>sum+exerciseVolume(e,i),0);
+const tonne=()=>DAYS.reduce((sum,_,i)=>sum+volumeForDay(i),0);
+function tonnagePanel(i){
+ const volume=volumeForDay(i),rows=DAYS[i][1].filter(e=>loggedSets(e,i).length);
+ const breakdown=rows.map(e=>{
+  const sets=loggedSets(e,i),subtotal=exerciseVolume(e,i);
+  const parts=sets.map((l,k)=>{
+   if(!(e[6]>0))return '<div class="tonnage-line">'+(k+1)+'-й подход: без дополнительного веса — 0 кг</div>';
+   const w=Number(l.w)||0,r=Number(l.r)||0,m=e[6];
+   return '<div class="tonnage-line">'+(k+1)+'-й: '+fmt(w)+' кг × '+fmt(r)+' повт.'+(m===2?' × 2 гантели':'')+' = <b>'+fmt(setVolume(e,l))+' кг</b></div>';
+  }).join('');
+  return '<div class="tonnage-group"><strong>'+e[1]+'</strong><span class="tonnage-subtotal">'+fmt(subtotal)+' кг</span>'+parts+'</div>';
+ }).join('');
+ return '<div class="panel tonnage-panel"><div class="section-inline"><b>Тоннаж этого занятия</b><span class="muted">записанные подходы</span></div><div class="tonnage-total">'+fmt(volume)+' <small>кг</small></div><details class="tonnage-details"><summary>Проверить расчёт по подходам</summary>'+(breakdown||'<div class="muted">Пока нет выполненных подходов.</div>')+'</details><div class="tiny">Вес одной гантели умножается на 2. Разминка, ходьба и упражнения без отягощения не учитываются.</div></div>';
+}
 const timedone=()=>DAYS.reduce((t,_,i)=>t+(ses(i).done?dur(ses(i)):0),0);
 const doneSets=()=>DAYS.reduce((t,_,i)=>t+logged(i),0);
 const kmTotal=()=>DAYS.reduce((t,_,i)=>t+(Number(S.sessions[i]?.distanceKm)||0),0);
@@ -249,7 +278,7 @@ function rollingWeek(){
  for(let h of S.history)for(let sesrow of (h.sessionStats||[]))if(sesrow.endAt>=since)sessions.push({archive:sesrow});
  for(let x of sessions){
  days++;if(x.archive){volume+=x.archive.volume||0;minutes+=x.archive.time||0;sets+=x.archive.sets||0;kilometers+=x.archive.distanceKm||0;}
- else{let i=x.i,s=x.s;minutes+=dur(s);sets+=logged(i);kilometers+=Number(s.distanceKm)||0;volume+=DAYS[i][1].reduce((total,e)=>total+(s.logs[e[0]]||[]).filter(Boolean).reduce((sum,a)=>sum+a.w*a.r*e[6],0),0)}
+ else{let i=x.i,s=x.s;minutes+=dur(s);sets+=logged(i);kilometers+=Number(s.distanceKm)||0;volume+=volumeForDay(i)}
  }
  return {days,volume,minutes,sets,kilometers};
 }
@@ -258,7 +287,7 @@ function weekSection(){
  return '<div class="panel viz-panel"><div class="section-inline"><b>Последние 7 дней</b><span class="muted">скользящая неделя</span></div><div class="week-grid"><div><strong>'+a.days+'/7</strong><small>тренировки</small></div><div><strong>'+fmt(a.volume)+'</strong><small>кг тоннаж</small></div><div><strong>'+hdur(a.minutes)+'</strong><small>время</small></div></div>'+(a.kilometers?'<div class="distance-week">Ходьба: <b>'+fmt(a.kilometers)+' км</b></div>':'')+'<div class="week-footer"><span>План на неделю: <b>'+Math.round(a.days/7*100)+'%</b></span><span>'+(best?'<b>↗ +'+fmt(best.pct)+'%</b> · '+best.name:'Прогресс: пока нет сравнения')+'</span></div><div class="tiny">Учитываются завершённые тренировки с доступными датами. Нагрузка — по записанным подходам.</div></div>';
 }
 function dayStatsForHistory(){
- return DAYS.map((d,i)=>{let s=ses(i);return {id:i,endAt:s.endAt||0,time:s.done?dur(s):0,sets:logged(i),distanceKm:Number(s.distanceKm)||0,volume:d[1].reduce((a,e)=>a+(s.logs[e[0]]||[]).filter(Boolean).reduce((t,l)=>t+l.w*l.r*e[6],0),0)}});
+ return DAYS.map((d,i)=>{let s=ses(i);return {id:i,endAt:s.endAt||0,time:s.done?dur(s):0,sets:logged(i),distanceKm:Number(s.distanceKm)||0,volume:volumeForDay(i)}});
 }
 function historyExtras(){
  let maxWeights={},lastSets={},exerciseResults={};
@@ -281,13 +310,13 @@ function home(){
  const tabs=S.order.map((id,p)=>'<button class="daytile '+(ses(id).done?'done':id===n?'active':'')+'" data-act="day" data-i="'+id+'">'+(ses(id).done?'✓':p+1)+'<small>Д'+(p+1)+'</small></button>').join('');
  const cards=S.order.map((id,p)=>{
   const d=DAYS[id],state=stateFor(id),number=String(p+1).padStart(2,'0'),counted=logged(id),total=count(id);
-  const subtitle=state==='done'?'Завершено · '+counted+' подходов':state==='work'?'Выполнено '+counted+' из '+total+' подходов':d[1].length+' упражнения · '+total+' подходов';
+  const subtitle=(state==='done'?'Завершено · '+counted+' подходов':state==='work'?'Выполнено '+counted+' из '+total+' подходов':d[1].length+' упражнения · '+total+' подходов')+(volumeForDay(id)?' · '+fmt(volumeForDay(id))+' кг тоннаж':'');
   return '<div class="card workout-row '+(state==='done'?'done':id===n?'active':'')+'" data-workout="'+id+'"><button class="card-main" data-act="day" data-i="'+id+'"><span class="num">'+(state==='done'?'✓':number)+'</span><span class="grow"><span class="workout-title"><span class="workout-title-text">'+d[0]+'</span>'+typeChip(id)+'</span><span class="card-status"><span class="status-dot status-'+state+'"></span><span>'+(state==='done'?'Готово':state==='work'?'В процессе':'Не начато')+'</span></span><p>'+subtitle+'</p></span><span class="chev">›</span></button><button class="draghandle" data-i="'+id+'" aria-label="Переместить занятие '+(p+1)+'. Перетаскивай или используй стрелки клавиатуры" title="Перетащить занятие">⠿</button></div>';
  }).join('');
  const main='<main class="page"><div class="top"><div><div class="kicker">ТРЕНИРОВКИ / TRAIN</div><div class="muted">30 минут · 7 занятий · рост мышц</div></div><div class="top-controls">'+themeToggle()+'<button class="smallbtn" data-act="settings" aria-label="Настройки">⚙</button></div></div>'+
  '<div class="kicker">'+(S.demo?'ДЕМОНСТРАЦИЯ':'ПРОГРЕСС ЦИКЛА')+'</div><div class="h1">Цикл № '+S.cycle+'</div><div class="muted">Занятия не привязаны к календарным датам</div>'+connectionIndicator()+
  '<div class="panel hero"><div class="hero-progress"><div class="ring" style="--percentage:'+completedPct+'"><div><strong>'+f+'/7</strong><span>занятий</span></div></div><div class="hero-summary"><div class="kicker">Завершено</div><strong>'+completedPct+'%</strong><span class="muted">'+total+' / '+planned+' подходов</span><div class="bar"><i style="width:'+(planned?total/planned*100:0)+'%"></i></div></div></div></div>'+
- '<div class="statgrid"><div class="stat"><div class="bigstat">'+fmt(tonne())+'</div><div class="label">Кг поднято</div></div><div class="stat"><div class="bigstat">'+doneSets()+'</div><div class="label">Подходов</div></div><div class="stat"><div class="bigstat">'+hdur(timedone())+'</div><div class="label">Времени</div></div></div>'+
+ '<div class="statgrid"><div class="stat"><div class="bigstat">'+fmt(tonne())+'</div><div class="label">Тоннаж цикла, кг</div></div><div class="stat"><div class="bigstat">'+doneSets()+'</div><div class="label">Подходов</div></div><div class="stat"><div class="bigstat">'+hdur(timedone())+'</div><div class="label">Времени</div></div></div>'+
  '<div class="daystrip">'+tabs+'</div><div class="section">Семь занятий</div><div class="muted drag-instruction">Изменить порядок — потяни карточку за ⠿</div><div class="workout-list">'+cards+'</div>'+
  (f===7?'<button class="btn" data-act="report">Посмотреть отчёт →</button>':'<button class="btn" data-act="day" data-i="'+n+'">Открыть занятие '+(S.order.indexOf(n)+1)+' →</button>')+
  '<div class="section">Аналитика</div>'+dailyViz()+loadViz()+chartSection()+weekSection()+recordsSection()+
@@ -365,7 +394,7 @@ function training(i){
  const forecast='<div class="remaining"><span>Осталось <b>'+(all-done)+'</b> подходов</span><span>≈ '+timeForecast(i)+' мин</span></div>';
  const rt=rest?'<div class="rest"><div class="kicker">ОТДЫХ</div><div style="display:flex;align-items:center;justify-content:space-between"><div class="timer" id="rest-time">'+minfmt(rest.end-Date.now())+'</div><button class="smallbtn" data-act="skip"> '+(rest.end<=Date.now()?'Понятно':'Пропустить')+' </button></div><div class="muted">Сигнал при заблокированном экране пока недоступен — требуется Web Push.</div></div>':'';
  return '<main class="page"><div class="top"><button class="smallbtn" data-act="home">‹ Назад</button><div class="top-controls">'+typeChip(i)+themeToggle()+'</div></div><div class="h1">'+d[0]+'</div><div class="muted">Занятие '+(S.order.indexOf(i)+1)+' из 7</div><div class="bar"><i style="width:'+(done/all*100)+'%"></i></div>'+forecast+
- '<div class="clockbox"><div><div class="tiny">Время тренировки</div><div class="timer" id="session-time">'+minfmt(dur(s))+'</div></div>'+(s.done?'<b>Готово ✓</b>':!s.startAt?'<button class="smallbtn" data-act="start" data-i="'+i+'">▶ Начать</button>':s.pausedAt?'<button class="smallbtn" data-act="resume" data-i="'+i+'">▶ Продолжить</button>':'<button class="smallbtn" data-act="pause" data-i="'+i+'">Ⅱ Пауза</button>')+'</div>'+warmupPanel(i)+rt+
+ tonnagePanel(i)+'<div class="clockbox"><div><div class="tiny">Время тренировки</div><div class="timer" id="session-time">'+minfmt(dur(s))+'</div></div>'+(s.done?'<b>Готово ✓</b>':!s.startAt?'<button class="smallbtn" data-act="start" data-i="'+i+'">▶ Начать</button>':s.pausedAt?'<button class="smallbtn" data-act="resume" data-i="'+i+'">▶ Продолжить</button>':'<button class="smallbtn" data-act="pause" data-i="'+i+'">Ⅱ Пауза</button>')+'</div>'+warmupPanel(i)+rt+
  d[1].map((e,j)=>exercise(e,i,j)).join('')+
  (s.done?'<div class="panel">Завершено за '+hdur(dur(s))+'<button class="btn secondary" data-act="home">На главную</button></div>':'<button class="btn" data-act="finish" data-i="'+i+'" '+(!done?'disabled':'')+'>Завершить тренировку ✓</button>')+
  '<div class="note">«≈ мин» — ориентировочное оставшееся время, не норматив. Для гантелей указан вес одной гантели; в тоннаже учитываются обе.</div></main>';
@@ -383,14 +412,14 @@ function review(){
  const summary='<div class="reportgrid"><div class="reportmetric"><b>'+fmt(cur.volume)+'</b><span>Всего поднято, кг</span></div><div class="reportmetric"><b>'+hdur(cur.time)+'</b><span>Время занятий</span></div><div class="reportmetric"><b>'+cur.sets+'</b><span>Подходов</span></div><div class="reportmetric"><b>'+(cur.days?Math.round(cur.time/60000/cur.days):0)+' мин</b><span>Среднее время</span></div></div>'+(cur.distanceKm?'<div class="panel"><b>Ходьба: '+fmt(cur.distanceKm)+' км</b><div class="muted">Расстояние введено вручную</div></div>':'');
  const changeTable=changes.length?'<div class="panel"><table>'+changes.map(c=>'<tr><td>'+c.name+'</td><td>'+fmt(c.from)+' → '+fmt(c.to)+'</td><td class="'+(c.pct>0?'positive':'')+'">'+(c.pct>0?'+':'')+fmt(c.pct)+'%</td></tr>').join('')+'</table></div>':'<div class="note">Сравнение появится после повторной тренировки этого упражнения или со следующего цикла.</div>';
  return '<main class="page"><div class="top"><button class="smallbtn" data-act="home">‹ Цикл</button>'+themeToggle()+'</div><div class="kicker">ОТЧЁТ ПО ТРЕНИРОВКАМ</div><div class="h1">Цикл № '+S.cycle+'</div><div class="muted">'+cur.days+' из 7 занятий завершено</div>'+summary+
- '<div class="section">Изменение рабочих весов</div>'+changeTable+chartSection()+recordsSection()+weekSection()+loadViz()+
+ '<div class="section">Тоннаж по занятиям</div><div class="panel tonnage-report">'+S.order.filter(i=>logged(i)).map(i=>'<div class="tonnage-report-row"><span>'+DAYS[i][0]+' <small>№ '+(S.order.indexOf(i)+1)+'</small></span><b>'+fmt(volumeForDay(i))+' кг</b></div>').join('')+'<div class="tonnage-report-row total"><span>Всего за цикл</span><b>'+fmt(cur.volume)+' кг</b></div></div><div class="section">Изменение рабочих весов</div>'+changeTable+chartSection()+recordsSection()+weekSection()+loadViz()+
  '<div class="note">Тоннаж = сумма (вес × повторы). Кардио и упражнения с собственным весом учитываются отдельно. Изменение рабочих весов не равно измерению мышечной массы.</div>'+
  (cur.days===7?'<button class="btn" data-act="newcycle">Начать следующий цикл →</button>':'<button class="btn secondary" data-act="home">Продолжить тренировки</button>')+
  (S.history.length?'<div class="section">Предыдущие циклы</div>'+S.history.map(h=>'<div class="panel">Цикл № '+h.cycle+' · '+fmt(h.volume)+' кг · '+hdur(h.time)+'</div>').join(''):'')+'</main>';
 }
 
 
-const APP_VERSION='0.9';
+const APP_VERSION='1.0';
 function firstWorkoutSummary(){
  const session=S.sessions[0],logs=session?.logs||{};
  const countSaved=DAYS[0][1].reduce((total,e)=>total+(Array.isArray(logs[e[0]])?logs[e[0]].filter(x=>x&&x.r!=null).length:0),0);
@@ -437,7 +466,7 @@ function checkAppUpdate(){
 }
 
 function settings(){let standalone=matchMedia('(display-mode:standalone)').matches||navigator.standalone;
-return '<main class="page"><div class="top"><button class="smallbtn" data-act="home">‹ Цикл</button><div class="top-controls"><div class="kicker">НАСТРОЙКИ</div>'+themeToggle()+'</div></div><div class="h1">Приложение</div><div class="panel"><b>Обновление приложения</b><p class="muted">Версия 0.9. Кнопка проверит кэш и откроет обновление без удаления результатов.</p><button class="btn secondary" data-act="updateapp">Проверить обновление</button></div><div class="panel"><b>Первая тренировка</b><p class="muted">Проверь результаты первого занятия или перенеси из резервной копии старой версии, не затрагивая другие дни.</p><div class="two"><button class="smallbtn" data-act="checkfirst">Проверить</button><button class="smallbtn" data-act="importfirst">Из JSON</button></div></div><div class="panel"><b>Тема оформления</b><p class="muted">Нажми на солнце или луну в верхнем углу. Выбранная тема сохранится на iPhone.</p><div class="install">Сейчас: '+(colorTheme==='dark'?'тёмная':'светлая')+' тема</div></div><div class="panel"><b>Установка на iPhone</b><p class="muted">Открой в Safari → Поделиться → На экран Домой. Затем запускай приложение по иконке.</p><div class="install">'+(standalone?'Приложение открыто с главного экрана.':'Открой это приложение через иконку на рабочем столе iPhone.')+'</div></div><div class="panel"><b>Звуковой сигнал</b><p class="muted">Звуковой сигнал по завершении 5-минутной разминки, отдыха и занятия — когда приложение открыто.</p><button class="btn secondary" data-act="soundtoggle">Звук: '+(S.soundEnabled?'Включён':'Выключен')+'</button><button class="btn secondary" data-act="soundtest">Проверить сигнал</button></div><div class="panel"><b>Офлайн-режим и сохранение</b><p class="muted">Приложение открывается без интернета после первой загрузки. Результаты сразу записываются на iPhone и дублируются в локальном хранилище IndexedDB. Для автоматической отправки копии на сервер нужен отдельный сервис синхронизации — пока он не подключён.</p>'+connectionIndicator()+'</div><div class="panel"><b>Уведомления при блокировке</b><p class="muted">Для сигнала нужен подключённый сервер Web Push и интернет. Сервер сейчас не подключён. При открытом экране таймер работает без интернета.</p><button class="btn secondary" disabled>Web Push: не подключён</button></div><div class="panel"><b>Порядок занятий</b><p class="muted">На главном экране тяни карточку за значок ⠿. Порядок сохраняется автоматически.</p><button class="btn secondary" data-act="defaultorder">Вернуть первоначальный порядок</button></div><div class="panel"><b>Резервное копирование</b><p class="muted">Тренировки хранятся на этом устройстве. Экспортируй JSON перед сменой телефона или удалением веб-приложения.</p><div class="two"><button class="smallbtn" data-act="export">Экспорт JSON</button><button class="smallbtn" data-act="import">Импорт JSON</button></div></div><div class="panel"><b>Демонстрация отчёта</b><p class="muted">Тестовые записи заменят текущий цикл.</p><button class="btn secondary" data-act="demo">Показать демо-цикл</button><button class="btn danger" data-act="reset">Удалить все данные</button></div><div class="note">Версия 0.9. Без аккаунта. Данные тренировок не отправляются на сервер.</div></main>'}
+return '<main class="page"><div class="top"><button class="smallbtn" data-act="home">‹ Цикл</button><div class="top-controls"><div class="kicker">НАСТРОЙКИ</div>'+themeToggle()+'</div></div><div class="h1">Приложение</div><div class="panel"><b>Обновление приложения</b><p class="muted">Версия 1.0. Пересчитан тоннаж; сохранённые подходы и веса не изменяются.</p><button class="btn secondary" data-act="updateapp">Проверить обновление</button></div><div class="panel"><b>Первая тренировка</b><p class="muted">Проверь результаты первого занятия или перенеси из резервной копии старой версии, не затрагивая другие дни.</p><div class="two"><button class="smallbtn" data-act="checkfirst">Проверить</button><button class="smallbtn" data-act="importfirst">Из JSON</button></div></div><div class="panel"><b>Тема оформления</b><p class="muted">Нажми на солнце или луну в верхнем углу. Выбранная тема сохранится на iPhone.</p><div class="install">Сейчас: '+(colorTheme==='dark'?'тёмная':'светлая')+' тема</div></div><div class="panel"><b>Установка на iPhone</b><p class="muted">Открой в Safari → Поделиться → На экран Домой. Затем запускай приложение по иконке.</p><div class="install">'+(standalone?'Приложение открыто с главного экрана.':'Открой это приложение через иконку на рабочем столе iPhone.')+'</div></div><div class="panel"><b>Звуковой сигнал</b><p class="muted">Звуковой сигнал по завершении 5-минутной разминки, отдыха и занятия — когда приложение открыто.</p><button class="btn secondary" data-act="soundtoggle">Звук: '+(S.soundEnabled?'Включён':'Выключен')+'</button><button class="btn secondary" data-act="soundtest">Проверить сигнал</button></div><div class="panel"><b>Офлайн-режим и сохранение</b><p class="muted">Приложение открывается без интернета после первой загрузки. Результаты сразу записываются на iPhone и дублируются в локальном хранилище IndexedDB. Для автоматической отправки копии на сервер нужен отдельный сервис синхронизации — пока он не подключён.</p>'+connectionIndicator()+'</div><div class="panel"><b>Уведомления при блокировке</b><p class="muted">Для сигнала нужен подключённый сервер Web Push и интернет. Сервер сейчас не подключён. При открытом экране таймер работает без интернета.</p><button class="btn secondary" disabled>Web Push: не подключён</button></div><div class="panel"><b>Порядок занятий</b><p class="muted">На главном экране тяни карточку за значок ⠿. Порядок сохраняется автоматически.</p><button class="btn secondary" data-act="defaultorder">Вернуть первоначальный порядок</button></div><div class="panel"><b>Резервное копирование</b><p class="muted">Тренировки хранятся на этом устройстве. Экспортируй JSON перед сменой телефона или удалением веб-приложения.</p><div class="two"><button class="smallbtn" data-act="export">Экспорт JSON</button><button class="smallbtn" data-act="import">Импорт JSON</button></div></div><div class="panel"><b>Демонстрация отчёта</b><p class="muted">Тестовые записи заменят текущий цикл.</p><button class="btn secondary" data-act="demo">Показать демо-цикл</button><button class="btn danger" data-act="reset">Удалить все данные</button></div><div class="note">Версия 1.0. Без аккаунта. Данные тренировок не отправляются на сервер.</div></main>'}
 function render(){app.innerHTML=(view==='home'?home():view==='day'?training(day):view==='report'?review():settings())+nav();update()}
 function update(){
  let c=$('#session-time');if(c)c.textContent=minfmt(dur(ses(day)));
