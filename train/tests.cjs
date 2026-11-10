@@ -91,7 +91,8 @@ console.log('TRAIN v0.7 tests OK — warmup, km, sound switch, offline status');
 
 /* In-place update must retain the existing key and all other days. */
 assert.match(src,/train_iphone_prototype_v1/);
-assert.equal(run('APP_VERSION'),'0.8');
+assert.equal(run('APP_VERSION'),'0.9');
+assert.match(src,/refresh\.html/);
 assert.match(run('settings()'),/Проверить обновление/);
 assert.match(run('settings()'),/Первая тренировка/);
 assert.equal(run('firstWorkoutSummary().count'),1);
