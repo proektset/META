@@ -171,4 +171,22 @@ tr{border-color:var(--line)}
  color:var(--text)
 }
 .previous-distance{color:var(--accent);font-weight:750}
-</style></head><body><div id="app"></div><script type="module" src="./app.js?v=09"></script></body></html>
+
+/* v1.0 exact tonnage audit */
+.tonnage-panel{margin:13px 0;border-color:var(--line)}
+.tonnage-total{font-size:30px;font-weight:850;color:var(--accent);letter-spacing:-.04em;margin-bottom:13px;font-variant-numeric:tabular-nums}
+.tonnage-total small{font-size:13px;color:var(--muted)}
+.tonnage-details{border-top:1px solid var(--line);padding-top:11px;margin-bottom:10px}
+.tonnage-details summary{cursor:pointer;color:var(--text);font-size:13px;font-weight:750;padding:3px 0 8px}
+.tonnage-details[open] summary{margin-bottom:9px}
+.tonnage-group{position:relative;background:var(--panel-2);border-radius:12px;padding:10px 11px;margin-top:8px}
+.tonnage-group>strong{display:block;font-size:13px;max-width:75%;padding-bottom:7px}
+.tonnage-subtotal{position:absolute;right:10px;top:10px;font-weight:800;font-size:12px;color:var(--accent)}
+.tonnage-line{font-size:12px;color:var(--muted);line-height:1.65;font-variant-numeric:tabular-nums}
+.tonnage-line b{color:var(--text)}
+.tonnage-report-row{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px}
+.tonnage-report-row:last-child{border:0}.tonnage-report-row span{max-width:70%}.tonnage-report-row span small{color:var(--muted)}
+.tonnage-report-row b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tonnage-report-row.total{font-weight:800;color:var(--accent)}
+
+</style></head><body><div id="app"></div><script type="module" src="./app.js?v=10"></script></body></html>
