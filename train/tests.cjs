@@ -91,7 +91,7 @@ console.log('TRAIN v0.7 tests OK — warmup, km, sound switch, offline status');
 
 /* In-place update must retain the existing key and all other days. */
 assert.match(src,/train_iphone_prototype_v1/);
-assert.equal(run('APP_VERSION'),'0.9');
+assert.equal(run('APP_VERSION'),'1.0');
 assert.match(src,/refresh\.html/);
 assert.match(run('settings()'),/Проверить обновление/);
 assert.match(run('settings()'),/Первая тренировка/);
@@ -107,5 +107,36 @@ assert.equal(run('JSON.stringify(S.sessions[1])'),day2Before);
 assert.equal(run('S.order.join(",")'),orderBefore);
 assert.equal(run('S.history.length'),0);
 console.log('TRAIN v0.8 tests OK — preserves local key and transfers only first workout');
+
+
+/* Exact tonnage checks: weight x completed repetitions x dumbbell count. */
+run("S.sessions={}; S.history=[]; S.order=[0,1,2,3,4,5,6];");
+run("ses(0).logs={chestpress:[{w:40,r:10,time:Date.now()},{w:40,r:8,time:Date.now()}],incline:[{w:12,r:10,time:Date.now()},{w:14,r:12,time:Date.now()}],trirope:[{w:20,r:12,time:Date.now()}]};");
+assert.equal(run('exerciseVolume(DAYS[0][1][0],0)'),720);
+assert.equal(run('exerciseVolume(DAYS[0][1][1],0)'),576);
+assert.equal(run('exerciseVolume(DAYS[0][1][2],0)'),240);
+assert.equal(run('volumeForDay(0)'),1536);
+assert.equal(run('tonne()'),1536);
+assert.equal(run('report().volume'),1536);
+assert.equal(run('historyExtras().sessionStats[0].volume'),1536);
+assert.match(run('tonnagePanel(0)'),/336 кг/);
+assert.match(run('tonnagePanel(0)'),/× 2 гантели/);
+assert.match(run('home()'),/Тоннаж цикла, кг/);
+assert.match(run('review()'),/Тоннаж по занятиям/);
+assert.match(run('training(0)'),/Тоннаж этого занятия/);
+run('ses(1).logs.latpulldown=[{w:50,r:8,time:Date.now()}]');
+assert.equal(run('volumeForDay(1)'),400);
+assert.equal(run('tonne()'),1936);
+assert.equal(run('report().volume'),1936);
+run("ses(0).logs.chestpress.push({w:-5,r:10},{w:100,r:500,time:Date.now()})");
+assert.equal(run('exerciseVolume(DAYS[0][1][0],0)'),720,'ignore invalid values and entries beyond configured sets');
+assert.equal(run('tonne()'),1936);
+run("ses(6).logs.walking=[{w:100,r:20,time:Date.now()}]");
+assert.equal(run('volumeForDay(6)'),0,'no tonnage assigned to walking');
+run("ses(0).done=true;ses(0).endAt=Date.now();ses(0).startAt=Date.now()-120000;ses(1).done=true;ses(1).endAt=Date.now();ses(1).startAt=Date.now()-120000;");
+assert.equal(run('rollingWeek().volume'),1936);
+assert.equal(run('historyExtras().sessionStats[1].volume'),400);
+assert.equal(run('setVolume(DAYS[0][1][1],{w:2.5,r:12})'),60);
+console.log('TRAIN v1.0 tonnage tests OK — dumbbells, actual sets, day/cycle/week consistency');
 
 console.log('TRAIN PWA smoke checks OK — theme, UI, progress, order, history');
