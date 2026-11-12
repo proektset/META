@@ -2,12 +2,14 @@
 const DAYS=[
 ['Грудь + трицепс',[['chestpress','Жим в грудном тренажёре',3,8,12,2.5,1],['incline','Жим гантелей под наклоном',2,8,12,2,2],['trirope','Разгибание рук с канатом',3,10,15,2.5,1]]],
 ['Спина + бицепс',[['latpulldown','Тяга верхнего блока',3,8,12,2.5,1],['cable-row','Горизонтальная тяга',2,8,12,2.5,1],['barcurl','Подъём штанги на бицепс',3,10,12,2.5,1]]],
-['Ноги + плечи',[['legpress','Жим ногами',3,10,12,5,1],['rdl','Румынская тяга с гантелями',3,8,12,2,2],['lateral','Махи гантелями в стороны',2,12,15,1,2]]],
+['Ноги + грудь',[['legpress','Жим ногами',3,10,12,5,1],['rdl','Румынская тяга с гантелями',3,8,12,2,2],['butterfly','Тренажёр «Бабочка»',2,12,15,2.5,1]]],
 ['Грудь + трицепс',[['incline','Жим гантелей под наклоном',3,8,12,2,2],['fly','Сведение рук в тренажёре',2,12,15,2.5,1],['overheadtri','Разгибание из-за головы на блоке',3,10,15,2.5,1]]],
 ['Спина + бицепс',[['chestrow','Горизонтальная тяга с опорой',3,8,12,2.5,1],['close-lat','Тяга верхнего блока узким хватом',2,10,12,2.5,1],['hammer','Молотковые сгибания',3,10,12,2,2]]],
 ['Ноги + плечи',[['legcurl','Сгибание ног в тренажёре',3,10,15,2.5,1],['legpress','Жим ногами',3,10,12,5,1],['shoulderpress','Жим гантелей сидя',2,10,12,2,2]]],
 ['Кардио + пресс',[['walking','Ходьба в комфортном темпе',1,20,20,1,0],['crunch','Скручивания',2,15,15,1,0],['plank','Планка (секунды)',2,30,30,5,0]]]
 ];
+const LEGACY_LATERAL=['lateral','Махи гантелями в стороны · архив',2,12,15,1,2];
+const MAX_EXTRA_SETS=12;
 const KEY='train_iphone_prototype_v1';
 const empty=()=>({v:1,cycle:1,sessions:{},drafts:{},rest:null,history:[],demo:false,order:DAYS.map((_,i)=>i),soundEnabled:true});
 let S;try{S={...empty(),...JSON.parse(localStorage.getItem(KEY))}}catch{S=empty()}
@@ -51,7 +53,12 @@ async function restoreSnapshot(){
  }catch{}
 }
 const ses=i=>S.sessions[i]||(S.sessions[i]={startAt:0,endAt:0,pausedAt:0,pausedTotal:0,done:false,logs:{},warmupStartedAt:0,warmupEndAt:0,warmupDoneAt:0,warmupAlerted:false,distanceKm:0});
-const count=i=>DAYS[i][1].reduce((a,e)=>a+e[2],0);
+const legacyExercises=i=>i===2&&Array.isArray(S.sessions[2]?.logs?.lateral)&&S.sessions[2].logs.lateral.some(Boolean)?[LEGACY_LATERAL]:[];
+const activeExercises=i=>i===2&&S.sessions[2]?.done&&legacyExercises(i).length?DAYS[2][1].filter(e=>e[0]!=='butterfly'):DAYS[i][1];
+const dayExercises=i=>[...activeExercises(i),...legacyExercises(i)];
+const setTarget=(e,i)=>e[0]==='lateral'?Math.max(e[2],S.sessions[i]?.logs?.lateral?.length||0):e[2]+Math.max(0,Math.min(MAX_EXTRA_SETS,Number(S.sessions[i]?.extraSets?.[e[0]])||0));
+const count=i=>dayExercises(i).reduce((a,e)=>a+(e[0]==='lateral'?(S.sessions[i]?.logs?.lateral||[]).filter(Boolean).length:setTarget(e,i)),0);
+const findExercise=(i,id)=>dayExercises(i).find(e=>e[0]===id);
 const logged=i=>Object.values(ses(i).logs).flat().filter(Boolean).length;
 const finished=()=>DAYS.reduce((a,_,i)=>a+(ses(i).done?1:0),0);
 const next=()=>S.order.find(i=>!ses(i).done)??-1;
@@ -72,13 +79,13 @@ const setVolume=(e,l)=>{
 };
 const loggedSets=(e,i)=>{
  const rows=S.sessions[i]?.logs?.[e[0]];
- return Array.isArray(rows)?rows.slice(0,e[2]).filter(Boolean):[];
+ return Array.isArray(rows)?rows.slice(0,Math.max(setTarget(e,i),rows.length)).filter(Boolean):[];
 };
 const exerciseVolume=(e,i)=>loggedSets(e,i).reduce((sum,l)=>sum+setVolume(e,l),0);
-const volumeForDay=i=>DAYS[i][1].reduce((sum,e)=>sum+exerciseVolume(e,i),0);
+const volumeForDay=i=>dayExercises(i).reduce((sum,e)=>sum+exerciseVolume(e,i),0);
 const tonne=()=>DAYS.reduce((sum,_,i)=>sum+volumeForDay(i),0);
 function tonnagePanel(i){
- const volume=volumeForDay(i),rows=DAYS[i][1].filter(e=>loggedSets(e,i).length);
+ const volume=volumeForDay(i),rows=dayExercises(i).filter(e=>loggedSets(e,i).length);
  const breakdown=rows.map(e=>{
   const sets=loggedSets(e,i),subtotal=exerciseVolume(e,i);
   const parts=sets.map((l,k)=>{
@@ -93,7 +100,7 @@ function tonnagePanel(i){
 const timedone=()=>DAYS.reduce((t,_,i)=>t+(ses(i).done?dur(ses(i)):0),0);
 const doneSets=()=>DAYS.reduce((t,_,i)=>t+logged(i),0);
 const kmTotal=()=>DAYS.reduce((t,_,i)=>t+(Number(S.sessions[i]?.distanceKm)||0),0);
-function weights(){const a={};DAYS.forEach((d,i)=>d[1].forEach(e=>{if(!e[6])return;const logs=(ses(i).logs[e[0]]||[]).filter(Boolean);if(logs.length)a[e[0]]=logs.at(-1).w;}));return a}
+function weights(){const a={};DAYS.forEach((d,i)=>dayExercises(i).forEach(e=>{if(!e[6])return;const logs=loggedSets(e,i);if(logs.length)a[e[0]]=logs.at(-1).w;}));return a}
 const report=()=>({cycle:S.cycle,date:Date.now(),volume:tonne(),time:timedone(),sets:doneSets(),days:finished(),weights:weights(),order:[...S.order],distanceKm:kmTotal()});
 function toast(msg){document.querySelector('.toast')?.remove();const el=document.createElement('div');el.className='toast';el.textContent=msg;document.body.append(el);setTimeout(()=>el.remove(),3200)}
 
@@ -200,7 +207,7 @@ function observations(id){
  return points.sort((a,b)=>a.t-b.t);
 }
 function bestWeights(){let best={};for(let h of S.history){let data=h.maxWeights||h.weights||{};for(let [id,w] of Object.entries(data))if(w>0)best[id]=Math.max(best[id]||0,w);}
- DAYS.forEach((d,i)=>d[1].forEach(e=>{if(!e[6])return;for(let a of (S.sessions[i]?.logs?.[e[0]]||[]).filter(Boolean))if(a.w>0)best[e[0]]=Math.max(best[e[0]]||0,a.w)}));
+ DAYS.forEach((d,i)=>dayExercises(i).forEach(e=>{if(!e[6])return;for(let a of loggedSets(e,i))if(a.w>0)best[e[0]]=Math.max(best[e[0]]||0,a.w)}));
  return best;
 }
 function previousExerciseResult(id,excludeDay=null){
@@ -291,8 +298,8 @@ function dayStatsForHistory(){
 }
 function historyExtras(){
  let maxWeights={},lastSets={},exerciseResults={};
- DAYS.forEach((d,i)=>d[1].forEach(e=>{
-  const id=e[0],session=ses(i),sets=(session.logs[id]||[]).filter(Boolean);
+ DAYS.forEach((d,i)=>dayExercises(i).forEach(e=>{
+  const id=e[0],session=ses(i),sets=loggedSets(e,i);
   if(!sets.length)return;
   if(e[6]){maxWeights[id]=Math.max(maxWeights[id]||0,...sets.map(v=>v.w));const latest=sets.at(-1);if(!lastSets[id]||(latest.time||0)>(lastSets[id].time||0))lastSets[id]=latest;}
   const when=sets.at(-1)?.time||session.endAt||session.startAt||0;
