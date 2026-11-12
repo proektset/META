@@ -189,4 +189,36 @@ tr{border-color:var(--line)}
 .tonnage-report-row b{font-variant-numeric:tabular-nums;white-space:nowrap}
 .tonnage-report-row.total{font-weight:800;color:var(--accent)}
 
-</style></head><body><div id="app"></div><script type="module" src="./app.js?v=10"></script></body></html>
+
+/* v1.1 bottom navigation no longer floats over and blocks the settings page */
+#app{min-height:100dvh;display:flex;flex-direction:column}
+#app>.page{flex:1;padding-bottom:24px}
+#app>.tabbar{
+ position:static;left:auto;bottom:auto;transform:none;
+ width:100%;max-width:480px;margin:0 auto;
+ border-top:1px solid var(--line);border-radius:0;
+ flex:none;padding:10px 4px calc(12px + env(safe-area-inset-bottom));
+ z-index:auto;box-shadow:none
+}
+.sets-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px dashed var(--line);padding-top:12px;margin-top:8px}
+.sets-controls .muted{font-size:11px}
+.sets-controls>div{display:flex;align-items:center;gap:6px}
+.sets-controls .smallbtn{font-weight:800;min-height:38px}
+.archived-exercise{border:1px dashed var(--line);background:var(--panel-2)}
+.archived-exercise .kicker{color:var(--muted)}
+.archived-exercise .set.done{opacity:1}
+.archived-exercise>.muted{font-size:12px;line-height:1.4;margin-bottom:9px}
+.sticky-timer{
+ position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+ display:flex;align-items:center;gap:10px;margin:0 -4px 14px;
+ padding:10px 12px;border:1px solid var(--accent);border-radius:14px;
+ background:var(--panel);box-shadow:0 8px 26px rgba(0,0,0,.25);
+ color:var(--text);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)
+}
+.sticky-timer-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex-shrink:0;box-shadow:0 0 10px var(--accent)}
+.sticky-timer>div{display:flex;align-items:baseline;gap:9px}
+.sticky-timer-main{font-size:23px;font-weight:850;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--accent)}
+.sticky-timer-label{font-size:12px;color:var(--text);font-weight:700}
+.sticky-timer-state{margin-left:auto;font-size:10px;color:var(--muted);text-align:right;white-space:nowrap}
+@media(max-width:360px){.sticky-timer-main{font-size:20px}.sticky-timer-state{font-size:9px}.sets-controls{flex-wrap:wrap}}
+</style></head><body><div id="app"></div><script type="module" src="./app.js?v=11"></script></body></html>
