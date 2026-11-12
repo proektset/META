@@ -56,7 +56,7 @@ const ses=i=>S.sessions[i]||(S.sessions[i]={startAt:0,endAt:0,pausedAt:0,pausedT
 const legacyExercises=i=>i===2&&Array.isArray(S.sessions[2]?.logs?.lateral)&&S.sessions[2].logs.lateral.some(Boolean)?[LEGACY_LATERAL]:[];
 const activeExercises=i=>i===2&&S.sessions[2]?.done&&legacyExercises(i).length?DAYS[2][1].filter(e=>e[0]!=='butterfly'):DAYS[i][1];
 const dayExercises=i=>[...activeExercises(i),...legacyExercises(i)];
-const setTarget=(e,i)=>e[0]==='lateral'?Math.max(e[2],S.sessions[i]?.logs?.lateral?.length||0):Math.max(e[2]+Math.max(0,Math.min(MAX_EXTRA_SETS,Number(S.sessions[i]?.extraSets?.[e[0]])||0)),S.sessions[i]?.logs?.[e[0]]?.length||0);
+const setTarget=(e,i)=>e[0]==='lateral'?Math.max(e[2],S.sessions[i]?.logs?.lateral?.length||0):e[2]+Math.max(0,Math.min(MAX_EXTRA_SETS,Math.trunc(Number(S.sessions[i]?.extraSets?.[e[0]])||0)));
 const count=i=>dayExercises(i).reduce((a,e)=>a+(e[0]==='lateral'?(S.sessions[i]?.logs?.lateral||[]).filter(Boolean).length:setTarget(e,i)),0);
 const findExercise=(i,id)=>dayExercises(i).find(e=>e[0]===id);
 const logged=i=>Object.values(ses(i).logs).flat().filter(Boolean).length;
@@ -79,7 +79,7 @@ const setVolume=(e,l)=>{
 };
 const loggedSets=(e,i)=>{
  const rows=S.sessions[i]?.logs?.[e[0]];
- return Array.isArray(rows)?rows.slice(0,Math.max(setTarget(e,i),rows.length)).filter(Boolean):[];
+ return Array.isArray(rows)?rows.slice(0,setTarget(e,i)).filter(Boolean):[];
 };
 const exerciseVolume=(e,i)=>loggedSets(e,i).reduce((sum,l)=>sum+setVolume(e,l),0);
 const volumeForDay=i=>dayExercises(i).reduce((sum,e)=>sum+exerciseVolume(e,i),0);
