@@ -13,7 +13,7 @@ b{color:#fff}code{font-size:12px;word-break:break-all}.tag{font-weight:800;color
 <h1>Обновление без потери данных</h1>
 <p>Проверка установленной версии и сохранений. Этот экран не удаляет результаты тренировок.</p>
 <div class="section"><b>Текущее хранилище</b><p id="status">Проверяю сохранение…</p><div class="small" id="address"></div></div>
-<div class="section"><b>Обновление</b><p id="version">Текущая версия на GitHub: 1.0</p>
+<div class="section"><b>Обновление</b><p id="version">Текущая версия на GitHub: 1.1</p>
 <button id="update">Загрузить последнюю версию</button>
 <button class="secondary" id="export">Скачать резервную копию данных</button>
 <p id="result" role="status" aria-live="polite"></p></div>
@@ -47,7 +47,7 @@ const reg=await navigator.serviceWorker.getRegistration('./');if(reg){await reg.
 }
 const response=await fetch('./index.html?fresh='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('Не удалось получить новую версию с сервера');
 result.textContent='Новая версия получена. Открываю приложение…';
-location.replace('./?updated=10&fresh='+Date.now());
+location.replace('./?updated=11&fresh='+Date.now());
 }catch(e){result.textContent='Обновление не выполнено: '+(e.message||'ошибка сети')+'. Данные остались на телефоне.'}
 });
 })();
