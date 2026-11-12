@@ -91,7 +91,7 @@ console.log('TRAIN v0.7 tests OK — warmup, km, sound switch, offline status');
 
 /* In-place update must retain the existing key and all other days. */
 assert.match(src,/train_iphone_prototype_v1/);
-assert.equal(run('APP_VERSION'),'1.0');
+assert.equal(run('APP_VERSION'),'1.1');
 assert.match(src,/refresh\.html/);
 assert.match(run('settings()'),/Проверить обновление/);
 assert.match(run('settings()'),/Первая тренировка/);
@@ -138,5 +138,69 @@ assert.equal(run('rollingWeek().volume'),1936);
 assert.equal(run('historyExtras().sessionStats[1].volume'),400);
 assert.equal(run('setVolume(DAYS[0][1][1],{w:2.5,r:12})'),60);
 console.log('TRAIN v1.0 tonnage tests OK — dumbbells, actual sets, day/cycle/week consistency');
+
+
+/* v1.1: exercises can add unlogged sets; completed and historic logs remain intact */
+run("S.sessions={}; S.history=[]; S.order=[0,1,2,3,4,5,6];S.soundEnabled=true;");
+assert.equal(run("DAYS[2][1][2][0]"),"butterfly");
+assert.equal(run("DAYS[2][1][2][6]"),1);
+assert.match(run("DAYS[2][1][2][1]"),/Бабочка/);
+assert.equal(run("count(0)"),8);
+run("ses(0).extraSets={chestpress:2};ses(0).warmupDoneAt=Date.now();save();");
+assert.equal(run("count(0)"),10);
+assert.equal(run("setTarget(DAYS[0][1][0],0)"),5);
+assert.match(run("exercise(DAYS[0][1][0],0,0)"),/\+ Подход/);
+assert.match(run("exercise(DAYS[0][1][0],0,0)"),/5-й подход/);
+run("ses(0).logs.chestpress=[{w:40,r:10,time:Date.now()},{w:40,r:10,time:Date.now()},{w:40,r:10,time:Date.now()},{w:40,r:10,time:Date.now()},{w:40,r:10,time:Date.now()}];");
+assert.equal(run("exerciseVolume(DAYS[0][1][0],0)"),2000);
+assert.equal(run("volumeForDay(0)"),2000);
+assert.equal(run("logged(0)"),5);
+assert.equal(run("historyExtras().exerciseResults.chestpress.sets.length"),5);
+
+run("S.sessions={};S.history=[];S.order=[0,1,2,3,4,5,6];");
+run("ses(2).logs.lateral=[{w:5,r:12,time:Date.now()-4000},{w:6,r:10,time:Date.now()-3000}];ses(2).done=true;");
+assert.equal(run("legacyExercises(2).length"),1);
+assert.equal(run("activeExercises(2).some(e=>e[0]==='butterfly')"),false);
+assert.equal(run("volumeForDay(2)"),240);
+assert.equal(run("count(2)"),8);
+assert.match(run("training(2)"),/Махи гантелями в стороны/);
+assert.doesNotMatch(run("training(2)"),/УПРАЖНЕНИЕ 3<\/div><div class=\"extitle\"[^>]*>Тренажёр «Бабочка»/);
+assert.match(run("tonnagePanel(2)"),/240/);
+run("ses(2).done=false;ses(2).logs.butterfly=[{w:35,r:12,time:Date.now()}];");
+assert.equal(run("activeExercises(2).some(e=>e[0]==='butterfly')"),true);
+assert.equal(run("volumeForDay(2)"),660);
+assert.equal(run("count(2)"),10);
+assert.match(run("training(2)"),/Тренажёр «Бабочка»/);
+assert.equal(run("historyExtras().exerciseResults.lateral.sets.length"),2);
+assert.equal(run("historyExtras().exerciseResults.butterfly.sets[0].w"),35);
+assert.equal(run("S.sessions[2].logs.lateral[0].w"),5);
+const oldArchive=run("JSON.stringify(S.sessions[2].logs.lateral)");
+run("S.history.unshift({...report(),...historyExtras()});S.sessions={};");
+assert.equal(run("JSON.stringify(S.history[0].exerciseResults.lateral.sets)"),oldArchive);
+assert.equal(run("dayExercises(2).some(e=>e[0]==='butterfly')"),true);
+
+/* Sticky active timer and rest/warmup remain visible while scrolling */
+run("ses(2).startAt=Date.now()-60000;ses(2).warmupDoneAt=Date.now();");
+assert.match(run("training(2)"),/sticky-session-time/);
+run("S.rest={i:2,end:Date.now()+60000,expired:false};");
+assert.match(run("training(2)"),/sticky-rest-time/);
+run("S.rest=null;ses(2).warmupEndAt=Date.now()+120000;ses(2).warmupDoneAt=0;");
+assert.match(run("training(2)"),/sticky-warmup-time/);
+const stylesheet=fs.readFileSync(__dirname+'/index.html','utf8');
+assert.match(stylesheet,/#app>\.tabbar\{[\s\S]*?position:static/);
+assert.match(stylesheet,/\.sticky-timer\{[\s\S]*?position:sticky/);
+
+/* Alert 8 pulses totaling > 2 seconds at high web-audio gain */
+const endings=[];
+ctx.window.AudioContext=class{
+ constructor(){this.state='running';this.currentTime=0;this.destination={}}
+ createOscillator(){return {type:'',frequency:{setValueAtTime(){}},connect(){},start(){},stop(t){endings.push(t)}}}
+ createGain(){return {gain:{setValueAtTime(){},linearRampToValueAtTime(){}},connect(){}}}
+};
+run("S.soundEnabled=true;signal()");
+assert.equal(endings.length,8);
+assert.ok(endings[7]>=2.3);
+assert.match(src,/linearRampToValueAtTime\(\.85/);
+console.log('TRAIN v1.1 tests OK — extra sets, preserved lateral history, butterfly, sticky timer and 2.4s sound');
 
 console.log('TRAIN PWA smoke checks OK — theme, UI, progress, order, history');
