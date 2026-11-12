@@ -379,22 +379,27 @@ function timeForecast(i){
  const session=ses(i),warmupLeft=session.warmupDoneAt?0:session.warmupEndAt?warmupCountdown(i)/60000:5;return Math.max(1,Math.round(rem*2.25+warmupLeft));
 }
 function exercise(e,i,idx){
- const s=ses(i),logs=s.logs[e[0]]||[],done=logs.filter(Boolean).length,ok=done===e[2],isweight=e[6]>0;
- const prev=lastSetOf(e[0],i),best=bestWeights()[e[0]];
- const trend=progressBadge(e[0],i);
- const header='<div class="exercise-top"><div><div class="kicker">УПРАЖНЕНИЕ '+(idx+1)+'</div><div class="extitle" style="margin-top:5px">'+e[1]+'</div><div class="exmeta">'+e[2]+' × '+e[3]+(e[3]===e[4]?'':'–'+e[4])+(e[0]==='walking'?' мин':e[0]==='plank'?' сек':' повт.')+'</div></div><div class="exercise-marks">'+trend+(best?'<span class="record-badge">'+icon('trophy')+fmt(best)+' кг</span>':'')+'</div></div>';
- let ctrl=isweight?'<div class="control"><span class="muted">Вес '+(e[6]===2?'гантели':'снаряда')+'</span><div class="counter"><button data-act="w-" data-i="'+i+'" data-e="'+e[0]+'" '+(ok||s.done?'disabled':'')+'>−</button><input data-input="w" data-e="'+e[0]+'" type="number" inputmode="decimal" min="0" step="0.5" value="'+w(e)+'" '+(ok||s.done?'disabled':'')+'><button data-act="w+" data-i="'+i+'" data-e="'+e[0]+'" '+(ok||s.done?'disabled':'')+'>+</button></div></div>':'';
- if(!ok&&!s.done){
-  ctrl+='<div class="control"><span class="muted">'+(e[0]==='walking'?'Минуты':e[0]==='plank'?'Секунды':'Повторы')+'</span><div class="counter"><button data-act="r-" data-i="'+i+'" data-e="'+e[0]+'">−</button><b>'+reps(e)+'</b><button data-act="r+" data-i="'+i+'" data-e="'+e[0]+'">+</button></div></div>';
-  if(isweight&&prev)ctrl+='<button class="copy-previous" data-act="previous" data-i="'+i+'" data-e="'+e[0]+'">⎘ Как в прошлый раз: '+fmt(prev.w)+' кг'+(prev.r?' × '+prev.r:'')+'</button>';
+ const s=ses(i),id=e[0],archive=id==='lateral',logs=s.logs[id]||[],done=logs.filter(Boolean).length,target=setTarget(e,i),ok=done>=target,isweight=e[6]>0;
+ const prev=archive?null:lastSetOf(id,i),best=bestWeights()[id],trend=archive?'':progressBadge(id,i);
+ const head='<div class="exercise-top"><div><div class="kicker">'+(archive?'АРХИВ · СОХРАНЁННОЕ УПРАЖНЕНИЕ':'УПРАЖНЕНИЕ '+(idx+1))+'</div><div class="extitle" style="margin-top:5px">'+e[1]+'</div><div class="exmeta">'+target+' × '+e[3]+(e[3]===e[4]?'':'–'+e[4])+(id==='walking'?' мин':id==='plank'?' сек':' повт.')+'</div></div><div class="exercise-marks">'+trend+(best?'<span class="record-badge">'+icon('trophy')+fmt(best)+' кг</span>':'')+'</div></div>';
+ if(archive){
+  const items=logs.filter(Boolean).map((l,k)=>'<div class="set done"><div><b>'+(k+1)+'-й подход ✓</b><div class="tiny">'+fmt(l.w)+' кг × '+fmt(l.r)+' повт. × 2 гантели = '+fmt(setVolume(e,l))+' кг</div></div></div>').join('');
+  return '<div class="exercise archived-exercise">'+head+'<div class="muted">Результаты сохранены из старой программы. В новых тренировках вместо махов — тренажёр «Бабочка».</div>'+items+'</div>';
  }
- if(e[0]==='walking')ctrl+='<div class="distance-field"><label for="km-'+i+'">Пройдено километров</label><div class="distance-input"><input id="km-'+i+'" data-input="distance" data-i="'+i+'" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Например, 2.5" value="'+(Number(s.distanceKm)||'')+'"><span>км</span></div></div>';
- const rows=Array.from({length:e[2]},(_,k)=>{
+ let ctrl=isweight?'<div class="control"><span class="muted">Вес '+(e[6]===2?'гантели':'снаряда')+'</span><div class="counter"><button data-act="w-" data-i="'+i+'" data-e="'+id+'" '+(ok||s.done?'disabled':'')+'>−</button><input data-input="w" data-e="'+id+'" type="number" inputmode="decimal" min="0" step="0.5" value="'+w(e)+'" '+(ok||s.done?'disabled':'')+'><button data-act="w+" data-i="'+i+'" data-e="'+id+'" '+(ok||s.done?'disabled':'')+'>+</button></div></div>':'';
+ if(!ok&&!s.done){
+  ctrl+='<div class="control"><span class="muted">'+(id==='walking'?'Минуты':id==='plank'?'Секунды':'Повторы')+'</span><div class="counter"><button data-act="r-" data-i="'+i+'" data-e="'+id+'">−</button><b>'+reps(e)+'</b><button data-act="r+" data-i="'+i+'" data-e="'+id+'">+</button></div></div>';
+  if(isweight&&prev)ctrl+='<button class="copy-previous" data-act="previous" data-i="'+i+'" data-e="'+id+'">⎘ Как в прошлый раз: '+fmt(prev.w)+' кг'+(prev.r?' × '+prev.r:'')+'</button>';
+ }
+ if(id==='walking')ctrl+='<div class="distance-field"><label for="km-'+i+'">Пройдено километров</label><div class="distance-input"><input id="km-'+i+'" data-input="distance" data-i="'+i+'" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Например, 2.5" value="'+(Number(s.distanceKm)||'')+'"><span>км</span></div></div>';
+ const rows=Array.from({length:target},(_,k)=>{
   const l=logs[k],isnext=k===done;
-  const buttons=l?'<button class="smallbtn" data-act="undo" data-i="'+i+'" data-e="'+e[0]+'" data-set="'+k+'" '+(s.done?'disabled':'')+'>↶</button>':isnext&&!s.done?(e[0]==='walking'||count(i)-logged(i)===1?'<button class="smallbtn" data-act="mark" data-i="'+i+'" data-e="'+e[0]+'" data-rest="0">Готово ✓</button>':'<div class="times">'+[1,2,3].map(x=>'<button data-act="mark" data-i="'+i+'" data-e="'+e[0]+'" data-rest="'+x+'">'+x+' м</button>').join('')+'</div>'):'';
-  return '<div class="set '+(l?'done':'')+'"><div><div style="font-size:13px;font-weight:750">'+(k+1)+'-й подход '+(l?'✓':'')+'</div><div class="tiny" style="margin-top:3px">'+(l?l.r+' '+(e[0]==='walking'?'мин':e[0]==='plank'?'сек':'повт.')+(isweight?' · '+fmt(l.w)+' кг':''):isnext?'Следующий':'Не выполнен')+'</div></div>'+buttons+'</div>';
+  const buttons=l?'<button class="smallbtn" data-act="undo" data-i="'+i+'" data-e="'+id+'" data-set="'+k+'" '+(s.done?'disabled':'')+'>↶</button>':isnext&&!s.done?(id==='walking'||(count(i)-logged(i)===1)?'<button class="smallbtn" data-act="mark" data-i="'+i+'" data-e="'+id+'" data-rest="0">Готово ✓</button>':'<div class="times">'+[1,2,3].map(x=>'<button data-act="mark" data-i="'+i+'" data-e="'+id+'" data-rest="'+x+'">'+x+' м</button>').join('')+'</div>'):'';
+  return '<div class="set '+(l?'done':'')+'"><div><div style="font-size:13px;font-weight:750">'+(k+1)+'-й подход '+(l?'✓':'')+'</div><div class="tiny" style="margin-top:3px">'+(l?l.r+' '+(id==='walking'?'мин':id==='plank'?'сек':'повт.')+(isweight?' · '+fmt(l.w)+' кг':''):isnext?'Следующий':'Не выполнен')+'</div></div>'+buttons+'</div>';
  }).join('');
- return '<div class="exercise '+(ok?'done':'')+'">'+header+previousExerciseCard(e,i)+ctrl+rows+'</div>';
+ const added=target-e[2];
+ const setControls=!s.done?'<div class="sets-controls"><span class="muted">План: '+target+' подходов'+(added?' (+'+added+')':'')+'</span><div><button class="smallbtn" data-act="removeset" data-i="'+i+'" data-e="'+id+'" '+(!added||done>=target?'disabled':'')+' aria-label="Убрать лишний подход">−</button><button class="smallbtn" data-act="addset" data-i="'+i+'" data-e="'+id+'" '+(added>=MAX_EXTRA_SETS?'disabled':'')+'>+ Подход</button></div></div>':'';
+ return '<div class="exercise '+(ok?'done':'')+'">'+head+previousExerciseCard(e,i)+ctrl+rows+setControls+'</div>';
 }
 function training(i){
  const d=DAYS[i],s=ses(i),done=logged(i),all=count(i),rest=S.rest?.i===i?S.rest:null;
@@ -402,7 +407,7 @@ function training(i){
  const rt=rest?'<div class="rest"><div class="kicker">ОТДЫХ</div><div style="display:flex;align-items:center;justify-content:space-between"><div class="timer" id="rest-time">'+minfmt(rest.end-Date.now())+'</div><button class="smallbtn" data-act="skip"> '+(rest.end<=Date.now()?'Понятно':'Пропустить')+' </button></div><div class="muted">Сигнал при заблокированном экране пока недоступен — требуется Web Push.</div></div>':'';
  return '<main class="page"><div class="top"><button class="smallbtn" data-act="home">‹ Назад</button><div class="top-controls">'+typeChip(i)+themeToggle()+'</div></div><div class="h1">'+d[0]+'</div><div class="muted">Занятие '+(S.order.indexOf(i)+1)+' из 7</div><div class="bar"><i style="width:'+(done/all*100)+'%"></i></div>'+forecast+
  tonnagePanel(i)+'<div class="clockbox"><div><div class="tiny">Время тренировки</div><div class="timer" id="session-time">'+minfmt(dur(s))+'</div></div>'+(s.done?'<b>Готово ✓</b>':!s.startAt?'<button class="smallbtn" data-act="start" data-i="'+i+'">▶ Начать</button>':s.pausedAt?'<button class="smallbtn" data-act="resume" data-i="'+i+'">▶ Продолжить</button>':'<button class="smallbtn" data-act="pause" data-i="'+i+'">Ⅱ Пауза</button>')+'</div>'+warmupPanel(i)+rt+
- d[1].map((e,j)=>exercise(e,i,j)).join('')+
+ dayExercises(i).map((e,j)=>exercise(e,i,j)).join('')+
  (s.done?'<div class="panel">Завершено за '+hdur(dur(s))+'<button class="btn secondary" data-act="home">На главную</button></div>':'<button class="btn" data-act="finish" data-i="'+i+'" '+(!done?'disabled':'')+'>Завершить тренировку ✓</button>')+
  '<div class="note">«≈ мин» — ориентировочное оставшееся время, не норматив. Для гантелей указан вес одной гантели; в тоннаже учитываются обе.</div></main>';
 }
