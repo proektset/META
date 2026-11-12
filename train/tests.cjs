@@ -202,7 +202,7 @@ ctx.window.AudioContext=class{
 run("S.soundEnabled=true;signal()");
 assert.equal(endings.length,8);
 assert.ok(endings[7]>=2.3);
-assert.match(src,/linearRampToValueAtTime\(\.85/);
+assert.match(src,/linearRampToValueAtTime\(1,/);
 console.log('TRAIN v1.1 tests OK — extra sets, preserved lateral history, butterfly, sticky timer and 2.4s sound');
 
 console.log('TRAIN PWA smoke checks OK — theme, UI, progress, order, history');
