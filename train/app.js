@@ -426,6 +426,16 @@ function training(i){
 }
 
 
+function archivedLateralHistory(){
+ const cycles=S.history.filter(h=>h?.exerciseResults?.lateral?.sets?.length||h?.lastSets?.lateral||h?.weights?.lateral);
+ if(!cycles.length)return '';
+ return '<div class="section">Архив: махи гантелями в стороны</div>'+cycles.map(h=>{
+  const sets=h.exerciseResults?.lateral?.sets||[h.lastSets?.lateral].filter(Boolean);
+  const rows=sets.length?sets.map((l,k)=>'<div class="tonnage-line">'+(k+1)+'. '+fmt(l.w)+' кг'+(l.r?' × '+fmt(l.r)+' повт. × 2 = '+fmt(setVolume(LEGACY_LATERAL,l))+' кг':' · повторения не сохранены')+'</div>').join(''):
+   '<div class="tonnage-line">Последний рабочий вес: '+fmt(h.weights?.lateral)+' кг (одна гантель)</div>';
+  return '<div class="panel"><b>Цикл № '+h.cycle+'</b><div class="muted">Сохранено до замены на «Бабочку»</div>'+rows+'</div>';
+ }).join('');
+}
 function review(){
  const cur=report(),prev=S.history[0],obs={};
  DAYS.forEach((d,i)=>d[1].forEach(e=>{if(!e[6])return;let logs=(ses(i).logs[e[0]]||[]).filter(Boolean);if(logs.length)(obs[e[0]]??=[]).push({name:e[1],w:logs.at(-1).w,time:logs.at(-1).time||0});}));
@@ -440,6 +450,7 @@ function review(){
  '<div class="section">Тоннаж по занятиям</div><div class="panel tonnage-report">'+S.order.filter(i=>logged(i)).map(i=>'<div class="tonnage-report-row"><span>'+DAYS[i][0]+' <small>№ '+(S.order.indexOf(i)+1)+'</small></span><b>'+fmt(volumeForDay(i))+' кг</b></div>').join('')+'<div class="tonnage-report-row total"><span>Всего за цикл</span><b>'+fmt(cur.volume)+' кг</b></div></div><div class="section">Изменение рабочих весов</div>'+changeTable+chartSection()+recordsSection()+weekSection()+loadViz()+
  '<div class="note">Тоннаж = сумма (вес × повторы). Кардио и упражнения с собственным весом учитываются отдельно. Изменение рабочих весов не равно измерению мышечной массы.</div>'+
  (cur.days===7?'<button class="btn" data-act="newcycle">Начать следующий цикл →</button>':'<button class="btn secondary" data-act="home">Продолжить тренировки</button>')+
+ archivedLateralHistory()+
  (S.history.length?'<div class="section">Предыдущие циклы</div>'+S.history.map(h=>'<div class="panel">Цикл № '+h.cycle+' · '+fmt(h.volume)+' кг · '+hdur(h.time)+'</div>').join(''):'')+'</main>';
 }
 
