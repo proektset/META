@@ -177,6 +177,8 @@ assert.equal(run("S.sessions[2].logs.lateral[0].w"),5);
 const oldArchive=run("JSON.stringify(S.sessions[2].logs.lateral)");
 run("S.history.unshift({...report(),...historyExtras()});S.sessions={};");
 assert.equal(run("JSON.stringify(S.history[0].exerciseResults.lateral.sets)"),oldArchive);
+assert.match(run('archivedLateralHistory()'),/Махи|мах[ио]/i);
+assert.match(run('review()'),/Архив: махи гантелями/);
 assert.equal(run("dayExercises(2).some(e=>e[0]==='butterfly')"),true);
 
 /* Sticky active timer and rest/warmup remain visible while scrolling */
