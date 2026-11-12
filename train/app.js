@@ -112,20 +112,24 @@ function unlockAudio(){
 function signal(){
  if(!S.soundEnabled)return;
  try{
-  navigator.vibrate?.([130,80,130]);
+  navigator.vibrate?.([400,120,400,120,400]);
   const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
   if(!audioCtx)audioCtx=new Audio();
   if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});
-  const start=audioCtx.currentTime+.015;
-  [880,1046,1175].forEach((freq,i)=>{
-   const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-   o.type='sine';o.frequency.setValueAtTime(freq,start+i*.17);
-   g.gain.setValueAtTime(.001,start+i*.17);
-   g.gain.exponentialRampToValueAtTime(.12,start+i*.17+.015);
-   g.gain.exponentialRampToValueAtTime(.001,start+i*.17+.135);
-   o.connect(g);g.connect(audioCtx.destination);
-   o.start(start+i*.17);o.stop(start+i*.17+.15);
-  });
+  const start=audioCtx.currentTime+.02;
+  // Eight high-volume non-overlapping tones: 8 x .30 s = 2.40 s.
+  // Device volume, iOS silent mode and background execution are controlled by the phone.
+  for(let i=0;i<8;i++){
+   const at=start+i*.30,frequency=i%2?1046:880;
+   const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+   osc.type='square';osc.frequency.setValueAtTime(frequency,at);
+   gain.gain.setValueAtTime(.0001,at);
+   gain.gain.linearRampToValueAtTime(.85,at+.025);
+   gain.gain.setValueAtTime(.85,at+.23);
+   gain.gain.linearRampToValueAtTime(.0001,at+.29);
+   osc.connect(gain);gain.connect(audioCtx.destination);
+   osc.start(at);osc.stop(at+.295);
+  }
  }catch{}
 }
 function warmupCountdown(i){const s=ses(i);return s.warmupEndAt?Math.max(0,s.warmupEndAt-(s.pausedAt||Date.now())):300000;}
@@ -401,11 +405,20 @@ function exercise(e,i,idx){
  const setControls=!s.done?'<div class="sets-controls"><span class="muted">План: '+target+' подходов'+(added?' (+'+added+')':'')+'</span><div><button class="smallbtn" data-act="removeset" data-i="'+i+'" data-e="'+id+'" '+(!added||done>=target?'disabled':'')+' aria-label="Убрать лишний подход">−</button><button class="smallbtn" data-act="addset" data-i="'+i+'" data-e="'+id+'" '+(added>=MAX_EXTRA_SETS?'disabled':'')+'>+ Подход</button></div></div>':'';
  return '<div class="exercise '+(ok?'done':'')+'">'+head+previousExerciseCard(e,i)+ctrl+rows+setControls+'</div>';
 }
+function stickyTimer(i){
+ const session=ses(i),rest=S.rest?.i===i?S.rest:null;
+ if(session.done||!session.startAt)return '';
+ const warming=session.warmupEndAt&&!session.warmupDoneAt;
+ const primary=rest?'<span class="sticky-timer-main" id="sticky-rest-time">'+minfmt(rest.end-Date.now())+'</span><span class="sticky-timer-label">Отдых</span>':
+  warming?'<span class="sticky-timer-main" id="sticky-warmup-time">'+minfmt(warmupCountdown(i))+'</span><span class="sticky-timer-label">Разминка</span>':
+  '<span class="sticky-timer-main" id="sticky-session-time">'+minfmt(dur(session))+'</span><span class="sticky-timer-label">Тренировка</span>';
+ return '<div class="sticky-timer" role="timer" aria-label="Время текущего этапа"><span class="sticky-timer-dot"></span><div>'+primary+'</div><span class="sticky-timer-state">'+(session.pausedAt?'Пауза':'Таймер запущен')+'</span></div>';
+}
 function training(i){
  const d=DAYS[i],s=ses(i),done=logged(i),all=count(i),rest=S.rest?.i===i?S.rest:null;
  const forecast='<div class="remaining"><span>Осталось <b>'+(all-done)+'</b> подходов</span><span>≈ '+timeForecast(i)+' мин</span></div>';
  const rt=rest?'<div class="rest"><div class="kicker">ОТДЫХ</div><div style="display:flex;align-items:center;justify-content:space-between"><div class="timer" id="rest-time">'+minfmt(rest.end-Date.now())+'</div><button class="smallbtn" data-act="skip"> '+(rest.end<=Date.now()?'Понятно':'Пропустить')+' </button></div><div class="muted">Сигнал при заблокированном экране пока недоступен — требуется Web Push.</div></div>':'';
- return '<main class="page"><div class="top"><button class="smallbtn" data-act="home">‹ Назад</button><div class="top-controls">'+typeChip(i)+themeToggle()+'</div></div><div class="h1">'+d[0]+'</div><div class="muted">Занятие '+(S.order.indexOf(i)+1)+' из 7</div><div class="bar"><i style="width:'+(done/all*100)+'%"></i></div>'+forecast+
+ return '<main class="page workout-page"><div class="top"><button class="smallbtn" data-act="home">‹ Назад</button><div class="top-controls">'+typeChip(i)+themeToggle()+'</div></div>'+stickyTimer(i)+'<div class="h1">'+d[0]+'</div><div class="muted">Занятие '+(S.order.indexOf(i)+1)+' из 7</div><div class="bar"><i style="width:'+(done/all*100)+'%"></i></div>'+forecast+
  tonnagePanel(i)+'<div class="clockbox"><div><div class="tiny">Время тренировки</div><div class="timer" id="session-time">'+minfmt(dur(s))+'</div></div>'+(s.done?'<b>Готово ✓</b>':!s.startAt?'<button class="smallbtn" data-act="start" data-i="'+i+'">▶ Начать</button>':s.pausedAt?'<button class="smallbtn" data-act="resume" data-i="'+i+'">▶ Продолжить</button>':'<button class="smallbtn" data-act="pause" data-i="'+i+'">Ⅱ Пауза</button>')+'</div>'+warmupPanel(i)+rt+
  dayExercises(i).map((e,j)=>exercise(e,i,j)).join('')+
  (s.done?'<div class="panel">Завершено за '+hdur(dur(s))+'<button class="btn secondary" data-act="home">На главную</button></div>':'<button class="btn" data-act="finish" data-i="'+i+'" '+(!done?'disabled':'')+'>Завершить тренировку ✓</button>')+
@@ -482,6 +495,9 @@ return '<main class="page"><div class="top"><button class="smallbtn" data-act="h
 function render(){app.innerHTML=(view==='home'?home():view==='day'?training(day):view==='report'?review():settings())+nav();update()}
 function update(){
  let c=$('#session-time');if(c)c.textContent=minfmt(dur(ses(day)));
+ let stickySession=$('#sticky-session-time');if(stickySession)stickySession.textContent=minfmt(dur(ses(day)));
+ let stickyRest=$('#sticky-rest-time');if(stickyRest&&S.rest)stickyRest.textContent=minfmt(S.rest.end-Date.now());
+ let stickyWarmup=$('#sticky-warmup-time');if(stickyWarmup)stickyWarmup.textContent=minfmt(warmupCountdown(day));
  let r=$('#rest-time');if(r&&S.rest)r.textContent=minfmt(S.rest.end-Date.now());
  if(S.rest&&Date.now()>=S.rest.end&&!S.rest.expired){const late=Date.now()-S.rest.end;S.rest.expired=true;save();if(!document.hidden){toast('Отдых завершён');if(late<15000)signal()}}
  let a=S.sessions[day],w=$('#warmup-time');
